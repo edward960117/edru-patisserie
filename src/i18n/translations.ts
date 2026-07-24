@@ -24,7 +24,7 @@ export const translations = {
     heroEyebrow: "Handcrafted Since Day One",
     heroTitle: "ÈDRU PATISSERIE",
     heroSubtitle: "Seasonal cakes and pastries, made fresh daily. Pre-order for pickup or takeaway.",
-    heroCta: "Order Now",
+    heroCta: "Click to View Menu",
     heroAddress: "123 Orchard Road, #01-01, Singapore 238888",
     heroHours: "Wednesday to Sunday · 9:00 am – 7:00 pm",
 
@@ -82,7 +82,7 @@ export const translations = {
     heroEyebrow: "用心手作，始于初心",
     heroTitle: "ÈDRU烘培",
     heroSubtitle: "每日新鲜制作的季节限定蛋糕与甜点，欢迎预订自取或外带。",
-    heroCta: "立即订购",
+    heroCta: "查看菜单",
     heroAddress: "新加坡238888 乌节路123号 #01-01",
     heroHours: "周三至周日 · 上午9:00 – 晚上7:00",
 
