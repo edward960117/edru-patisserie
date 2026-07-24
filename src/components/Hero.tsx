@@ -10,11 +10,12 @@ export default function Hero() {
 
   return (
     <section id="top" className="relative h-[85vh] min-h-[520px] w-full overflow-hidden">
-      <img
+      {/* DISABLED: hero background image */}
+      {/* <img
         src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1600&q=80&auto=format&fit=crop"
         alt="Assortment of handcrafted cakes at ÈDRU PATISSERIE"
         className="absolute inset-0 h-full w-full object-cover"
-      />
+      /> */}
       <div className="absolute inset-0 bg-charcoal/40" />
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-cream px-4">

@@ -10,11 +10,12 @@ export default function PromoBanner() {
 
   return (
     <section className="relative py-20 sm:py-28 text-center text-cream overflow-hidden">
-      <img
+      {/* DISABLED: promo banner background image */}
+      {/* <img
         src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=1600&q=80&auto=format&fit=crop"
         alt="Seasonal cake collection"
         className="absolute inset-0 h-full w-full object-cover"
-      />
+      /> */}
       <div className="absolute inset-0 bg-charcoal/55" />
       <div className="relative z-10 max-w-2xl mx-auto px-4">
         <p className="uppercase tracking-[0.3em] text-xs mb-3">{t("promoEyebrow")}</p>
