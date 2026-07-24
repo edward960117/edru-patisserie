@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens for the EDRU PATISSERIE brand.
+ * Tailwind v4 auto-generates utility classes (bg-*, text-*, border-*) from
+ * the CSS variables declared in @theme, so the whole palette/typography
+ * system stays available as e.g. `bg-cream`, `text-charcoal`, `font-serif`.
+ */
+@theme {
+  --font-serif: "Playfair Display", "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-cream: #faf5ee;
+  --color-cream-dark: #f0e7d8;
+  --color-charcoal: #211a14;
+  --color-charcoal-soft: #4a3f35;
+  --color-gold: #b08d57;
+  --color-gold-light: #d9c39a;
+  --color-blush: #e7b8ad;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: var(--color-charcoal);
+}
+
+/* Small helper used to fade sections in as they enter the viewport */
+.reveal {
+  animation: reveal-in 0.6s ease-out both;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
