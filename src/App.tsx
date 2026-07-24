@@ -15,6 +15,8 @@ function App() {
   return (
     <LanguageProvider>
       <div className="min-h-screen flex flex-col">
+        <AnnouncementBar />
+        <Header />
         <main className="flex-1">
           <ProductGrid />
           <StoryBanner />
