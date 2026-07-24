@@ -10,7 +10,7 @@ import type { Product } from "../types";
 export const products: Product[] = [
   {
     id: "lemon-cheesecake-flower",
-    name: { en: "Lemon Cheesecake Flower", zh: "柠檬芝士花蛋糕" },
+    name: { en: "Lemon Cheesecake Flower", zh: "肖茹柠檬芝士花蛋糕" },
     description: {
       en: "Tangy lemon cheesecake mousse, shortbread crumble, citrus confit.",
       zh: "清爽柠檬芝士慕斯，酥脆黄油碎，柑橘蜜饯点缀。",
