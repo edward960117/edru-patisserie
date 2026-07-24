@@ -20,10 +20,10 @@ export default function Footer() {
         <div>
           <h4 className="uppercase text-xs tracking-wider text-gold mb-4">{t("footerExplore")}</h4>
           <ul className="space-y-2 text-sm text-cream/80">
-            <li><a href="#cakes" className="hover:text-cream">{t("navCakes")}</a></li>
-            <li><a href="#story" className="hover:text-cream">{t("navStory")}</a></li>
-            <li><a href="#book" className="hover:text-cream">{t("navBook")}</a></li>
-            <li><a href="#contact" className="hover:text-cream">{t("navContact")}</a></li>
+            <li><a href="/#cakes" className="hover:text-cream">{t("navCakes")}</a></li>
+            <li><a href="/#story" className="hover:text-cream">{t("navStory")}</a></li>
+            <li><a href="/#book" className="hover:text-cream">{t("navBook")}</a></li>
+            <li><a href="/#contact" className="hover:text-cream">{t("navContact")}</a></li>
           </ul>
         </div>
 

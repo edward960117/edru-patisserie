@@ -1,4 +1,139 @@
-import type { Product } from "../types";
+import type { Product, ProductCategory, ProductOption } from "../types";
+
+const optionBlueprints: Record<ProductCategory, Array<{ id: string; inches: number; priceDelta: number; labelEn: string; labelZh: string; descEn: string; descZh: string }>> = {
+  "Individual Cakes": [
+    {
+      id: "petit-4",
+      inches: 4,
+      priceDelta: 0,
+      labelEn: "Petit 4-inch",
+      labelZh: "迷你4寸",
+      descEn: "Ideal for one to two servings and quick gifting.",
+      descZh: "适合1到2人享用或小巧伴手礼。",
+    },
+    {
+      id: "classic-6",
+      inches: 6,
+      priceDelta: 10,
+      labelEn: "Classic 6-inch",
+      labelZh: "经典6寸",
+      descEn: "Balanced family size for a small table celebration.",
+      descZh: "适合小家庭聚会的经典尺寸。",
+    },
+    {
+      id: "party-8",
+      inches: 8,
+      priceDelta: 20,
+      labelEn: "Party 8-inch",
+      labelZh: "派对8寸",
+      descEn: "Great for gatherings and birthday moments.",
+      descZh: "适合朋友聚会与生日庆祝。",
+    },
+  ],
+  Entremets: [
+    {
+      id: "signature-6",
+      inches: 6,
+      priceDelta: 0,
+      labelEn: "Signature 6-inch",
+      labelZh: "招牌6寸",
+      descEn: "Serves around 6 people with full layer definition.",
+      descZh: "层次完整，约供6人享用。",
+    },
+    {
+      id: "celebration-8",
+      inches: 8,
+      priceDelta: 14,
+      labelEn: "Celebration 8-inch",
+      labelZh: "庆典8寸",
+      descEn: "Best for 8 to 10 guests at home celebrations.",
+      descZh: "适合8到10位宾客的居家庆典。",
+    },
+    {
+      id: "grand-10",
+      inches: 10,
+      priceDelta: 28,
+      labelEn: "Grand 10-inch",
+      labelZh: "盛宴10寸",
+      descEn: "Made for larger parties and office sharing.",
+      descZh: "适合大型聚会或办公室分享。",
+    },
+  ],
+  "Cookies & Bakes": [
+    {
+      id: "box-4",
+      inches: 4,
+      priceDelta: 0,
+      labelEn: "Tasting Box",
+      labelZh: "尝鲜盒",
+      descEn: "A compact box for tea time and sampling.",
+      descZh: "小份组合，适合下午茶试吃。",
+    },
+    {
+      id: "box-6",
+      inches: 6,
+      priceDelta: 8,
+      labelEn: "Sharing Box",
+      labelZh: "分享盒",
+      descEn: "A medium box for family or office sharing.",
+      descZh: "中份组合，适合家人或同事分享。",
+    },
+    {
+      id: "box-8",
+      inches: 8,
+      priceDelta: 16,
+      labelEn: "Party Box",
+      labelZh: "聚会盒",
+      descEn: "A larger box for parties and events.",
+      descZh: "大份组合，适合活动或派对。",
+    },
+  ],
+  "Celebration Cakes": [
+    {
+      id: "celebrate-6",
+      inches: 6,
+      priceDelta: 0,
+      labelEn: "Celebrate 6-inch",
+      labelZh: "庆祝6寸",
+      descEn: "A compact celebration cake for intimate gatherings.",
+      descZh: "适合温馨小聚的庆祝蛋糕尺寸。",
+    },
+    {
+      id: "celebrate-8",
+      inches: 8,
+      priceDelta: 18,
+      labelEn: "Celebrate 8-inch",
+      labelZh: "庆祝8寸",
+      descEn: "The most popular event size for 10 to 12 guests.",
+      descZh: "最受欢迎的庆典尺寸，适合10到12人。",
+    },
+    {
+      id: "celebrate-10",
+      inches: 10,
+      priceDelta: 32,
+      labelEn: "Celebrate 10-inch",
+      labelZh: "庆祝10寸",
+      descEn: "Designed for major occasions and large tables.",
+      descZh: "适用于重要庆典与多人宴会。",
+    },
+  ],
+};
+
+function buildOptions(category: ProductCategory, basePrice: number): ProductOption[] {
+  return optionBlueprints[category].map((option) => ({
+    id: option.id,
+    inches: option.inches,
+    price: basePrice + option.priceDelta,
+    label: {
+      en: option.labelEn,
+      zh: option.labelZh,
+    },
+    description: {
+      en: option.descEn,
+      zh: option.descZh,
+    },
+  }));
+}
 
 /**
  * Product catalogue for the storefront.
@@ -18,6 +153,7 @@ export const products: Product[] = [
     price: 12,
     category: "Individual Cakes",
     image: "https://images.unsplash.com/photo-1519869325930-281384150729?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Individual Cakes", 12),
   },
   {
     id: "apricot-rose",
@@ -29,6 +165,7 @@ export const products: Product[] = [
     price: 12,
     category: "Individual Cakes",
     image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Individual Cakes", 12),
   },
   {
     id: "coconut-pandan",
@@ -40,6 +177,7 @@ export const products: Product[] = [
     price: 12,
     category: "Individual Cakes",
     image: "https://images.unsplash.com/photo-1464195244916-405fa0a82545?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Individual Cakes", 12),
   },
   {
     id: "strawberry-tart",
@@ -51,6 +189,7 @@ export const products: Product[] = [
     price: 11,
     category: "Individual Cakes",
     image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Individual Cakes", 11),
   },
   {
     id: "chocolate-vanilla-entremet",
@@ -62,6 +201,7 @@ export const products: Product[] = [
     price: 42,
     category: "Entremets",
     image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Entremets", 42),
   },
   {
     id: "raspberry-pistachio-entremet",
@@ -73,6 +213,7 @@ export const products: Product[] = [
     price: 44,
     category: "Entremets",
     image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Entremets", 44),
   },
   {
     id: "opera-classic",
@@ -84,6 +225,7 @@ export const products: Product[] = [
     price: 46,
     category: "Entremets",
     image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Entremets", 46),
   },
   {
     id: "raspberry-cookie",
@@ -95,6 +237,7 @@ export const products: Product[] = [
     price: 6,
     category: "Cookies & Bakes",
     image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Cookies & Bakes", 6),
   },
   {
     id: "chocolate-chip-cookie",
@@ -106,6 +249,7 @@ export const products: Product[] = [
     price: 6,
     category: "Cookies & Bakes",
     image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800&q=80&auto=format&fit=crop&sat=-20",
+    options: buildOptions("Cookies & Bakes", 6),
   },
   {
     id: "chocolate-loaf-cake",
@@ -117,6 +261,7 @@ export const products: Product[] = [
     price: 14,
     category: "Cookies & Bakes",
     image: "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Cookies & Bakes", 14),
   },
   {
     id: "numbers-cake",
@@ -128,6 +273,7 @@ export const products: Product[] = [
     price: 68,
     category: "Celebration Cakes",
     image: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Celebration Cakes", 68),
   },
   {
     id: "flowers-signature",
@@ -139,5 +285,6 @@ export const products: Product[] = [
     price: 78,
     category: "Celebration Cakes",
     image: "https://images.unsplash.com/photo-1535141192574-5d4897c12636?w=800&q=80&auto=format&fit=crop",
+    options: buildOptions("Celebration Cakes", 78),
   },
 ];

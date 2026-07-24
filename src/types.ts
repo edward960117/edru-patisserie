@@ -7,6 +7,14 @@ export type LocalizedText = Record<Lang, string>;
 
 export type ProductCategory = "Individual Cakes" | "Entremets" | "Cookies & Bakes" | "Celebration Cakes";
 
+export interface ProductOption {
+  id: string;
+  label: LocalizedText;
+  inches: number;
+  description: LocalizedText;
+  price: number;
+}
+
 export interface Product {
   id: string;
   name: LocalizedText;
@@ -14,4 +22,5 @@ export interface Product {
   price: number;
   category: ProductCategory;
   image: string;
+  options: ProductOption[];
 }

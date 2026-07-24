@@ -1,5 +1,6 @@
 import type { Product } from "../types";
 import { useLanguage } from "../i18n/LanguageContext";
+import { Link } from "react-router-dom";
 
 interface ProductCardProps {
   product: Product;
@@ -14,7 +15,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { lang, t } = useLanguage();
 
   return (
-    <article className="group cursor-pointer">
+    <Link to={`/cakes/${product.id}`} className="group block cursor-pointer" aria-label={product.name[lang]}>
       <div className="aspect-square overflow-hidden rounded-lg bg-cream-dark">
         <img
           src={product.image}
@@ -28,6 +29,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       <p className="mt-2 text-sm font-medium text-gold">
         {t("priceFrom")}{product.price.toFixed(2)}
       </p>
-    </article>
+    </Link>
   );
 }

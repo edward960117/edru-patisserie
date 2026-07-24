@@ -13,17 +13,17 @@ export default function Header() {
   const { t, lang, setLang } = useLanguage();
 
   const NAV_LINKS = [
-    { label: t("navCakes"), href: "#cakes" },
-    { label: t("navBook"), href: "#book" },
-    { label: t("navStory"), href: "#story" },
-    { label: t("navContact"), href: "#contact" },
+    { label: t("navCakes"), href: "/#cakes" },
+    { label: t("navBook"), href: "/#book" },
+    { label: t("navStory"), href: "/#story" },
+    { label: t("navContact"), href: "/#contact" },
   ];
 
   return (
     <header className="sticky top-0 z-50 bg-cream/95 backdrop-blur border-b border-charcoal/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16 sm:h-20">
         {/* Brand wordmark */}
-        <a href="#top" className="font-serif text-xl sm:text-2xl tracking-widest uppercase">
+        <a href="/" className="font-serif text-xl sm:text-2xl tracking-widest uppercase">
           {lang === "en" ? (
             <>
               Èdru <span className="text-gold">Patisserie</span>
