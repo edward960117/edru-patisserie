@@ -1,24 +1,24 @@
+import { useLanguage } from "../i18n/LanguageContext";
+
 /**
  * Split "our story" section: image on one side, narrative + CTA on the
  * other — mirrors the reference site's "Our maison" editorial block.
  */
 export default function StoryBanner() {
+  const { t } = useLanguage();
+
   return (
     <section id="story" className="bg-cream-dark py-16 sm:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-10 items-center">
         <div className="order-2 md:order-1">
-          <p className="uppercase tracking-[0.3em] text-xs text-gold mb-3">Our Maison</p>
-          <h2 className="font-serif text-3xl sm:text-4xl mb-4">Crafted with Precision, Baked with Heart</h2>
-          <p className="text-sm sm:text-base text-charcoal-soft leading-relaxed mb-6">
-            At EDRU PATISSERIE, every cake begins with the finest seasonal ingredients and a
-            commitment to classic French technique. Our pastry chefs hand-finish each creation
-            in small batches, so every slice tastes as good as it looks.
-          </p>
+          <p className="uppercase tracking-[0.3em] text-xs text-gold mb-3">{t("storyEyebrow")}</p>
+          <h2 className="font-serif text-3xl sm:text-4xl mb-4">{t("storyTitle")}</h2>
+          <p className="text-sm sm:text-base text-charcoal-soft leading-relaxed mb-6">{t("storyDesc")}</p>
           <a
             href="#contact"
             className="inline-block border border-charcoal px-6 py-3 text-xs sm:text-sm uppercase tracking-wider hover:bg-charcoal hover:text-cream transition-colors"
           >
-            Discover Our Story
+            {t("storyCta")}
           </a>
         </div>
         <div className="order-1 md:order-2">

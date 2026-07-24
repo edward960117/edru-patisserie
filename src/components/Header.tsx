@@ -1,26 +1,38 @@
 import { useState } from "react";
+import { useLanguage } from "../i18n/LanguageContext";
+import { LANGUAGES } from "../i18n/translations";
 
 /**
- * Sticky header with primary navigation, brand wordmark, and account/cart
- * icons — modeled on the reference site's minimal, all-caps navigation bar.
- * Collapses into a slide-down mobile menu below the `md` breakpoint.
+ * Sticky header with primary navigation, brand wordmark, language switcher,
+ * and account/cart icons — modeled on the reference site's minimal,
+ * all-caps navigation bar. Collapses into a slide-down mobile menu below
+ * the `md` breakpoint.
  */
-const NAV_LINKS = [
-  { label: "Our Cakes", href: "#cakes" },
-  { label: "Book a Table", href: "#book" },
-  { label: "Our Story", href: "#story" },
-  { label: "Contact", href: "#contact" },
-];
-
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t, lang, setLang } = useLanguage();
+
+  const NAV_LINKS = [
+    { label: t("navCakes"), href: "#cakes" },
+    { label: t("navBook"), href: "#book" },
+    { label: t("navStory"), href: "#story" },
+    { label: t("navContact"), href: "#contact" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 bg-cream/95 backdrop-blur border-b border-charcoal/10">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16 sm:h-20">
         {/* Brand wordmark */}
         <a href="#top" className="font-serif text-xl sm:text-2xl tracking-widest uppercase">
-          Edru <span className="text-gold">Patisserie</span>
+          {lang === "en" ? (
+            <>
+              Edru <span className="text-gold">Patisserie</span>
+            </>
+          ) : (
+            <>
+              EDRU<span className="text-gold">烘培</span>
+            </>
+          )}
         </a>
 
         {/* Desktop nav */}
@@ -34,13 +46,28 @@ export default function Header() {
 
         {/* Account / cart icons + mobile menu toggle */}
         <div className="flex items-center gap-4">
-          <button aria-label="Account" className="hidden sm:inline-flex hover:text-gold transition-colors">
+          <div className="hidden sm:flex items-center gap-1 text-xs uppercase tracking-wider border border-charcoal/20 rounded-full p-0.5" role="group" aria-label="Language">
+            {LANGUAGES.map(({ code, label }) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => setLang(code)}
+                aria-pressed={lang === code}
+                className={`px-3 py-1 rounded-full transition-colors ${
+                  lang === code ? "bg-charcoal text-cream" : "hover:text-gold"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <button aria-label={t("account")} className="hidden sm:inline-flex hover:text-gold transition-colors">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <circle cx="12" cy="8" r="4" />
               <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
             </svg>
           </button>
-          <button aria-label="Cart" className="relative hover:text-gold transition-colors">
+          <button aria-label={t("cart")} className="relative hover:text-gold transition-colors">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M3 6h2l2.4 12.2a1 1 0 0 0 1 .8h9.2a1 1 0 0 0 1-.8L20 8H6" />
               <circle cx="9" cy="21" r="1" />
@@ -70,6 +97,21 @@ export default function Header() {
               {link.label}
             </a>
           ))}
+          <div className="flex items-center gap-2 pt-2" role="group" aria-label="Language">
+            {LANGUAGES.map(({ code, label }) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => setLang(code)}
+                aria-pressed={lang === code}
+                className={`px-3 py-1.5 rounded-full border transition-colors ${
+                  lang === code ? "bg-charcoal text-cream border-charcoal" : "border-charcoal/20 hover:text-gold"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </nav>
       )}
     </header>

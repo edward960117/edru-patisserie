@@ -3,6 +3,8 @@ import { products } from "../data/products";
 import ProductCard from "./ProductCard";
 import PickupScheduler from "./PickupScheduler";
 import type { Product } from "../types";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { TranslationKey } from "../i18n/translations";
 
 const CATEGORIES: Array<Product["category"] | "All"> = [
   "All",
@@ -12,6 +14,14 @@ const CATEGORIES: Array<Product["category"] | "All"> = [
   "Celebration Cakes",
 ];
 
+const CATEGORY_LABEL_KEYS: Record<typeof CATEGORIES[number], TranslationKey> = {
+  All: "categoryAll",
+  "Individual Cakes": "categoryIndividualCakes",
+  Entremets: "categoryEntremets",
+  "Cookies & Bakes": "categoryCookiesBakes",
+  "Celebration Cakes": "categoryCelebrationCakes",
+};
+
 /**
  * Catalogue section: pickup scheduler + category filter tabs + responsive
  * product grid (2 cols mobile, 3 tablet, 4 desktop) — reproduces the
@@ -19,6 +29,7 @@ const CATEGORIES: Array<Product["category"] | "All"> = [
  */
 export default function ProductGrid() {
   const [activeCategory, setActiveCategory] = useState<typeof CATEGORIES[number]>("All");
+  const { t } = useLanguage();
 
   const filtered = useMemo(
     () => (activeCategory === "All" ? products : products.filter((p) => p.category === activeCategory)),
@@ -28,8 +39,8 @@ export default function ProductGrid() {
   return (
     <section id="cakes" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
       <div className="text-center mb-10">
-        <p className="uppercase tracking-[0.3em] text-xs text-gold mb-2">By pre-order or takeaway</p>
-        <h2 className="font-serif text-3xl sm:text-4xl">Our Seasonal Creations</h2>
+        <p className="uppercase tracking-[0.3em] text-xs text-gold mb-2">{t("productGridEyebrow")}</p>
+        <h2 className="font-serif text-3xl sm:text-4xl">{t("productGridTitle")}</h2>
       </div>
 
       <PickupScheduler />
@@ -46,7 +57,7 @@ export default function ProductGrid() {
                 : "border-charcoal/20 hover:border-gold hover:text-gold"
             }`}
           >
-            {category}
+            {t(CATEGORY_LABEL_KEYS[category])}
           </button>
         ))}
       </div>

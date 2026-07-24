@@ -7,8 +7,8 @@
  * system stays available as e.g. `bg-cream`, `text-charcoal`, `font-serif`.
  */
 @theme {
-  --font-serif: "Playfair Display", "Times New Roman", serif;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Playfair Display", "Noto Serif SC", "Times New Roman", serif;
+  --font-sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
 
   --color-cream: #faf5ee;
   --color-cream-dark: #f0e7d8;

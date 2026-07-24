@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /**
  * Pickup date scheduler — recreates the reference site's "Schedule your
@@ -6,6 +7,7 @@ import { useState } from "react";
  * shoppers pick a collection date before browsing items.
  */
 export default function PickupScheduler() {
+  const { t } = useLanguage();
   const today = new Date();
   const defaultDate = new Date(today);
   defaultDate.setDate(today.getDate() + 2);
@@ -16,7 +18,7 @@ export default function PickupScheduler() {
   return (
     <div className="bg-cream-dark border border-gold-light/60 rounded-lg px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 max-w-xl mx-auto mb-12">
       <label htmlFor="pickup-date" className="text-sm font-medium whitespace-nowrap">
-        I will collect my order on
+        {t("pickupLabel")}
       </label>
       <input
         id="pickup-date"
