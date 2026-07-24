@@ -21,13 +21,14 @@ export default function StoryBanner() {
             {t("storyCta")}
           </a>
         </div>
-        <div className="order-1 md:order-2">
+        {/* DISABLED: image showing pastry chef - removed per request */}
+        {/* <div className="order-1 md:order-2">
           <img
             src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=900&q=80&auto=format&fit=crop"
-            alt="Pastry chef finishing a cake at EDRU PATISSERIE"
+            alt="Pastry chef finishing a cake at ÈDRU PATISSERIE"
             className="w-full h-80 sm:h-[420px] object-cover rounded-lg"
           />
-        </div>
+        </div> */}
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { products } from "../data/products";
 import ProductCard from "./ProductCard";
-import PickupScheduler from "./PickupScheduler";
+// import PickupScheduler from "./PickupScheduler";
 import type { Product } from "../types";
 import { useLanguage } from "../i18n/LanguageContext";
 import type { TranslationKey } from "../i18n/translations";
@@ -39,11 +39,13 @@ export default function ProductGrid() {
   return (
     <section id="cakes" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
       <div className="text-center mb-10">
-        <p className="uppercase tracking-[0.3em] text-xs text-gold mb-2">{t("productGridEyebrow")}</p>
+        {/* DISABLED: eyebrow text for pre-order messaging */}
+        {/* <p className="uppercase tracking-[0.3em] text-xs text-gold mb-2">{t("productGridEyebrow")}</p> */}
         <h2 className="font-serif text-3xl sm:text-4xl">{t("productGridTitle")}</h2>
       </div>
 
-      <PickupScheduler />
+      {/* DISABLED: pickup scheduler component */}
+      {/* <PickupScheduler /> */}
 
       {/* Category filter tabs */}
       <div className="flex flex-wrap justify-center gap-2 mb-10">
