@@ -19,12 +19,15 @@ function App() {
   return (
     <LanguageProvider>
       <div className="min-h-screen flex flex-col">
-        <AnnouncementBar />
+        {/* DISABLED: announcement bar, header, hero, and promo banner */}
+        {/* <AnnouncementBar />
         <Header />
         <main className="flex-1">
           <Hero />
+          <PromoBanner /> */}
+        
+        <main className="flex-1">
           <ProductGrid />
-          <PromoBanner />
           <StoryBanner />
         </main>
         <Footer />
