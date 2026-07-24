@@ -44,7 +44,7 @@ export const translations = {
     promoTitle: "Autumn Harvest Collection",
     promoDesc:
       "Celebrate the season with our exclusive autumn cake collection — available for pre-order now through the end of the harvest season.",
-    promoCta: "Order Now",
+    promoCta: "Click to View Menu",
 
     storyEyebrow: "Our Maison",
     storyTitle: "Crafted with Precision, Baked with Heart",
@@ -101,7 +101,7 @@ export const translations = {
     promoEyebrow: "限量系列",
     promoTitle: "秋季丰收系列",
     promoDesc: "即刻预订，尽享独家秋季蛋糕系列 — 供应至丰收季末。",
-    promoCta: "立即订购",
+    promoCta: "查看菜单",
 
     storyEyebrow: "关于我们",
     storyTitle: "精工细作，用心烘焙",
