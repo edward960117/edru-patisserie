@@ -1,3 +1,5 @@
+import AnnouncementBar from './components/AnnouncementBar'
+import Header from './components/Header'
 import ProductGrid from './components/ProductGrid'
 import StoryBanner from './components/StoryBanner'
 import Footer from './components/Footer'
