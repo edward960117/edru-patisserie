@@ -41,7 +41,7 @@ export default function Footer() {
           <p className="text-sm text-cream/80">hello@edrupatisserie.sg</p>
           <p className="text-sm text-cream/80 mt-1">+65 6123 4567</p>
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/xiaoru_0207?igsh=MWk1anlmNWl5bHR3NA=="
             target="_blank"
             rel="noreferrer"
             className="inline-block mt-4 text-sm underline hover:text-gold"
