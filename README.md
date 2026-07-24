@@ -1,6 +1,6 @@
-# EDRU PATISSERIE
+# ÈDRU PATISSERIE
 
-A production-quality, single-page storefront for **EDRU PATISSERIE**, a cake shop — built with React, TypeScript, Tailwind CSS, and Vite. Recreates the layout and UX patterns of a modern French-patisserie e-commerce site (hero, seasonal product catalogue with pickup scheduling, promo banner, brand story, and footer).
+A production-quality, single-page storefront for **ÈDRU PATISSERIE**, a cake shop — built with React, TypeScript, Tailwind CSS, and Vite. Recreates the layout and UX patterns of a modern French-patisserie website.
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@ A production-quality, single-page storefront for **EDRU PATISSERIE**, a cake sho
 ## Project Structure
 
 ```
-edru-patisserie/
+èdru-patisserie/
 ├── index.html                 # Document shell, Google Fonts, meta tags
 ├── postcss.config.js          # Registers the Tailwind v4 PostCSS plugin
 ├── src/
@@ -71,7 +71,7 @@ npm run lint       # Run Oxlint
 
 ## Design Notes
 
-- **Palette:** cream background (`--color-cream`), charcoal text/ink (`--color-charcoal`), gold accent (`--color-gold`) — defined once in [src/index.css](src/index.css) via Tailwind v4's `@theme`, so they're usable as regular utilities (`bg-cream`, `text-gold`, etc.).
+- **Palette:** cream background (`--color-cream`), charcoal text/ink (`--color-charcoal`), gold accent (`--color-gold`) — defined once in [src/index.css](src/index.css) via Tailwind v4's `@theme` block.
 - **Typography:** `Playfair Display` (serif) for headings, `Inter` (sans) for body copy — loaded via Google Fonts in `index.html`.
 - **Responsiveness:** mobile-first Tailwind breakpoints (`sm`, `md`, `lg`) throughout; the product grid goes 2 → 3 → 4 columns, and the header collapses into a slide-down mobile menu below `md`.
 
@@ -84,9 +84,8 @@ All imagery currently uses placeholder photography from Unsplash. Before shippin
 3. **Story section image** — [src/components/StoryBanner.tsx](src/components/StoryBanner.tsx) (`img src`)
 4. **All product photography and copy** — [src/data/products.ts](src/data/products.ts) (`image`, `name`, `description`, `price` fields)
 5. **Favicon** — `public/favicon.svg`
-6. **Store details** — address, hours, phone, and email are hardcoded placeholders in `Hero.tsx` and `Footer.tsx`; update with real EDRU PATISSERIE details.
+6. **Store details** — address, hours, phone, and email are hardcoded placeholders in `Hero.tsx` and `Footer.tsx`; update with real ÈDRU PATISSERIE details.
 
 ## Notes on Backend
 
-No backend is required for this static, informational storefront. If real e-commerce functionality (cart persistence, checkout, order scheduling) is needed later, consider adding a lightweight API (Node/Express, or a headless commerce platform) and wiring the existing cart icon / pickup scheduler up to it.
-
+No backend is required for this static, informational storefront. If real e-commerce functionality (cart persistence, checkout, order scheduling) is needed later, consider adding a lightweight API (e.g., Node/Express or Supabase) to handle reservations and order data.

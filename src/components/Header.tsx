@@ -26,11 +26,11 @@ export default function Header() {
         <a href="#top" className="font-serif text-xl sm:text-2xl tracking-widest uppercase">
           {lang === "en" ? (
             <>
-              Edru <span className="text-gold">Patisserie</span>
+              Èdru <span className="text-gold">Patisserie</span>
             </>
           ) : (
             <>
-              EDRU<span className="text-gold">烘培</span>
+              ÈDRU<span className="text-gold">烘培</span>
             </>
           )}
         </a>

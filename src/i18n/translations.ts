@@ -11,7 +11,7 @@ export const LANGUAGES: { code: Lang; label: string }[] = [
 
 export const translations = {
   en: {
-    brandName: "Edru Patisserie",
+    brandName: "Èdru Patisserie",
     announcement: "Order online for pickup or delivery — freshly baked, every day",
 
     navCakes: "Our Cakes",
@@ -49,7 +49,7 @@ export const translations = {
     storyEyebrow: "Our Maison",
     storyTitle: "Crafted with Precision, Baked with Heart",
     storyDesc:
-      "At EDRU PATISSERIE, every cake begins with the finest seasonal ingredients and a commitment to classic French technique. Our pastry chefs hand-finish each creation in small batches, so every slice tastes as good as it looks.",
+      "At ÈDRU PATISSERIE, every cake begins with the finest seasonal ingredients and a commitment to classic French technique. Our pastry chefs hand-finish each creation in small batches, so every slice delivers the same exquisite texture and flavour.",
     storyCta: "Discover Our Story",
 
     footerAddress: "123 Orchard Road, #01-01\nSingapore 238888",
@@ -69,7 +69,7 @@ export const translations = {
     cookieAccept: "Accept All",
   },
   zh: {
-    brandName: "EDRU烘培",
+    brandName: "ÈDRU烘培",
     announcement: "线上下单，自取或配送 — 每日新鲜出炉",
 
     navCakes: "蛋糕系列",
@@ -106,7 +106,7 @@ export const translations = {
     storyEyebrow: "关于我们",
     storyTitle: "精工细作，用心烘焙",
     storyDesc:
-      "在EDRU烘培，每一款蛋糕都始于当季最优质的食材，并秉承经典法式工艺。我们的糕点师以小批量手工制作每一件作品，只为让每一口都名副其实。",
+      "在ÈDRU烘培，每一款蛋糕都始于当季最优质的食材，并秉承经典法式工艺。我们的糕点师以小批量手工制作每一件作品，只为让每一口都名副其实。",
     storyCta: "了解我们的故事",
 
     footerAddress: "新加坡238888\n乌节路123号 #01-01",

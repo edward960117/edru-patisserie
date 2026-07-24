@@ -9,7 +9,7 @@ import CookieConsent from './components/CookieConsent'
 import { LanguageProvider } from './i18n/LanguageContext'
 
 /**
- * Top-level page composition for the EDRU PATISSERIE single-page site.
+ * Top-level page composition for the ÈDRU PATISSERIE single-page site.
  * Sections are ordered to mirror the reference layout: announcement ->
  * header/nav -> hero -> product catalogue -> promo -> story -> footer.
  * Wrapped in `LanguageProvider` so every section can render in English or
