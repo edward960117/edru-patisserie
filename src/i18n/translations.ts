@@ -35,7 +35,7 @@ export const translations = {
     categoryCelebrationCakes: "Celebration Cakes",
 
     productGridEyebrow: "By pre-order or takeaway",
-    productGridTitle: "Our Seasonal Creations",
+    productGridTitle: "Our Menu",
     priceFrom: "From S$",
 
     pickupLabel: "I will collect my order on",
@@ -93,7 +93,7 @@ export const translations = {
     categoryCelebrationCakes: "庆典蛋糕",
 
     productGridEyebrow: "支持预订或外带",
-    productGridTitle: "季节限定甜点",
+    productGridTitle: "我的菜单",
     priceFrom: "起价 S$",
 
     pickupLabel: "我将于以下日期取货",
