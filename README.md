@@ -68,6 +68,7 @@ npm run preview   # Preview the production build locally
 npm run lint       # Run Oxlint
 ```
 
+
 ## Design Notes
 
 - **Palette:** cream background (`--color-cream`), charcoal text/ink (`--color-charcoal`), gold accent (`--color-gold`) — defined once in [src/index.css](src/index.css) via Tailwind v4's `@theme`, so they're usable as regular utilities (`bg-cream`, `text-gold`, etc.).
