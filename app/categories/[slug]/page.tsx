@@ -28,7 +28,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     <section>
       <div className="card-lux px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-2xl">{category.emoji}</p>
-        <h1 className="heading-serif text-[2rem] sm:text-5xl leading-tight">{category.name_cn}</h1>
+        <h1 className="heading-serif text-[1.9rem] sm:text-5xl leading-tight">{category.name_cn}</h1>
         <p className="text-[color:var(--ink-soft)] mt-2 text-base sm:text-lg">{category.name}</p>
       </div>
 
@@ -38,8 +38,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           const cakeDescription = lang === "zh" ? (cake.description_cn || cake.description) : cake.description;
           const minPrice = cake.sizes.length ? Math.min(...cake.sizes.map((size) => size.price)) : null;
           return (
-            <article key={cake.id} className="card-lux overflow-hidden">
-              <div className="relative h-48 sm:h-52 w-full overflow-hidden">
+            <Link key={cake.id} href={`/cakes/${cake.slug}`} className="card-lux overflow-hidden block hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(65,42,18,0.14)] active:scale-[0.995]">
+              <div className="relative h-44 sm:h-52 w-full overflow-hidden">
                 <Image
                   src={cake.image_url}
                   alt={cakeName}
@@ -48,15 +48,15 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                   className="object-cover"
                 />
               </div>
-              <div className="p-5">
-                <h2 className="heading-serif text-[1.7rem] sm:text-3xl leading-tight">{cakeName}</h2>
-                <p className="mt-2 text-sm text-[color:var(--ink-soft)] line-clamp-2">{cakeDescription}</p>
+              <div className="p-4 sm:p-5">
+                <h2 className="heading-serif text-[1.5rem] sm:text-3xl leading-tight">{cakeName}</h2>
+                <p className="mt-2 text-[0.92rem] text-[color:var(--ink-soft)] line-clamp-2">{cakeDescription}</p>
                 {minPrice ? <p className="mt-3 text-[color:var(--gold-deep)]">{copy.from} S${minPrice.toFixed(2)}</p> : null}
-                <Link href={`/cakes/${cake.slug}`} className="btn-lux-outline mt-4 w-full sm:w-auto">
+                <span className="btn-lux-outline mt-4 w-full inline-flex sm:w-auto">
                   {copy.viewDetails}
-                </Link>
+                </span>
               </div>
-            </article>
+            </Link>
           );
         })}
       </div>

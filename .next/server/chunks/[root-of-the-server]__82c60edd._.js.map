@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 55, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/uif50133/edru-patisserie/app/api/language/route.ts"],"sourcesContent":["import { NextResponse } from \"next/server\";\r\n\r\nexport async function POST(request: Request) {\r\n  const body = (await request.json()) as { lang?: string };\r\n  const lang = body.lang === \"en\" ? \"en\" : \"zh\";\r\n\r\n  const response = NextResponse.json({ ok: true });\r\n  response.cookies.set(\"edru_lang\", lang, {\r\n    path: \"/\",\r\n    httpOnly: false,\r\n    sameSite: \"lax\",\r\n    maxAge: 60 * 60 * 24 * 365,\r\n  });\r\n\r\n  return response;\r\n}\r\n"],"names":[],"mappings":";;;;AAAA;;AAEO,eAAe,KAAK,OAAgB;IACzC,MAAM,OAAQ,MAAM,QAAQ,IAAI;IAChC,MAAM,OAAO,KAAK,IAAI,KAAK,OAAO,OAAO;IAEzC,MAAM,WAAW,gJAAY,CAAC,IAAI,CAAC;QAAE,IAAI;IAAK;IAC9C,SAAS,OAAO,CAAC,GAAG,CAAC,aAAa,MAAM;QACtC,MAAM;QACN,UAAU;QACV,UAAU;QACV,QAAQ,KAAK,KAAK,KAAK;IACzB;IAEA,OAAO;AACT","debugId":null}}]
+}

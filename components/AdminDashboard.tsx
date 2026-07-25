@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { t, type Lang } from "@/lib/i18n-shared";
 
 type Category = { id: number; name: string; name_cn: string };
 type CakeSize = { size: '6"' | '8"' | '10"'; price: number; available: boolean };
@@ -21,8 +22,14 @@ type Cake = {
 };
 
 interface Props {
+  lang: Lang;
   categories: Category[];
   initialCakes: Cake[];
+  initialAnnouncement: {
+    enabled: boolean;
+    messageEn: string;
+    messageZh: string;
+  };
 }
 
 const defaultSizes: CakeSize[] = [
@@ -46,11 +53,14 @@ const emptyForm = {
   sizes: defaultSizes,
 };
 
-export default function AdminDashboard({ categories, initialCakes }: Props) {
+export default function AdminDashboard({ lang, categories, initialCakes, initialAnnouncement }: Props) {
+  const copy = t(lang);
   const [cakes, setCakes] = useState(initialCakes);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [message, setMessage] = useState<string>("");
+  const [announcement, setAnnouncement] = useState(initialAnnouncement);
+  const [announcementMessage, setAnnouncementMessage] = useState("");
 
   const stats = useMemo(() => ({
     totalCakes: cakes.length,
@@ -100,21 +110,25 @@ export default function AdminDashboard({ categories, initialCakes }: Props) {
 
     if (!response.ok) {
       const result = await response.json();
-      setMessage(result.error ?? "Failed to save cake");
+      setMessage(result.error ?? copy.saveFailed);
       return;
     }
 
     await refreshCakes();
     resetForm();
-    setMessage("Saved successfully.");
+    setMessage(copy.saveSuccess);
   }
 
   async function deleteCake(id: number) {
     const response = await fetch(`/api/admin/cakes/${id}`, { method: "DELETE" });
     if (response.ok) {
       await refreshCakes();
-      setMessage("Cake deleted.");
+      setMessage(copy.deleteSuccess);
+      return;
     }
+
+    const result = (await response.json().catch(() => ({}))) as { error?: string };
+    setMessage(result.error ?? copy.deleteFailed);
   }
 
   function editCake(cake: Cake) {
@@ -140,6 +154,25 @@ export default function AdminDashboard({ categories, initialCakes }: Props) {
         };
       }),
     });
+  }
+
+  async function saveAnnouncement(event: React.FormEvent) {
+    event.preventDefault();
+    setAnnouncementMessage("");
+
+    const response = await fetch("/api/admin/announcement", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(announcement),
+    });
+
+    if (!response.ok) {
+      const result = (await response.json().catch(() => ({}))) as { error?: string };
+      setAnnouncementMessage(result.error ?? "Failed to update announcement");
+      return;
+    }
+
+    setAnnouncementMessage(lang === "zh" ? "公告已更新。" : "Announcement updated.");
   }
 
   return (
@@ -217,7 +250,11 @@ export default function AdminDashboard({ categories, initialCakes }: Props) {
             {editingId ? <button type="button" onClick={resetForm} className="px-5 py-2 rounded-xl border border-[color:var(--gold)]/40">Cancel</button> : null}
           </div>
         </form>
-        {message ? <p className="mt-3 text-sm text-[color:var(--ink-soft)]">{message}</p> : null}
+        {message ? (
+          <div className="mt-4 rounded-xl border border-[color:var(--gold)]/35 bg-[#fff8ea] px-4 py-3 text-sm text-[color:var(--ink-soft)]" role="status" aria-live="polite">
+            {message}
+          </div>
+        ) : null}
       </section>
 
       <section className="card-lux p-6">
@@ -237,6 +274,52 @@ export default function AdminDashboard({ categories, initialCakes }: Props) {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="card-lux p-6">
+        <h2 className="heading-serif text-3xl mb-4">Seller Moving Announcement</h2>
+        <form onSubmit={saveAnnouncement} className="space-y-4">
+          <label className="text-sm inline-flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={announcement.enabled}
+              onChange={(event) => setAnnouncement((prev) => ({ ...prev, enabled: event.target.checked }))}
+            />
+            {lang === "zh" ? "启用滚动公告" : "Enable moving announcement"}
+          </label>
+
+          <label className="block text-sm">
+            {lang === "zh" ? "英文公告文案" : "English announcement message"}
+            <textarea
+              value={announcement.messageEn}
+              onChange={(event) => setAnnouncement((prev) => ({ ...prev, messageEn: event.target.value }))}
+              className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90"
+              rows={2}
+              required
+            />
+          </label>
+
+          <label className="block text-sm">
+            {lang === "zh" ? "中文公告文案" : "Chinese announcement message"}
+            <textarea
+              value={announcement.messageZh}
+              onChange={(event) => setAnnouncement((prev) => ({ ...prev, messageZh: event.target.value }))}
+              className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90"
+              rows={2}
+              required
+            />
+          </label>
+
+          <button className="px-5 py-2 rounded-xl bg-[#2f2419] text-white">
+            {lang === "zh" ? "保存公告" : "Save Announcement"}
+          </button>
+        </form>
+
+        {announcementMessage ? (
+          <div className="mt-4 rounded-xl border border-[color:var(--gold)]/35 bg-[#fff8ea] px-4 py-3 text-sm text-[color:var(--ink-soft)]" role="status" aria-live="polite">
+            {announcementMessage}
+          </div>
+        ) : null}
       </section>
     </div>
   );

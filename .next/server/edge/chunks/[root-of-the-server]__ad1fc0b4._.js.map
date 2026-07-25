@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/lib/auth/constants.ts"],"sourcesContent":["export const SESSION_COOKIE = \"edru_staff_session\";\r\n"],"names":[],"mappings":";;;;AAAO,MAAM,iBAAiB"}},
+    {"offset": {"line": 25, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/middleware.ts"],"sourcesContent":["import type { NextRequest } from \"next/server\";\r\nimport { NextResponse } from \"next/server\";\r\nimport { SESSION_COOKIE } from \"@/lib/auth/constants\";\r\n\r\nexport function middleware(request: NextRequest) {\r\n  if (request.nextUrl.pathname.startsWith(\"/admin\")) {\r\n    const token = request.cookies.get(SESSION_COOKIE)?.value;\r\n    if (!token) {\r\n      const loginUrl = new URL(\"/login\", request.url);\r\n      loginUrl.searchParams.set(\"next\", request.nextUrl.pathname);\r\n      return NextResponse.redirect(loginUrl);\r\n    }\r\n  }\r\n\r\n  return NextResponse.next();\r\n}\r\n\r\nexport const config = {\r\n  matcher: [\"/admin/:path*\"],\r\n};\r\n"],"names":[],"mappings":";;;;;;AACA;AAAA;AACA;;;AAEO,SAAS,WAAW,OAAoB;IAC7C,IAAI,QAAQ,OAAO,CAAC,QAAQ,CAAC,UAAU,CAAC,WAAW;QACjD,MAAM,QAAQ,QAAQ,OAAO,CAAC,GAAG,CAAC,kJAAc,GAAG;QACnD,IAAI,CAAC,OAAO;YACV,MAAM,WAAW,IAAI,IAAI,UAAU,QAAQ,GAAG;YAC9C,SAAS,YAAY,CAAC,GAAG,CAAC,QAAQ,QAAQ,OAAO,CAAC,QAAQ;YAC1D,OAAO,gMAAY,CAAC,QAAQ,CAAC;QAC/B;IACF;IAEA,OAAO,gMAAY,CAAC,IAAI;AAC1B;AAEO,MAAM,SAAS;IACpB,SAAS;QAAC;KAAgB;AAC5B"}}]
+}

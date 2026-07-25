@@ -22,9 +22,9 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
   const cakeDescription = lang === "zh" ? (cake.description_cn || cake.description) : cake.description;
 
   return (
-    <section className="grid gap-6 sm:gap-8 lg:grid-cols-2">
+    <section className="grid gap-5 sm:gap-8 lg:grid-cols-2">
       <div className="card-lux overflow-hidden">
-        <div className="relative min-h-[280px] sm:min-h-[360px] h-full w-full">
+        <div className="relative min-h-[250px] sm:min-h-[360px] h-full w-full">
           <Image
             src={cake.image_url}
             alt={cakeName}
@@ -37,9 +37,9 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
       </div>
 
       <article className="card-lux p-5 sm:p-8">
-        <p className="lux-kicker">Artisan Selection</p>
-        <h1 className="heading-serif mt-2 text-[2.05rem] sm:text-5xl leading-tight">{cakeName}</h1>
-        <p className="mt-4 text-[color:var(--ink-soft)] leading-relaxed">{cakeDescription}</p>
+        <p className="lux-kicker">{copy.artisanSelection}</p>
+        <h1 className="heading-serif mt-2 text-[1.86rem] sm:text-5xl leading-tight">{cakeName}</h1>
+        <p className="mt-3 text-[color:var(--ink-soft)] leading-relaxed text-[0.98rem]">{cakeDescription}</p>
 
         <h2 className="mt-6 text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.ingredients}</h2>
         <p className="mt-2">{cake.ingredients}</p>
@@ -51,12 +51,12 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
         </p>
 
         <h2 className="mt-7 text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.availableSizes}</h2>
-        <ul className="mt-3 space-y-2">
+        <ul className="mt-3 space-y-2.5">
           {cake.sizes.map((size) => (
-            <li key={size.id} className="rounded-xl border border-[color:var(--gold)]/22 px-4 py-3 bg-[rgba(255,250,241,0.72)]">
-              <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-                <span>{size.size}</span>
-                <span>S${size.price.toFixed(2)}</span>
+            <li key={size.id} className="rounded-xl border border-[color:var(--gold)]/22 px-4 py-3.5 bg-[rgba(255,250,241,0.72)]">
+              <div className="grid w-full gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3">
+                <span className="font-medium">{size.size}</span>
+                <span className="text-[color:var(--gold-deep)] font-semibold">S${size.price.toFixed(2)}</span>
                 <Link href={`/checkout?cake=${cake.slug}&size=${size.id}`} className="btn-lux text-xs w-full sm:w-auto">
                   {copy.checkout}
                 </Link>

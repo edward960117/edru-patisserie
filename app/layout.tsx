@@ -5,7 +5,10 @@ import AnnouncementBar from "@/components/AnnouncementBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
+import IntroGate from "@/components/IntroGate";
 import { getLang } from "@/lib/i18n";
+import { readSiteAnnouncement } from "@/lib/announcement";
+import SellerNoticeBar from "@/components/SellerNoticeBar";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -26,17 +29,21 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await getLang();
+  const announcement = await readSiteAnnouncement();
+  const announcementText = lang === "zh" ? announcement.messageZh : announcement.messageEn;
 
   return (
     <html lang={lang === "zh" ? "zh-CN" : "en"} className={`${cormorant.variable} ${lora.variable}`}>
       <body>
         <AnnouncementBar lang={lang} />
-        <Header />
+        <Header lang={lang} />
+        <SellerNoticeBar enabled={announcement.enabled} message={announcementText} />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3 sm:pt-6">
           <BackButton lang={lang} />
         </div>
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">{children}</main>
-        <Footer />
+        <Footer lang={lang} />
+        <IntroGate lang={lang} />
       </body>
     </html>
   );
