@@ -55,8 +55,8 @@ const emptyForm = {
   sizes: defaultSizes,
 };
 
-const MAX_UPLOAD_EDGE = 1600;
-const MAX_DATA_URL_LENGTH = 1_800_000;
+const MAX_UPLOAD_EDGE = 1200;
+const MAX_DATA_URL_LENGTH = 1_200_000;
 
 function slugify(value: string) {
   return value
@@ -149,7 +149,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
       }
 
       context.drawImage(image, 0, 0, width, height);
-      return canvas.toDataURL("image/jpeg", 0.82);
+      return canvas.toDataURL("image/jpeg", 0.76);
     } finally {
       URL.revokeObjectURL(objectUrl);
     }

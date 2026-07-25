@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import { cakeInputSchema } from "@/lib/validation/cake";
+import { ImageOptimizationError, optimizeImageUrlForStorage } from "@/lib/image";
 
 function isDuplicateSlugError(message: string) {
   const normalized = message.toLowerCase();
@@ -68,6 +69,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     const data = parsed.data;
+    const optimizedImageUrl = await optimizeImageUrlForStorage(data.imageUrl);
 
     const cake = await prisma.cake.update({
       where: { id: cakeId },
@@ -79,7 +81,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         description: data.description,
         description_cn: data.descriptionCn,
         ingredients: data.ingredients,
-        image_url: data.imageUrl,
+        image_url: optimizedImageUrl,
         lead_time_days: data.leadTimeDays,
         active: data.active,
         featured: data.featured,
@@ -93,6 +95,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     return NextResponse.json({ cake });
   } catch (error) {
+    if (error instanceof ImageOptimizationError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     const message = getErrorText(error);
     if (isDuplicateSlugError(message)) {
       const conflict = parseUniqueConflict(message);
