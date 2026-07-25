@@ -25,18 +25,22 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = (await request.json()) as {
-    enabled?: boolean;
-    messageEn?: string;
-    messageZh?: string;
-  };
+  try {
+    const body = (await request.json()) as {
+      enabled?: boolean;
+      messageEn?: string;
+      messageZh?: string;
+    };
 
-  const next = {
-    enabled: Boolean(body.enabled),
-    messageEn: body.messageEn?.trim() || "Free shipping for cake orders above S$60.",
-    messageZh: body.messageZh?.trim() || "蛋糕订单满 S$60 免运费。",
-  };
+    const next = {
+      enabled: Boolean(body.enabled),
+      messageEn: body.messageEn?.trim() || "Free shipping for cake orders above S$60.",
+      messageZh: body.messageZh?.trim() || "蛋糕订单满 S$60 免运费。",
+    };
 
-  await writeSiteAnnouncement(next);
-  return NextResponse.json({ ok: true, announcement: next });
+    await writeSiteAnnouncement(next);
+    return NextResponse.json({ ok: true, announcement: next });
+  } catch {
+    return NextResponse.json({ error: "Failed to update announcement. Please try again." }, { status: 500 });
+  }
 }

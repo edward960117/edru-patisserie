@@ -23,7 +23,7 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  title: "EDRU Patisserie",
+  title: "ÈDRU Patisserie",
   description: "Premium cake ordering platform",
 };
 
@@ -35,8 +35,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang === "zh" ? "zh-CN" : "en"} className={`${cormorant.variable} ${lora.variable}`}>
       <body>
-        <AnnouncementBar lang={lang} />
-        <Header lang={lang} />
+        <div className="sticky top-0 z-[70]">
+          <AnnouncementBar lang={lang} />
+          <Header lang={lang} />
+        </div>
         <SellerNoticeBar enabled={announcement.enabled} message={announcementText} />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-3 sm:pt-6">
           <BackButton lang={lang} />

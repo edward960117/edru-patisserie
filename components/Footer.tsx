@@ -20,7 +20,7 @@ export default function Footer({ lang }: { lang: "zh" | "en" }) {
       <div className="mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 sm:pb-10 sm:pt-12 lg:px-8">
         <div className="grid gap-5 rounded-[26px] border border-[color:var(--gold)]/28 bg-[linear-gradient(155deg,rgba(255,252,246,0.9),rgba(248,236,215,0.8))] p-5 shadow-[0_18px_34px_rgba(56,34,13,0.14)] sm:p-7 lg:grid-cols-[1.2fr_1fr] lg:items-center">
           <div>
-            <p className="lux-kicker">EDRU Patisserie</p>
+            <p className="lux-kicker">ÈDRU Patisserie</p>
             <p className="heading-serif mt-1 text-[1.45rem] leading-tight text-[color:var(--ink)] sm:text-[1.8rem]">{copy.footerTitle}</p>
             <p className="mt-2 max-w-xl text-[0.92rem] leading-relaxed text-[color:var(--ink-soft)] sm:text-[0.96rem]">{copy.footerSubtitle}</p>
             <div className="mt-4 inline-flex items-center rounded-full border border-[color:var(--gold)]/35 bg-white/65 px-3 py-1 text-[0.72rem] tracking-[0.08em] text-[color:var(--gold-deep)]">

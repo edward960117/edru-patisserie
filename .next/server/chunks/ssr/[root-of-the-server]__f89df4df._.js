@@ -61,12 +61,12 @@ async function generateMetadata() {
     const lang = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$i18n$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["getLang"])();
     if (lang === "zh") {
         return {
-            title: "员工登录 | EDRU Patisserie",
+            title: "员工登录 | ÈDRU Patisserie",
             description: "员工后台登录页面"
         };
     }
     return {
-        title: "Staff Login | EDRU Patisserie",
+        title: "Staff Login | ÈDRU Patisserie",
         description: "Staff admin login page"
     };
 }

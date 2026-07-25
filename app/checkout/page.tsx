@@ -25,14 +25,14 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const whatsappRawMessage = cake && size
     ? (lang === "zh"
         ? [
-            "你好 EDRU，我想咨询下单：",
+            "你好 ÈDRU，我想咨询下单：",
             `蛋糕：${cakeName}`,
             `尺寸（英寸）：${size.size}`,
             `价格：S$${size.price.toFixed(2)}`,
             "请问最快可取货日期是？",
           ].join("\n")
         : [
-            "Hello EDRU, I would like to place an order enquiry:",
+            "Hello ÈDRU, I would like to place an order enquiry:",
             `Cake: ${cakeName}`,
             `Size (inches): ${size.size}`,
             `Price: S$${size.price.toFixed(2)}`,
@@ -41,18 +41,18 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     : cake
       ? (lang === "zh"
           ? [
-              "你好 EDRU，我想咨询蛋糕下单：",
+              "你好 ÈDRU，我想咨询蛋糕下单：",
               `蛋糕：${cakeName}`,
               "我还没决定尺寸，请推荐。",
             ].join("\n")
           : [
-              "Hello EDRU, I would like to place a cake order enquiry:",
+              "Hello ÈDRU, I would like to place a cake order enquiry:",
               `Cake: ${cakeName}`,
               "I have not decided on the size yet. Please recommend.",
             ].join("\n"))
       : (lang === "zh"
-          ? "你好 EDRU，我想咨询蛋糕下单。"
-          : "Hello EDRU, I would like to place a cake order enquiry.");
+          ? "你好 ÈDRU，我想咨询蛋糕下单。"
+          : "Hello ÈDRU, I would like to place a cake order enquiry.");
   const whatsappMessage = encodeURIComponent(whatsappRawMessage);
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
   const helperTextClass = "text-left text-sm leading-relaxed text-[color:var(--ink-soft)]";
@@ -115,8 +115,10 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         <p className="mt-2 text-[color:var(--ink-soft)]"><span className="font-semibold text-[color:var(--ink)]">{pickupLabel}</span>{pickupValue}</p>
         <p className="mt-1 text-[color:var(--ink-soft)]"><span className="font-semibold text-[color:var(--ink)]">{deliveryLabel}</span>{deliveryValue}</p>
 
-        <div className="mt-4 rounded-xl border border-[color:var(--gold)]/25 bg-white/60 px-3 py-2.5">
-          <p className="text-sm font-semibold text-[color:var(--ink)]">{copy.checkoutTermsToggle}</p>
+        <details className="mt-4 rounded-xl border border-[color:var(--gold)]/25 bg-white/60 px-3 py-2.5">
+          <summary className="cursor-pointer select-none text-sm font-semibold text-[color:var(--ink)] hover:text-[color:var(--gold-deep)]">
+            {copy.checkoutTermsToggle}
+          </summary>
           <ul className="mt-2 space-y-1.5 pl-4 text-sm leading-relaxed text-[color:var(--ink-soft)]">
             {termsItems.map((item) => (
               <li key={item} className="list-disc">
@@ -124,7 +126,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
               </li>
             ))}
           </ul>
-        </div>
+        </details>
       </div>
     </section>
   );

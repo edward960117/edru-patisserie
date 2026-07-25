@@ -72,7 +72,7 @@ async function HomePage() {
         className: "space-y-7 sm:space-y-10",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "card-lux relative overflow-hidden px-5 py-7 sm:px-10 sm:py-12",
+                className: "card-lux hero-lux atelier-frame relative overflow-hidden px-5 py-7 sm:px-10 sm:py-12",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "absolute -top-14 -right-10 h-40 w-40 rounded-full bg-[#d9b582]/18 blur-2xl"
@@ -82,7 +82,7 @@ async function HomePage() {
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                        className: "lux-kicker",
+                        className: "lux-kicker section-label",
                         children: copy.homeTagline
                     }, void 0, false, {
                         fileName: "[project]/app/page.tsx",
@@ -98,7 +98,7 @@ async function HomePage() {
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                        className: "mt-3 sm:mt-4 max-w-2xl text-[color:var(--ink-soft)] text-[0.98rem] sm:text-lg leading-relaxed",
+                        className: "mt-3 sm:mt-4 max-w-2xl text-[color:var(--ink-faint)] text-[0.98rem] sm:text-lg leading-relaxed",
                         children: copy.homeSubtitle
                     }, void 0, false, {
                         fileName: "[project]/app/page.tsx",
@@ -115,7 +115,7 @@ async function HomePage() {
                 className: "grid home-category-grid gap-3 sm:gap-6",
                 children: categories.map((category)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
                         href: `/categories/${category.slug}`,
-                        className: "group card-lux p-5 sm:p-6 hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(65,42,18,0.14)] active:scale-[0.995]",
+                        className: "group category-card card-lux flex h-full flex-col p-5 sm:p-6 hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(65,42,18,0.14)] active:scale-[0.995]",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "text-[1.7rem] sm:text-3xl",
@@ -142,7 +142,7 @@ async function HomePage() {
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "mt-5 sm:mt-7 text-[0.74rem] sm:text-xs text-[color:var(--gold-deep)] uppercase tracking-[0.15em] sm:tracking-[0.2em] group-hover:tracking-[0.21em]",
+                                className: "mt-auto pt-5 sm:pt-7 text-[0.74rem] sm:text-xs text-[color:var(--gold-deep)] uppercase tracking-[0.15em] sm:tracking-[0.2em] group-hover:tracking-[0.21em]",
                                 children: copy.viewCategory
                             }, void 0, false, {
                                 fileName: "[project]/app/page.tsx",

@@ -6,6 +6,7 @@ interface ConfirmDialogProps {
   message: string;
   confirmText: string;
   cancelText: string;
+  singleAction?: boolean;
   danger?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -17,6 +18,7 @@ export default function ConfirmDialog({
   message,
   confirmText,
   cancelText,
+  singleAction = false,
   danger = false,
   onConfirm,
   onCancel,
@@ -31,13 +33,15 @@ export default function ConfirmDialog({
         <p className="mt-2 text-sm leading-relaxed text-[color:var(--ink-soft)]">{message}</p>
 
         <div className="mt-5 flex justify-end gap-2.5">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-full border border-[color:var(--gold)]/45 bg-white/85 px-4 py-2 text-sm text-[color:var(--ink-soft)] hover:bg-white hover:text-[color:var(--ink)]"
-          >
-            {cancelText}
-          </button>
+          {singleAction ? null : (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="rounded-full border border-[color:var(--gold)]/45 bg-white/85 px-4 py-2 text-sm text-[color:var(--ink-soft)] hover:bg-white hover:text-[color:var(--ink)]"
+            >
+              {cancelText}
+            </button>
+          )}
           <button
             type="button"
             onClick={onConfirm}

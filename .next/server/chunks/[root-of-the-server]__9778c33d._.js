@@ -216,17 +216,25 @@ async function PUT(request) {
             status: 401
         });
     }
-    const body = await request.json();
-    const next = {
-        enabled: Boolean(body.enabled),
-        messageEn: body.messageEn?.trim() || "Free shipping for cake orders above S$60.",
-        messageZh: body.messageZh?.trim() || "蛋糕订单满 S$60 免运费。"
-    };
-    await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$announcement$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeSiteAnnouncement"])(next);
-    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-        ok: true,
-        announcement: next
-    });
+    try {
+        const body = await request.json();
+        const next = {
+            enabled: Boolean(body.enabled),
+            messageEn: body.messageEn?.trim() || "Free shipping for cake orders above S$60.",
+            messageZh: body.messageZh?.trim() || "蛋糕订单满 S$60 免运费。"
+        };
+        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$announcement$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["writeSiteAnnouncement"])(next);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            ok: true,
+            announcement: next
+        });
+    } catch  {
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: "Failed to update announcement. Please try again."
+        }, {
+            status: 500
+        });
+    }
 }
 }),
 ];

@@ -23,8 +23,8 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
 
   return (
     <section className="grid gap-5 sm:gap-8 lg:grid-cols-2">
-      <div className="card-lux overflow-hidden">
-        <div className="relative min-h-[250px] sm:min-h-[360px] h-full w-full">
+      <div className="card-lux atelier-frame overflow-hidden">
+        <div className="product-media relative min-h-[250px] sm:min-h-[360px] h-full w-full">
           <Image
             src={cake.image_url}
             alt={cakeName}
@@ -36,10 +36,10 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
         </div>
       </div>
 
-      <article className="card-lux p-5 sm:p-8">
+      <article className="detail-card card-lux atelier-frame p-5 sm:p-8">
         <p className="lux-kicker">{copy.artisanSelection}</p>
         <h1 className="heading-serif mt-2 text-[1.86rem] sm:text-5xl leading-tight">{cakeName}</h1>
-        <p className="mt-3 text-[color:var(--ink-soft)] leading-relaxed text-[0.98rem]">{cakeDescription}</p>
+        <p className="mt-3 text-[color:var(--ink-faint)] leading-relaxed text-[0.98rem]">{cakeDescription}</p>
 
         <h2 className="mt-6 text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.ingredients}</h2>
         <p className="mt-2">{cake.ingredients}</p>
@@ -50,13 +50,15 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
           {" "}{copy.leadTimeSuffix}
         </p>
 
+        <div className="divider-ornate mt-7" />
+
         <h2 className="mt-7 text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.availableSizes}</h2>
         <ul className="mt-3 space-y-2.5">
           {cake.sizes.map((size) => (
-            <li key={size.id} className="rounded-xl border border-[color:var(--gold)]/22 px-4 py-3.5 bg-[rgba(255,250,241,0.72)]">
-              <div className="grid w-full gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3">
-                <span className="font-medium">{size.size}</span>
-                <span className="text-[color:var(--gold-deep)] font-semibold">S${size.price.toFixed(2)}</span>
+            <li key={size.id} className="size-row rounded-xl border border-[color:var(--gold)]/22 px-4 py-3.5 bg-[rgba(255,250,241,0.72)]">
+              <div className="relative grid w-full gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3">
+                <span className="font-medium heading-serif text-lg">{size.size}</span>
+                <span className="price-callout text-[color:var(--gold-deep)] font-semibold">S${size.price.toFixed(2)}</span>
                 <Link href={`/checkout?cake=${cake.slug}&size=${size.id}`} className="btn-lux text-xs w-full sm:w-auto">
                   {copy.checkout}
                 </Link>

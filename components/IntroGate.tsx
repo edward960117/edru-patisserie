@@ -31,6 +31,16 @@ export default function IntroGate({ lang }: { lang: Lang }) {
   const [selectedLang, setSelectedLang] = useState<Lang>(lang);
   const [submitting, setSubmitting] = useState(false);
 
+  function lockScroll() {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+  }
+
+  function unlockScroll() {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  }
+
   useEffect(() => {
     const forceIntro = introFlag === "1";
     const seen = sessionStorage.getItem(STORAGE_KEY) === "1";
@@ -39,21 +49,22 @@ export default function IntroGate({ lang }: { lang: Lang }) {
       setExiting(false);
       setSubmitting(false);
       setVisible(false);
+      unlockScroll();
       return;
     }
 
     setExiting(false);
     setSubmitting(false);
     setVisible(true);
-    document.body.style.overflow = "hidden";
+    lockScroll();
     return () => {
-      document.body.style.overflow = "";
+      unlockScroll();
     };
   }, [pathname, introFlag]);
 
   useEffect(() => {
     if (!visible) {
-      document.body.style.overflow = "";
+      unlockScroll();
     }
   }, [visible]);
 
@@ -139,20 +150,23 @@ export default function IntroGate({ lang }: { lang: Lang }) {
         {logoSrc ? (
           <img
             src={logoSrc}
-            alt="EDRU Patisserie"
+            alt="ÈDRU Patisserie"
             className="mx-auto h-auto w-auto max-h-[420px] max-w-full object-contain intro-logo-float"
             style={{ filter: "none", transform: "none" }}
           />
         ) : (
           <div className="mx-auto max-w-[320px] py-7">
-            <p className="heading-serif text-5xl text-[color:var(--gold-deep)]">EDRU</p>
+            <p className="heading-serif text-5xl text-[color:var(--gold-deep)]">ÈDRU</p>
             <p className="mt-2 tracking-[0.22em] text-[color:var(--ink-soft)] text-xs uppercase">Patisserie</p>
             <p className="mt-4 text-xs text-[color:var(--ink-soft)]">Logo file not found in public folder.</p>
           </div>
         )}
 
-        <p className="mt-4 text-sm text-[color:var(--ink-soft)]">
-          {selectedLang === "zh" ? "欢迎来到 EDRU 甜品工作室" : "Welcome to EDRU Patisserie"}
+        <h1 className="mt-4 heading-serif text-2xl text-[color:var(--ink)]">
+          {selectedLang === "zh" ? "进入网站" : "Enter Website"}
+        </h1>
+        <p className="mt-1 text-sm text-[color:var(--ink-soft)]">
+          {selectedLang === "zh" ? "欢迎来到甜品工作室" : "Welcome to the patisserie"}
         </p>
 
         <div className="mt-5 inline-flex items-center rounded-full border border-[color:var(--gold)]/40 bg-white/70 p-1.5">

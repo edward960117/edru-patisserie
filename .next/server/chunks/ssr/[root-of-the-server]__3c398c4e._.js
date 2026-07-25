@@ -83,7 +83,7 @@ async function CategoryPage({ params }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "card-lux px-5 py-6 sm:px-8 sm:py-8",
+                className: "card-lux atelier-frame px-5 py-6 sm:px-8 sm:py-8",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                         className: "text-2xl",
@@ -120,13 +120,14 @@ async function CategoryPage({ params }) {
                 children: category.cakes.map((cake)=>{
                     const cakeName = lang === "zh" ? cake.name_cn || cake.name : cake.name;
                     const cakeDescription = lang === "zh" ? cake.description_cn || cake.description : cake.description;
-                    const minPrice = cake.sizes.length ? Math.min(...cake.sizes.map((size)=>size.price)) : null;
+                    const pricedSizes = cake.sizes.filter((size)=>size.available && size.price > 0);
+                    const minPrice = pricedSizes.length ? Math.min(...pricedSizes.map((size)=>size.price)) : null;
                     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
                         href: `/cakes/${cake.slug}`,
-                        className: "card-lux overflow-hidden block hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(65,42,18,0.14)] active:scale-[0.995]",
+                        className: "group card-lux flex h-full flex-col overflow-hidden hover:-translate-y-1 hover:shadow-[0_18px_38px_rgba(65,42,18,0.14)] active:scale-[0.995]",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "relative h-44 sm:h-52 w-full overflow-hidden",
+                                className: "product-media relative h-44 sm:h-52 w-full overflow-hidden",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
                                     src: cake.image_url,
                                     alt: cakeName,
@@ -135,49 +136,76 @@ async function CategoryPage({ params }) {
                                     className: "object-cover"
                                 }, void 0, false, {
                                     fileName: "[project]/app/categories/[slug]/page.tsx",
-                                    lineNumber: 43,
+                                    lineNumber: 44,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/categories/[slug]/page.tsx",
-                                lineNumber: 42,
+                                lineNumber: 43,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "p-4 sm:p-5",
+                                className: "flex flex-1 flex-col p-4 sm:p-5",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
                                         className: "heading-serif text-[1.5rem] sm:text-3xl leading-tight",
                                         children: cakeName
                                     }, void 0, false, {
                                         fileName: "[project]/app/categories/[slug]/page.tsx",
-                                        lineNumber: 52,
-                                        columnNumber: 17
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "mt-2 text-[0.92rem] text-[color:var(--ink-soft)] line-clamp-2",
-                                        children: cakeDescription
-                                    }, void 0, false, {
-                                        fileName: "[project]/app/categories/[slug]/page.tsx",
                                         lineNumber: 53,
                                         columnNumber: 17
                                     }, this),
-                                    minPrice ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                        className: "mt-3 text-[color:var(--gold-deep)]",
-                                        children: [
-                                            copy.from,
-                                            " S$",
-                                            minPrice.toFixed(2)
-                                        ]
-                                    }, void 0, true, {
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "mt-2 text-[0.92rem] text-[color:var(--ink-faint)] line-clamp-2",
+                                        children: cakeDescription
+                                    }, void 0, false, {
                                         fileName: "[project]/app/categories/[slug]/page.tsx",
                                         lineNumber: 54,
-                                        columnNumber: 29
-                                    }, this) : null,
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                        className: "btn-lux-outline mt-4 w-full inline-flex sm:w-auto",
-                                        children: copy.viewDetails
-                                    }, void 0, false, {
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "mt-auto pt-4",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "min-h-[1.6rem] text-[color:var(--gold-deep)]",
+                                                children: minPrice !== null ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "price-callout",
+                                                    children: [
+                                                        copy.from,
+                                                        " S$",
+                                                        minPrice.toFixed(2)
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/categories/[slug]/page.tsx",
+                                                    lineNumber: 57,
+                                                    columnNumber: 42
+                                                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    "aria-hidden": "true",
+                                                    className: "invisible",
+                                                    children: [
+                                                        copy.from,
+                                                        " S$00.00"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/categories/[slug]/page.tsx",
+                                                    lineNumber: 57,
+                                                    columnNumber: 119
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/categories/[slug]/page.tsx",
+                                                lineNumber: 56,
+                                                columnNumber: 19
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "btn-lux-outline mt-3 w-full inline-flex justify-center",
+                                                children: copy.viewDetails
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/categories/[slug]/page.tsx",
+                                                lineNumber: 59,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
                                         fileName: "[project]/app/categories/[slug]/page.tsx",
                                         lineNumber: 55,
                                         columnNumber: 17
@@ -185,13 +213,13 @@ async function CategoryPage({ params }) {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/categories/[slug]/page.tsx",
-                                lineNumber: 51,
+                                lineNumber: 52,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, cake.id, true, {
                         fileName: "[project]/app/categories/[slug]/page.tsx",
-                        lineNumber: 41,
+                        lineNumber: 42,
                         columnNumber: 13
                     }, this);
                 })

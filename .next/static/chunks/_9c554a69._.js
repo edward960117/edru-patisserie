@@ -105,7 +105,7 @@ const text = {
     zh: {
         homeTitle: "甄选蛋糕分类",
         homeSubtitle: "先选风格，再挑选您喜欢的蛋糕",
-        homeTagline: "EDRU 甄选系列",
+        homeTagline: "ÈDRU 甄选系列",
         artisanSelection: "匠心甄选",
         orderConcierge: "下单咨询",
         viewCategory: "查看该分类",
@@ -144,7 +144,7 @@ const text = {
         navAdmin: "管理",
         footerTitle: "手工精品蛋糕与甜点",
         footerSubtitle: "为现代庆典打造的精致手工蛋糕。",
-        whatsappCustomizePrompt: "你好 EDRU，我想咨询定制蛋糕。",
+        whatsappCustomizePrompt: "你好 ÈDRU，我想咨询定制蛋糕。",
         adminTitle: "管理后台",
         adminWelcome: "欢迎，小茹",
         saveSuccess: "保存成功。",
@@ -205,7 +205,7 @@ const text = {
     en: {
         homeTitle: "Cake Categories",
         homeSubtitle: "Choose a style first, then explore cakes",
-        homeTagline: "EDRU Signature Collection",
+        homeTagline: "ÈDRU Signature Collection",
         artisanSelection: "Artisan Selection",
         orderConcierge: "Order Concierge",
         viewCategory: "View Category",
@@ -244,7 +244,7 @@ const text = {
         navAdmin: "Admin",
         footerTitle: "Handcrafted Cakes and Desserts",
         footerSubtitle: "Luxury handcrafted cakes for modern celebrations.",
-        whatsappCustomizePrompt: "Hello EDRU, I would like to ask about a customized cake. 你好 EDRU，我想咨询定制蛋糕。",
+        whatsappCustomizePrompt: "Hello ÈDRU, I would like to ask about a customized cake. 你好 ÈDRU，我想咨询定制蛋糕。",
         adminTitle: "Admin Dashboard",
         adminWelcome: "Welcome Xiao Ru",
         saveSuccess: "Saved successfully.",
@@ -530,7 +530,7 @@ function Footer(param) {
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                     className: "lux-kicker",
-                                    children: "EDRU Patisserie"
+                                    children: "ÈDRU Patisserie"
                                 }, void 0, false, {
                                     fileName: "[project]/components/Footer.tsx",
                                     lineNumber: 23,
@@ -808,6 +808,14 @@ function IntroGate(param) {
     const [logoSrc, setLogoSrc] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [selectedLang, setSelectedLang] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(lang);
     const [submitting, setSubmitting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    function lockScroll() {
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+    }
+    function unlockScroll() {
+        document.documentElement.style.overflow = "";
+        document.body.style.overflow = "";
+    }
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "IntroGate.useEffect": ()=>{
             const forceIntro = introFlag === "1";
@@ -816,15 +824,16 @@ function IntroGate(param) {
                 setExiting(false);
                 setSubmitting(false);
                 setVisible(false);
+                unlockScroll();
                 return;
             }
             setExiting(false);
             setSubmitting(false);
             setVisible(true);
-            document.body.style.overflow = "hidden";
+            lockScroll();
             return ({
                 "IntroGate.useEffect": ()=>{
-                    document.body.style.overflow = "";
+                    unlockScroll();
                 }
             })["IntroGate.useEffect"];
         }
@@ -835,7 +844,7 @@ function IntroGate(param) {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "IntroGate.useEffect": ()=>{
             if (!visible) {
-                document.body.style.overflow = "";
+                unlockScroll();
             }
         }
     }["IntroGate.useEffect"], [
@@ -927,7 +936,7 @@ function IntroGate(param) {
                 className: "absolute inset-0 bg-black/12 backdrop-blur-md intro-overlay-pulse"
             }, void 0, false, {
                 fileName: "[project]/components/IntroGate.tsx",
-                lineNumber: 137,
+                lineNumber: 148,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -935,7 +944,7 @@ function IntroGate(param) {
                 children: [
                     logoSrc ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
                         src: logoSrc,
-                        alt: "EDRU Patisserie",
+                        alt: "ÈDRU Patisserie",
                         className: "mx-auto h-auto w-auto max-h-[420px] max-w-full object-contain intro-logo-float",
                         style: {
                             filter: "none",
@@ -943,17 +952,17 @@ function IntroGate(param) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 140,
+                        lineNumber: 151,
                         columnNumber: 11
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "mx-auto max-w-[320px] py-7",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "heading-serif text-5xl text-[color:var(--gold-deep)]",
-                                children: "EDRU"
+                                children: "ÈDRU"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 148,
+                                lineNumber: 159,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -961,7 +970,7 @@ function IntroGate(param) {
                                 children: "Patisserie"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 149,
+                                lineNumber: 160,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -969,21 +978,29 @@ function IntroGate(param) {
                                 children: "Logo file not found in public folder."
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 150,
+                                lineNumber: 161,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 147,
+                        lineNumber: 158,
                         columnNumber: 11
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                        className: "mt-4 text-sm text-[color:var(--ink-soft)]",
-                        children: selectedLang === "zh" ? "欢迎来到 EDRU 甜品工作室" : "Welcome to EDRU Patisserie"
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                        className: "mt-4 heading-serif text-2xl text-[color:var(--ink)]",
+                        children: selectedLang === "zh" ? "进入网站" : "Enter Website"
                     }, void 0, false, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 154,
+                        lineNumber: 165,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "mt-1 text-sm text-[color:var(--ink-soft)]",
+                        children: selectedLang === "zh" ? "欢迎来到甜品工作室" : "Welcome to the patisserie"
+                    }, void 0, false, {
+                        fileName: "[project]/components/IntroGate.tsx",
+                        lineNumber: 168,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1002,25 +1019,25 @@ function IntroGate(param) {
                                             className: "h-3.5 w-5 rounded-[2px] object-cover"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 168,
+                                            lineNumber: 182,
                                             columnNumber: 64
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "中文"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 168,
+                                            lineNumber: 182,
                                             columnNumber: 152
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/IntroGate.tsx",
-                                    lineNumber: 168,
+                                    lineNumber: 182,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 159,
+                                lineNumber: 173,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1036,31 +1053,31 @@ function IntroGate(param) {
                                             className: "h-3.5 w-5 rounded-[2px] object-cover"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 179,
+                                            lineNumber: 193,
                                             columnNumber: 64
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "English"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 179,
+                                            lineNumber: 193,
                                             columnNumber: 160
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/IntroGate.tsx",
-                                    lineNumber: 179,
+                                    lineNumber: 193,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 170,
+                                lineNumber: 184,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 158,
+                        lineNumber: 172,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1075,25 +1092,25 @@ function IntroGate(param) {
                                 children: "→"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 185,
+                                lineNumber: 199,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 183,
+                        lineNumber: 197,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/IntroGate.tsx",
-                lineNumber: 138,
+                lineNumber: 149,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/IntroGate.tsx",
-        lineNumber: 131,
+        lineNumber: 142,
         columnNumber: 5
     }, this);
 }

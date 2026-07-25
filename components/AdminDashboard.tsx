@@ -6,7 +6,7 @@ import { t, type Lang } from "@/lib/i18n-shared";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Category = { id: number; name: string; name_cn: string };
-type CakeSize = { size: '6"' | '8"' | '10"'; price: number; available: boolean };
+type CakeSize = { size: '6"' | '8"' | '10"'; price: string; available: boolean };
 type Cake = {
   id: number;
   category_id: number;
@@ -35,9 +35,9 @@ interface Props {
 }
 
 const defaultSizes: CakeSize[] = [
-  { size: '6"', price: 0, available: true },
-  { size: '8"', price: 0, available: true },
-  { size: '10"', price: 0, available: true },
+  { size: '6"', price: "0.00", available: false },
+  { size: '8"', price: "0.00", available: false },
+  { size: '10"', price: "0.00", available: false },
 ];
 
 const emptyForm = {
@@ -55,6 +55,9 @@ const emptyForm = {
   sizes: defaultSizes,
 };
 
+const MAX_UPLOAD_EDGE = 1600;
+const MAX_DATA_URL_LENGTH = 1_800_000;
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -64,11 +67,29 @@ function slugify(value: string) {
     .replace(/-+/g, "-");
 }
 
+function normalizePriceInput(raw: string) {
+  if (raw.trim() === "") {
+    return "0.00";
+  }
+
+  const parsed = Number.parseFloat(raw);
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return "0.00";
+  }
+
+  return parsed.toFixed(2);
+}
+
+function parsePrice(raw: string) {
+  const parsed = Number.parseFloat(raw);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export default function AdminDashboard({ lang, categories, initialCakes, initialAnnouncement }: Props) {
   const router = useRouter();
   const copy = t(lang);
   const [cakes, setCakes] = useState(initialCakes);
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState({ ...emptyForm, categoryId: categories[0]?.id ?? 0 });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [message, setMessage] = useState<string>("");
   const [announcement, setAnnouncement] = useState(initialAnnouncement);
@@ -77,6 +98,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
   const [savingAnnouncement, setSavingAnnouncement] = useState(false);
   const [slugEdited, setSlugEdited] = useState(false);
   const [confirmState, setConfirmState] = useState<{ message: string; danger?: boolean } | null>(null);
+  const [errorPopupMessage, setErrorPopupMessage] = useState<string | null>(null);
   const confirmResolverRef = useRef<((value: boolean) => void) | null>(null);
 
   const stats = useMemo(() => ({
@@ -86,7 +108,11 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
   }), [cakes, categories.length]);
 
   function resetForm() {
-    setForm({ ...emptyForm, categoryId: categories[0]?.id ?? 0 });
+    setForm({
+      ...emptyForm,
+      categoryId: categories[0]?.id ?? 0,
+      sizes: defaultSizes.map((size) => ({ ...size })),
+    });
     setEditingId(null);
     setSlugEdited(false);
   }
@@ -95,6 +121,38 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
     const response = await fetch("/api/admin/cakes");
     const result = (await response.json()) as { cakes: Cake[] };
     setCakes(result.cakes);
+  }
+
+  async function compressImageFile(file: File) {
+    const objectUrl = URL.createObjectURL(file);
+
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Failed to load image file"));
+        img.src = objectUrl;
+      });
+
+      const longEdge = Math.max(image.width, image.height);
+      const scale = longEdge > MAX_UPLOAD_EDGE ? MAX_UPLOAD_EDGE / longEdge : 1;
+      const width = Math.max(1, Math.round(image.width * scale));
+      const height = Math.max(1, Math.round(image.height * scale));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext("2d");
+      if (!context) {
+        throw new Error("Unable to process image");
+      }
+
+      context.drawImage(image, 0, 0, width, height);
+      return canvas.toDataURL("image/jpeg", 0.82);
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
   }
 
   async function askConfirm(message: string, danger = false) {
@@ -112,16 +170,31 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
     setConfirmState(null);
   }
 
+  function showErrorPopup(messageText: string) {
+    setErrorPopupMessage(messageText);
+  }
+
   async function handleUpload(file: File | null) {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        const dataUrl = reader.result;
-        setForm((prev) => ({ ...prev, imageUrl: dataUrl }));
+    setMessage("");
+
+    try {
+      const dataUrl = await compressImageFile(file);
+
+      if (!dataUrl.startsWith("data:image/")) {
+        setMessage(lang === "zh" ? "图片处理失败，请重新选择。" : "Image processing failed. Please choose the image again.");
+        return;
       }
-    };
-    reader.readAsDataURL(file);
+
+      if (dataUrl.length > MAX_DATA_URL_LENGTH) {
+        setMessage(lang === "zh" ? "图片过大，请选择更小的图片。" : "Image is too large. Please choose a smaller image.");
+        return;
+      }
+
+      setForm((prev) => ({ ...prev, imageUrl: dataUrl }));
+    } catch {
+      setMessage(lang === "zh" ? "图片上传失败，请重试。" : "Image upload failed. Please try again.");
+    }
   }
 
   async function saveCake(event: React.FormEvent) {
@@ -131,6 +204,32 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
 
     if (!editingId && !form.imageUrl.startsWith("data:image/")) {
       setMessage(copy.adminImageRequired);
+      return;
+    }
+
+    const missingRequiredField =
+      !form.categoryId ||
+      !form.name.trim() ||
+      !form.nameCn.trim() ||
+      !form.slug.trim() ||
+      !form.description.trim() ||
+      !form.descriptionCn.trim() ||
+      !form.ingredients.trim();
+
+    if (missingRequiredField) {
+      setMessage(lang === "zh" ? "请填写所有必填信息。" : "Please fill in all required fields.");
+      return;
+    }
+
+    const hasAvailableSize = form.sizes.some((size) => size.available);
+    if (!hasAvailableSize) {
+      setMessage(lang === "zh" ? "请至少勾选一个可售尺寸。" : "Please select at least one available size.");
+      return;
+    }
+
+    const invalidAvailablePrice = form.sizes.some((size) => size.available && parsePrice(size.price) <= 0);
+    if (invalidAvailablePrice) {
+      setMessage(lang === "zh" ? "可售尺寸价格必须大于 0。" : "Available size prices must be greater than 0.");
       return;
     }
 
@@ -148,7 +247,10 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
       ...form,
       categoryId: Number(form.categoryId),
       leadTimeDays: Number(form.leadTimeDays),
-      sizes: form.sizes.map((size) => ({ ...size, price: Number(size.price) })),
+      sizes: form.sizes.map((size) => ({
+        ...size,
+        price: parsePrice(size.price),
+      })),
     };
 
     try {
@@ -159,14 +261,55 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
       });
 
       if (!response.ok) {
-        const result = await response.json();
-        setMessage(result.error ?? copy.saveFailed);
+        const result = (await response.json().catch(() => ({}))) as {
+          error?: string;
+          detail?: string;
+          field?: string;
+          value?: string | null;
+          details?: {
+            fieldErrors?: Record<string, string[] | undefined>;
+            formErrors?: string[];
+          };
+        };
+        if (response.status === 401) {
+          window.location.assign("/login?next=/admin");
+          return;
+        }
+
+        if (result.details?.fieldErrors) {
+          const firstFieldError = Object.values(result.details.fieldErrors).find((errors) => errors && errors.length)?.[0];
+          const firstFormError = result.details.formErrors?.[0];
+          const errorText = firstFieldError ?? firstFormError ?? result.error ?? copy.saveFailed;
+          setMessage(errorText);
+          showErrorPopup(errorText);
+          return;
+        }
+
+        if (result.error && result.detail) {
+          const errorText = `${result.error} ${result.detail}`;
+          setMessage(errorText);
+          showErrorPopup(errorText);
+          return;
+        }
+
+        const conflictHint = (result.field || result.value)
+          ? (lang === "zh"
+              ? `请修改 ${result.field ?? "该字段"}${result.value ? `（当前值：${result.value}）` : ""} 后重试。`
+              : `Please modify ${result.field ?? "this field"}${result.value ? ` (current value: ${result.value})` : ""} and try again.`)
+          : "";
+        const errorText = `${result.error ?? copy.saveFailed}${conflictHint ? ` ${conflictHint}` : ""}`;
+        setMessage(errorText);
+        showErrorPopup(errorText);
         return;
       }
 
       await refreshCakes();
       resetForm();
       setMessage(copy.saveSuccess);
+    } catch {
+      const fallbackText = lang === "zh" ? "保存失败，请检查输入后重试。" : "Save failed. Please check your inputs and try again.";
+      setMessage(fallbackText);
+      showErrorPopup(fallbackText);
     } finally {
       setSavingCake(false);
     }
@@ -182,6 +325,11 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
     if (response.ok) {
       await refreshCakes();
       setMessage(copy.deleteSuccess);
+      return;
+    }
+
+    if (response.status === 401) {
+      window.location.assign("/login?next=/admin");
       return;
     }
 
@@ -212,8 +360,8 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
         const matched = cake.sizes.find((size) => size.size === preset.size);
         return {
           size: preset.size,
-          price: matched?.price ?? 0,
-          available: matched?.available ?? true,
+          price: matched ? matched.price.toFixed(2) : "0.00",
+          available: matched?.available ?? false,
         };
       }),
     });
@@ -243,6 +391,10 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
 
       if (!response.ok) {
         const result = (await response.json().catch(() => ({}))) as { error?: string };
+        if (response.status === 401) {
+          window.location.assign("/login?next=/admin");
+          return;
+        }
         setAnnouncementMessage(result.error ?? copy.adminAnnouncementSaveFailed);
         return;
       }
@@ -359,10 +511,15 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
                 <p className="text-sm font-medium">{size.size}</p>
                 <label className="text-xs block mt-2">{copy.adminPrice}
                   <input type="number" step="0.01" min={0} value={size.price} onChange={(event) => {
+                    const rawValue = event.target.value;
                     const next = [...form.sizes];
-                    next[index] = { ...next[index], price: Number(event.target.value) };
+                    next[index] = { ...next[index], price: rawValue };
                     setForm((prev) => ({ ...prev, sizes: next }));
-                  }} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-lg px-2 py-1" required />
+                  }} onBlur={(event) => {
+                    const next = [...form.sizes];
+                    next[index] = { ...next[index], price: normalizePriceInput(event.target.value) };
+                    setForm((prev) => ({ ...prev, sizes: next }));
+                  }} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-lg px-2 py-1" />
                 </label>
                 <label className="text-xs inline-flex items-center gap-2 mt-2">
                   <input type="checkbox" checked={size.available} onChange={(event) => {
@@ -470,6 +627,17 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
         danger={Boolean(confirmState?.danger)}
         onCancel={() => closeConfirm(false)}
         onConfirm={() => closeConfirm(true)}
+      />
+
+      <ConfirmDialog
+        open={Boolean(errorPopupMessage)}
+        title={lang === "zh" ? "请修改后重试" : "Please Modify and Retry"}
+        message={errorPopupMessage ?? ""}
+        confirmText={lang === "zh" ? "我知道了" : "Got It"}
+        cancelText={lang === "zh" ? "我知道了" : "Got It"}
+        singleAction
+        onCancel={() => setErrorPopupMessage(null)}
+        onConfirm={() => setErrorPopupMessage(null)}
       />
     </div>
   );

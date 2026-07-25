@@ -431,11 +431,11 @@ async function CheckoutPage({ searchParams }) {
                         lineNumber: 116,
                         columnNumber: 9
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("details", {
                         className: "mt-4 rounded-xl border border-[color:var(--gold)]/25 bg-white/60 px-3 py-2.5",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-sm font-semibold text-[color:var(--ink)]",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("summary", {
+                                className: "cursor-pointer select-none text-sm font-semibold text-[color:var(--ink)] hover:text-[color:var(--gold-deep)]",
                                 children: copy.checkoutTermsToggle
                             }, void 0, false, {
                                 fileName: "[project]/app/checkout/page.tsx",
@@ -449,12 +449,12 @@ async function CheckoutPage({ searchParams }) {
                                         children: emphasizeTerms(item)
                                     }, item, false, {
                                         fileName: "[project]/app/checkout/page.tsx",
-                                        lineNumber: 122,
+                                        lineNumber: 124,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/checkout/page.tsx",
-                                lineNumber: 120,
+                                lineNumber: 122,
                                 columnNumber: 11
                             }, this)
                         ]

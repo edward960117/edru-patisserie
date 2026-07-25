@@ -1,6 +1,8 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/admin/page": "app/admin/page.js",
   "/api/admin/announcement/route": "app/api/admin/announcement/route.js",
+  "/api/admin/cakes/route": "app/api/admin/cakes/route.js",
   "/api/auth/login/route": "app/api/auth/login/route.js",
   "/api/auth/logout/route": "app/api/auth/logout/route.js",
   "/api/language/route": "app/api/language/route.js",

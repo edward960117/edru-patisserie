@@ -102,7 +102,7 @@ const text = {
     zh: {
         homeTitle: "甄选蛋糕分类",
         homeSubtitle: "先选风格，再挑选您喜欢的蛋糕",
-        homeTagline: "EDRU 甄选系列",
+        homeTagline: "ÈDRU 甄选系列",
         artisanSelection: "匠心甄选",
         orderConcierge: "下单咨询",
         viewCategory: "查看该分类",
@@ -141,7 +141,7 @@ const text = {
         navAdmin: "管理",
         footerTitle: "手工精品蛋糕与甜点",
         footerSubtitle: "为现代庆典打造的精致手工蛋糕。",
-        whatsappCustomizePrompt: "你好 EDRU，我想咨询定制蛋糕。",
+        whatsappCustomizePrompt: "你好 ÈDRU，我想咨询定制蛋糕。",
         adminTitle: "管理后台",
         adminWelcome: "欢迎，小茹",
         saveSuccess: "保存成功。",
@@ -202,7 +202,7 @@ const text = {
     en: {
         homeTitle: "Cake Categories",
         homeSubtitle: "Choose a style first, then explore cakes",
-        homeTagline: "EDRU Signature Collection",
+        homeTagline: "ÈDRU Signature Collection",
         artisanSelection: "Artisan Selection",
         orderConcierge: "Order Concierge",
         viewCategory: "View Category",
@@ -241,7 +241,7 @@ const text = {
         navAdmin: "Admin",
         footerTitle: "Handcrafted Cakes and Desserts",
         footerSubtitle: "Luxury handcrafted cakes for modern celebrations.",
-        whatsappCustomizePrompt: "Hello EDRU, I would like to ask about a customized cake. 你好 EDRU，我想咨询定制蛋糕。",
+        whatsappCustomizePrompt: "Hello ÈDRU, I would like to ask about a customized cake. 你好 ÈDRU，我想咨询定制蛋糕。",
         adminTitle: "Admin Dashboard",
         adminWelcome: "Welcome Xiao Ru",
         saveSuccess: "Saved successfully.",
@@ -387,7 +387,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$i18n$2d$shared$2e$ts_
 function Header({ lang }) {
     const copy = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$i18n$2d$shared$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["t"])(lang);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
-        className: "sticky top-0 z-40 backdrop-blur bg-[color:var(--bg-soft)]/88 border-b border-[color:var(--gold)]/25 shadow-[0_10px_24px_rgba(48,31,13,0.08)]",
+        className: "backdrop-blur bg-[color:var(--bg-soft)]/88 border-b border-[color:var(--gold)]/25 shadow-[0_10px_24px_rgba(48,31,13,0.08)]",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
             className: "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-15 sm:h-20 flex items-center justify-between gap-3",
             children: [
@@ -397,7 +397,7 @@ function Header({ lang }) {
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
                             src: "/Designer.png",
-                            alt: "EDRU logo",
+                            alt: "ÈDRU logo",
                             width: 34,
                             height: 34,
                             className: "h-7 w-7 rounded-full border border-[color:var(--gold)]/40 bg-white/70 object-cover shadow-[0_4px_12px_rgba(38,24,11,0.15)] sm:h-9 sm:w-9",
@@ -409,7 +409,7 @@ function Header({ lang }) {
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                             children: [
-                                "EDRU ",
+                                "ÈDRU ",
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                     className: "text-[color:var(--gold-deep)] max-[380px]:hidden",
                                     children: "Patisserie"
@@ -431,11 +431,11 @@ function Header({ lang }) {
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
-                    className: "flex items-center gap-2 sm:gap-4 text-[0.76rem] sm:text-[0.8rem] uppercase tracking-[0.08em] sm:tracking-[0.2em] text-[color:var(--ink-soft)]",
+                    className: "flex items-center gap-2 sm:gap-3 text-[0.76rem] sm:text-[0.8rem] uppercase tracking-[0.08em] sm:tracking-[0.2em] text-[color:var(--ink-soft)]",
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
                             href: "/?intro=1",
-                            className: "hover:text-[color:var(--gold-deep)] rounded-full border border-[color:var(--gold)]/25 px-3 py-1.5",
+                            className: "nav-atelier px-3 py-1.5 hover:text-[color:var(--gold-deep)]",
                             children: copy.navHome
                         }, void 0, false, {
                             fileName: "[project]/components/Header.tsx",
@@ -444,7 +444,7 @@ function Header({ lang }) {
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
                             href: "/admin",
-                            className: "hover:text-[color:var(--gold-deep)] rounded-full border border-[color:var(--gold)]/25 px-3 py-1.5",
+                            className: "nav-atelier px-3 py-1.5 hover:text-[color:var(--gold-deep)]",
                             children: copy.navAdmin
                         }, void 0, false, {
                             fileName: "[project]/components/Header.tsx",
@@ -714,7 +714,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SellerNoticeBa
 ;
 ;
 const metadata = {
-    title: "EDRU Patisserie",
+    title: "ÈDRU Patisserie",
     description: "Premium cake ordering platform"
 };
 async function RootLayout({ children }) {
@@ -726,18 +726,27 @@ async function RootLayout({ children }) {
         className: `${__TURBOPACK__imported__module__$5b$next$5d2f$internal$2f$font$2f$google$2f$cormorant_garamond_99fe95f3$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].variable} ${__TURBOPACK__imported__module__$5b$next$5d2f$internal$2f$font$2f$google$2f$lora_89efdbdf$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].variable}`,
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("body", {
             children: [
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AnnouncementBar$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                    lang: lang
-                }, void 0, false, {
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "sticky top-0 z-[70]",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AnnouncementBar$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
+                            lang: lang
+                        }, void 0, false, {
+                            fileName: "[project]/app/layout.tsx",
+                            lineNumber: 39,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Header$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
+                            lang: lang
+                        }, void 0, false, {
+                            fileName: "[project]/app/layout.tsx",
+                            lineNumber: 40,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
                     fileName: "[project]/app/layout.tsx",
                     lineNumber: 38,
-                    columnNumber: 9
-                }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Header$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
-                    lang: lang
-                }, void 0, false, {
-                    fileName: "[project]/app/layout.tsx",
-                    lineNumber: 39,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$SellerNoticeBar$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
@@ -745,7 +754,7 @@ async function RootLayout({ children }) {
                     message: announcementText
                 }, void 0, false, {
                     fileName: "[project]/app/layout.tsx",
-                    lineNumber: 40,
+                    lineNumber: 42,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -754,12 +763,12 @@ async function RootLayout({ children }) {
                         lang: lang
                     }, void 0, false, {
                         fileName: "[project]/app/layout.tsx",
-                        lineNumber: 42,
+                        lineNumber: 44,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/layout.tsx",
-                    lineNumber: 41,
+                    lineNumber: 43,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -767,21 +776,21 @@ async function RootLayout({ children }) {
                     children: children
                 }, void 0, false, {
                     fileName: "[project]/app/layout.tsx",
-                    lineNumber: 44,
+                    lineNumber: 46,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
                     lang: lang
                 }, void 0, false, {
                     fileName: "[project]/app/layout.tsx",
-                    lineNumber: 45,
+                    lineNumber: 47,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$IntroGate$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {
                     lang: lang
                 }, void 0, false, {
                     fileName: "[project]/app/layout.tsx",
-                    lineNumber: 46,
+                    lineNumber: 48,
                     columnNumber: 9
                 }, this)
             ]
