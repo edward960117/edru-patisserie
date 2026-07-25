@@ -1,0 +1,14 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/api/auth/logout/route": "/api/auth/logout",
+  "/api/admin/cakes/route": "/api/admin/cakes",
+  "/api/admin/cakes/[id]/route": "/api/admin/cakes/[id]",
+  "/api/language/route": "/api/language",
+  "/api/auth/login/route": "/api/auth/login",
+  "/admin/page": "/admin",
+  "/login/page": "/login",
+  "/categories/[slug]/page": "/categories/[slug]",
+  "/cakes/[slug]/page": "/cakes/[slug]",
+  "/checkout/page": "/checkout",
+  "/page": "/"
+}

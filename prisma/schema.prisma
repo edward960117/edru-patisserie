@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  staff
+  customer
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  name        String
+  name_cn     String
+  emoji       String
+  description String
+  cakes       Cake[]
+}
+
+model Cake {
+  id             Int        @id @default(autoincrement())
+  category_id    Int
+  category       Category   @relation(fields: [category_id], references: [id])
+  name           String
+  name_cn        String     @default("")
+  slug           String     @unique
+  description    String
+  description_cn String     @default("")
+  ingredients    String
+  image_url      String
+  lead_time_days Int
+  featured       Boolean    @default(false)
+  active         Boolean    @default(true)
+  sizes          CakeSize[]
+  created_at     DateTime   @default(now())
+  updated_at     DateTime   @updatedAt
+}
+
+model CakeSize {
+  id        Int      @id @default(autoincrement())
+  cake_id   Int
+  cake      Cake     @relation(fields: [cake_id], references: [id], onDelete: Cascade)
+  size      String
+  price     Float
+  available Boolean  @default(true)
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  password_hash String
+  role          UserRole
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now())
+}

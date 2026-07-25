@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f8f2e8;
+  --bg-soft: #efe3d2;
+  --bg-deep: #e8d7c2;
+  --ink: #23160c;
+  --ink-soft: #66523f;
+  --gold: #b8945a;
+  --gold-deep: #8f6a34;
+  --accent-red: #c62828;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 640px at -10% -20%, #fff7ea 0%, transparent 58%),
+    radial-gradient(900px 500px at 110% -25%, #e8d4b3 0%, transparent 60%),
+    linear-gradient(180deg, #f9f1e4 0%, var(--bg) 48%, #f3e7d7 100%);
+  color: var(--ink);
+  font-family: "Lora", "Noto Serif SC", Georgia, serif;
+}
+
+a,
+button {
+  transition: all 0.2s ease;
+}
+
+.card-lux {
+  background: linear-gradient(160deg, rgba(255, 252, 245, 0.9), rgba(249, 237, 217, 0.86));
+  border: 1px solid rgba(184, 148, 90, 0.34);
+  box-shadow: 0 14px 36px rgba(47, 31, 16, 0.1);
+  border-radius: 22px;
+  backdrop-filter: blur(4px);
+}
+
+.heading-serif {
+  font-family: "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
+}
+
+.lux-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+.btn-lux {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.58rem 1.1rem;
+  background: linear-gradient(120deg, #c8a06a 0%, #aa7c3f 100%);
+  color: #fff8ed;
+  border: 1px solid rgba(143, 106, 52, 0.42);
+  box-shadow: 0 8px 18px rgba(67, 43, 16, 0.2);
+  font-size: 0.86rem;
+}
+
+.btn-lux:hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+
+.btn-lux-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.56rem 1.05rem;
+  border: 1px solid rgba(184, 148, 90, 0.54);
+  color: var(--ink-soft);
+  background: rgba(255, 251, 244, 0.6);
+}
+
+.btn-lux-outline:hover {
+  background: rgba(184, 148, 90, 0.15);
+  color: var(--ink);
+}
