@@ -60,6 +60,32 @@ npm run dev
 
 The app runs at `http://localhost:5173/`.
 
+## Neon PostgreSQL (Vercel)
+
+This project uses Prisma and is configured for Neon PostgreSQL.
+
+1. Set these environment variables in local `.env` and in Vercel Project Settings:
+
+```env
+DATABASE_URL="postgresql://neondb_owner:<YOUR_PASSWORD>@ep-snowy-breeze-aztioy57-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+DIRECT_URL="postgresql://neondb_owner:<YOUR_PASSWORD>@ep-snowy-breeze-aztioy57.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+NEON_REST_API_URL="https://ep-snowy-breeze-aztioy57.apirest.c-3.ap-southeast-1.aws.neon.tech/neondb/rest/v1"
+```
+
+2. Sync schema and seed data:
+
+```powershell
+npm run db:push
+npm run db:seed
+```
+
+3. Build and run:
+
+```powershell
+npm run build
+npm run start -- -p 3000
+```
+
 ### Other scripts
 
 ```powershell

@@ -1,9 +1,80 @@
+import "dotenv/config";
 import { PrismaClient, UserRole } from "@prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
 import argon2 from "argon2";
 
-const prisma = new PrismaClient();
+neonConfig.webSocketConstructor = ws;
+const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
+
+async function ensureSchema() {
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN
+      CREATE TYPE "UserRole" AS ENUM ('staff', 'customer');
+    EXCEPTION
+      WHEN duplicate_object THEN null;
+    END $$;
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Category" (
+      "id" SERIAL PRIMARY KEY,
+      "slug" TEXT NOT NULL UNIQUE,
+      "name" TEXT NOT NULL,
+      "name_cn" TEXT NOT NULL,
+      "emoji" TEXT NOT NULL,
+      "description" TEXT NOT NULL
+    );
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Cake" (
+      "id" SERIAL PRIMARY KEY,
+      "category_id" INTEGER NOT NULL,
+      "name" TEXT NOT NULL,
+      "name_cn" TEXT NOT NULL DEFAULT '',
+      "slug" TEXT NOT NULL UNIQUE,
+      "description" TEXT NOT NULL,
+      "description_cn" TEXT NOT NULL DEFAULT '',
+      "ingredients" TEXT NOT NULL,
+      "image_url" TEXT NOT NULL,
+      "lead_time_days" INTEGER NOT NULL,
+      "featured" BOOLEAN NOT NULL DEFAULT false,
+      "active" BOOLEAN NOT NULL DEFAULT true,
+      "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      CONSTRAINT "Cake_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    );
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "CakeSize" (
+      "id" SERIAL PRIMARY KEY,
+      "cake_id" INTEGER NOT NULL,
+      "size" TEXT NOT NULL,
+      "price" DOUBLE PRECISION NOT NULL,
+      "available" BOOLEAN NOT NULL DEFAULT true,
+      CONSTRAINT "CakeSize_cake_id_fkey" FOREIGN KEY ("cake_id") REFERENCES "Cake"("id") ON DELETE CASCADE ON UPDATE CASCADE
+    );
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "User" (
+      "id" SERIAL PRIMARY KEY,
+      "username" TEXT NOT NULL UNIQUE,
+      "password_hash" TEXT NOT NULL,
+      "role" "UserRole" NOT NULL,
+      "active" BOOLEAN NOT NULL DEFAULT true,
+      "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+}
 
 async function main() {
+  await ensureSchema();
+
   const categories = [
     {
       slug: "todays-recommendation",
