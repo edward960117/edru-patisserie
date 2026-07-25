@@ -30,7 +30,7 @@ export default async function AdminPage() {
         <h1 className="heading-serif text-4xl">{copy.adminTitle}</h1>
         <div className="flex items-center gap-4">
           <p className="text-sm text-[color:var(--ink-soft)]">{copy.adminWelcome}</p>
-          <LogoutButton />
+          <LogoutButton lang={lang} />
         </div>
       </div>
       <AdminDashboard lang={lang} categories={categories} initialCakes={cakes} initialAnnouncement={announcement} />

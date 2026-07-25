@@ -55,6 +55,25 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           : "Hello EDRU, I would like to place a cake order enquiry.");
   const whatsappMessage = encodeURIComponent(whatsappRawMessage);
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+  const helperTextClass = "text-left text-sm leading-relaxed text-[color:var(--ink-soft)]";
+  const termsItems = copy.checkoutTermsItems.split("|").map((item) => item.trim()).filter(Boolean);
+
+  function emphasizeTerms(item: string) {
+    const highlights = lang === "zh"
+      ? ["竹签", "支撑棒", "请勿", "脸部", "身体", "误伤", "下单前", "主动联系店家", "移除", "本店恕不承担责任"]
+      : ["bamboo skewers", "support dowels", "do not", "face", "body", "accidental injury", "in advance", "contact the shop", "removed", "not liable"];
+
+    const escaped = highlights.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const pattern = new RegExp(`(${escaped.join("|")})`, "gi");
+    const chunks = item.split(pattern);
+
+    return chunks.map((chunk, index) => {
+      const matched = highlights.some((term) => term.toLowerCase() === chunk.toLowerCase());
+      return matched
+        ? <strong key={`${item}-${index}`} className="font-semibold text-[color:var(--ink)]">{chunk}</strong>
+        : <span key={`${item}-${index}`}>{chunk}</span>;
+    });
+  }
 
   return (
     <section className="max-w-3xl card-lux p-5 sm:p-9">
@@ -65,31 +84,29 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <p><span className="text-[color:var(--ink-soft)]">{copy.cakeLabel}:</span> {cakeName}</p>
           <p><span className="text-[color:var(--ink-soft)]">{copy.sizeLabel}:</span> {size.size}</p>
           <p><span className="text-[color:var(--ink-soft)]">{copy.priceLabel}:</span> S${size.price.toFixed(2)}</p>
-          <p className="text-sm text-[color:var(--ink-soft)] mt-4">{copy.proceedOrderViaWhatsApp}</p>
-          <div className="mt-3 grid grid-cols-1 sm:flex gap-2.5">
-            <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux">
+          <p className={`${helperTextClass} mt-4`}>{copy.proceedOrderViaWhatsApp}</p>
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux w-full sm:w-auto whitespace-normal text-center">
               {copy.orderViaWhatsApp}
             </a>
-            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
               {copy.orderViaInstagram}
             </a>
-            <WeChatQrButton lang={lang} className="btn-lux-outline" />
+            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" />
           </div>
-          <p className="text-sm text-[color:var(--ink-soft)]">{copy.orContactViaInstagram}</p>
         </div>
       ) : (
         <div className="mt-5 space-y-3">
-          <p className="text-[color:var(--ink-soft)]">{copy.chooseCakeBeforeCheckout}</p>
-          <div className="mt-1 grid grid-cols-1 sm:flex gap-2.5">
-            <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux">
+          <p className={helperTextClass}>{copy.chooseCakeBeforeCheckout}</p>
+          <div className="mt-1 flex flex-wrap gap-2.5">
+            <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux w-full sm:w-auto whitespace-normal text-center">
               {copy.orderViaWhatsApp}
             </a>
-            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
               {copy.orderViaInstagram}
             </a>
-            <WeChatQrButton lang={lang} className="btn-lux-outline" />
+            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" />
           </div>
-          <p className="text-sm text-[color:var(--ink-soft)]">{copy.orContactViaInstagram}</p>
         </div>
       )}
 
@@ -97,6 +114,17 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         <p className="text-sm uppercase tracking-[0.16em] text-[color:var(--gold)]">{fulfillmentTitle}</p>
         <p className="mt-2 text-[color:var(--ink-soft)]"><span className="font-semibold text-[color:var(--ink)]">{pickupLabel}</span>{pickupValue}</p>
         <p className="mt-1 text-[color:var(--ink-soft)]"><span className="font-semibold text-[color:var(--ink)]">{deliveryLabel}</span>{deliveryValue}</p>
+
+        <div className="mt-4 rounded-xl border border-[color:var(--gold)]/25 bg-white/60 px-3 py-2.5">
+          <p className="text-sm font-semibold text-[color:var(--ink)]">{copy.checkoutTermsToggle}</p>
+          <ul className="mt-2 space-y-1.5 pl-4 text-sm leading-relaxed text-[color:var(--ink-soft)]">
+            {termsItems.map((item) => (
+              <li key={item} className="list-disc">
+                {emphasizeTerms(item)}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

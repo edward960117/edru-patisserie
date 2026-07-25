@@ -124,6 +124,8 @@ const text = {
         weChatScanHint: "点击后将弹出微信二维码，请扫码联系下单。",
         orContactViaInstagram: "或通过 Instagram 私信我们。",
         checkoutTitle: "结账",
+        checkoutTermsToggle: "免责声明 / 条款与说明",
+        checkoutTermsItems: "部分蛋糕会使用竹签或支撑棒做内部结构固定。|请勿将脸部或身体直接推向蛋糕，以免被支撑物或尖锐结构误伤。|如需移除竹签或内部支撑，请在下单前主动联系店家确认是否可处理。|若顾客未提前提出移除需求而发生相关风险或受伤，本店恕不承担责任。",
         chooseCakeBeforeCheckout: "请先选择蛋糕和尺寸后再结账。",
         leadTimePrefix: "请至少提前",
         leadTimeSuffix: "天下单。",
@@ -148,7 +150,57 @@ const text = {
         saveSuccess: "保存成功。",
         saveFailed: "保存蛋糕失败",
         deleteSuccess: "蛋糕已删除。",
-        deleteFailed: "删除蛋糕失败"
+        deleteFailed: "删除蛋糕失败",
+        adminTotalCakes: "蛋糕总数",
+        adminTotalCategories: "分类总数",
+        adminActiveCakes: "上架蛋糕",
+        adminEditCake: "编辑蛋糕",
+        adminAddCake: "新增蛋糕",
+        adminCategory: "分类",
+        adminName: "名称",
+        adminNameChinese: "中文名称",
+        adminSlug: "Slug",
+        adminSlugAuto: "自动生成",
+        adminLeadTimeDays: "提前天数",
+        adminDescription: "描述",
+        adminDescriptionChinese: "中文描述",
+        adminIngredients: "配料",
+        adminDescriptionPlaceholder: "示例：口感细腻的香草海绵蛋糕，夹层草莓奶油，顶部新鲜水果装饰。",
+        adminDescriptionChinesePlaceholder: "示例：细腻香草蛋糕胚，搭配草莓奶油夹层，顶部以新鲜水果点缀。",
+        adminIngredientsPlaceholder: "示例：低筋面粉、鸡蛋、淡奶油、草莓、糖、黄油。",
+        adminUploadImage: "上传图片",
+        adminImageSelected: "图片已选择，可保存。",
+        adminPrice: "价格",
+        adminAvailable: "可售",
+        adminFeatured: "推荐",
+        adminActive: "启用",
+        adminUpdate: "更新",
+        adminCreate: "创建",
+        adminCancel: "取消",
+        adminCakeManagement: "蛋糕管理",
+        adminLeadTimeShort: "提前",
+        adminDays: "天",
+        adminDisabled: "停用",
+        adminStandard: "普通",
+        adminDelete: "删除",
+        adminEdit: "编辑",
+        adminSellerAnnouncementTitle: "卖家滚动公告",
+        adminSaving: "保存中...",
+        adminConfirmUpdateCake: "确认要更新这个蛋糕吗？",
+        adminConfirmCreateCake: "确认要创建这个新蛋糕吗？",
+        adminConfirmDeleteCake: "确认要删除这个蛋糕吗？",
+        adminConfirmEditCake: "确认要编辑这个蛋糕吗？",
+        adminImageRequired: "请先选择并上传图片。",
+        adminAnnouncementSaveFailed: "保存公告失败",
+        adminAnnouncementUpdated: "公告已更新。",
+        adminConfirmEnableAnnouncement: "确认要启用滚动公告吗？",
+        adminConfirmDisableAnnouncement: "确认要停用滚动公告吗？",
+        confirmTitle: "请确认",
+        confirmAction: "确认",
+        confirmCancel: "取消",
+        logoutLabel: "退出登录",
+        loggingOutLabel: "退出中...",
+        logoutConfirmMessage: "确认要退出登录吗？"
     },
     en: {
         homeTitle: "Cake Categories",
@@ -172,6 +224,8 @@ const text = {
         weChatScanHint: "Tap to open the WeChat QR code and scan to place your order.",
         orContactViaInstagram: "Or message us on Instagram.",
         checkoutTitle: "Checkout",
+        checkoutTermsToggle: "Disclaimer / Terms",
+        checkoutTermsItems: "Some cakes may contain bamboo skewers or support dowels for structural stability.|Please do not push your face or body directly into the cake to avoid accidental injury from internal supports or sharp structures.|If you need the skewers/supports removed, please contact the shop in advance before confirming your order.|If no prior removal request is made, the shop is not liable for related risks or injuries.",
         chooseCakeBeforeCheckout: "Please choose a cake and size before checkout.",
         leadTimePrefix: "Please order at least",
         leadTimeSuffix: "days in advance.",
@@ -196,7 +250,57 @@ const text = {
         saveSuccess: "Saved successfully.",
         saveFailed: "Failed to save cake",
         deleteSuccess: "Cake deleted.",
-        deleteFailed: "Failed to delete cake"
+        deleteFailed: "Failed to delete cake",
+        adminTotalCakes: "Total Cakes",
+        adminTotalCategories: "Total Categories",
+        adminActiveCakes: "Active Cakes",
+        adminEditCake: "Edit Cake",
+        adminAddCake: "Add Cake",
+        adminCategory: "Category",
+        adminName: "Name",
+        adminNameChinese: "Name (Chinese)",
+        adminSlug: "Slug",
+        adminSlugAuto: "Auto",
+        adminLeadTimeDays: "Lead Time (days)",
+        adminDescription: "Description",
+        adminDescriptionChinese: "Description (Chinese)",
+        adminIngredients: "Ingredients",
+        adminDescriptionPlaceholder: "Example: Soft vanilla sponge layered with strawberry cream and topped with fresh fruits.",
+        adminDescriptionChinesePlaceholder: "Example: Delicate vanilla sponge with strawberry cream filling, finished with fresh fruit garnish.",
+        adminIngredientsPlaceholder: "Example: Cake flour, eggs, whipping cream, strawberries, sugar, butter.",
+        adminUploadImage: "Upload Image",
+        adminImageSelected: "Image selected and ready to save.",
+        adminPrice: "Price",
+        adminAvailable: "Available",
+        adminFeatured: "Featured",
+        adminActive: "Active",
+        adminUpdate: "Update",
+        adminCreate: "Create",
+        adminCancel: "Cancel",
+        adminCakeManagement: "Cake Management",
+        adminLeadTimeShort: "lead time",
+        adminDays: "day(s)",
+        adminDisabled: "Disabled",
+        adminStandard: "Standard",
+        adminDelete: "Delete",
+        adminEdit: "Edit",
+        adminSellerAnnouncementTitle: "Seller Moving Announcement",
+        adminSaving: "Saving...",
+        adminConfirmUpdateCake: "Confirm update this cake?",
+        adminConfirmCreateCake: "Confirm create this new cake?",
+        adminConfirmDeleteCake: "Confirm delete this cake?",
+        adminConfirmEditCake: "Confirm edit this cake?",
+        adminImageRequired: "Please choose and upload an image first.",
+        adminAnnouncementSaveFailed: "Failed to update announcement",
+        adminAnnouncementUpdated: "Announcement updated.",
+        adminConfirmEnableAnnouncement: "Confirm to enable moving announcement?",
+        adminConfirmDisableAnnouncement: "Confirm to disable moving announcement?",
+        confirmTitle: "Please Confirm",
+        confirmAction: "Confirm",
+        confirmCancel: "Cancel",
+        logoutLabel: "Logout",
+        loggingOutLabel: "Logging out...",
+        logoutConfirmMessage: "Are you sure you want to logout?"
     }
 };
 function t(lang) {
@@ -671,9 +775,11 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
+;
 ;
 const STORAGE_KEY = "edru_intro_seen";
 const INTRO_DURATION_MS = 260;
@@ -694,6 +800,9 @@ const LOGO_CANDIDATES = [
 function IntroGate(param) {
     let { lang } = param;
     _s();
+    const pathname = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["usePathname"])();
+    const searchParams = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"])();
+    const introFlag = searchParams.get("intro");
     const [visible, setVisible] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(true);
     const [exiting, setExiting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [logoSrc, setLogoSrc] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
@@ -701,11 +810,17 @@ function IntroGate(param) {
     const [submitting, setSubmitting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "IntroGate.useEffect": ()=>{
+            const forceIntro = introFlag === "1";
             const seen = sessionStorage.getItem(STORAGE_KEY) === "1";
-            if (seen) {
+            if (seen && !forceIntro) {
+                setExiting(false);
+                setSubmitting(false);
                 setVisible(false);
                 return;
             }
+            setExiting(false);
+            setSubmitting(false);
+            setVisible(true);
             document.body.style.overflow = "hidden";
             return ({
                 "IntroGate.useEffect": ()=>{
@@ -713,7 +828,10 @@ function IntroGate(param) {
                 }
             })["IntroGate.useEffect"];
         }
-    }["IntroGate.useEffect"], []);
+    }["IntroGate.useEffect"], [
+        pathname,
+        introFlag
+    ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "IntroGate.useEffect": ()=>{
             if (!visible) {
@@ -721,6 +839,14 @@ function IntroGate(param) {
             }
         }
     }["IntroGate.useEffect"], [
+        visible
+    ]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "IntroGate.useEffect": ()=>{
+            setSelectedLang(lang);
+        }
+    }["IntroGate.useEffect"], [
+        lang,
         visible
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
@@ -761,24 +887,33 @@ function IntroGate(param) {
         if (submitting) return;
         setSubmitting(true);
         if (selectedLang !== lang) {
-            await fetch("/api/language", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    lang: selectedLang
-                })
-            });
+            try {
+                await fetch("/api/language", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        lang: selectedLang
+                    })
+                });
+            } catch (e) {
+            // Proceed anyway so user is never blocked by a temporary request failure.
+            }
         }
         sessionStorage.setItem(STORAGE_KEY, "1");
         setExiting(true);
         window.setTimeout(()=>{
             if (selectedLang !== lang) {
-                window.location.reload();
+                setSubmitting(false);
+                window.location.replace(window.location.pathname);
                 return;
             }
+            if (window.location.search) {
+                window.history.replaceState({}, "", window.location.pathname);
+            }
             setVisible(false);
+            setSubmitting(false);
         }, INTRO_DURATION_MS);
     }
     if (!visible) {
@@ -792,7 +927,7 @@ function IntroGate(param) {
                 className: "absolute inset-0 bg-black/12 backdrop-blur-md intro-overlay-pulse"
             }, void 0, false, {
                 fileName: "[project]/components/IntroGate.tsx",
-                lineNumber: 113,
+                lineNumber: 137,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -808,7 +943,7 @@ function IntroGate(param) {
                         }
                     }, void 0, false, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 116,
+                        lineNumber: 140,
                         columnNumber: 11
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "mx-auto max-w-[320px] py-7",
@@ -818,7 +953,7 @@ function IntroGate(param) {
                                 children: "EDRU"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 124,
+                                lineNumber: 148,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -826,7 +961,7 @@ function IntroGate(param) {
                                 children: "Patisserie"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 125,
+                                lineNumber: 149,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -834,13 +969,13 @@ function IntroGate(param) {
                                 children: "Logo file not found in public folder."
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 126,
+                                lineNumber: 150,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 123,
+                        lineNumber: 147,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -848,7 +983,7 @@ function IntroGate(param) {
                         children: selectedLang === "zh" ? "欢迎来到 EDRU 甜品工作室" : "Welcome to EDRU Patisserie"
                     }, void 0, false, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 130,
+                        lineNumber: 154,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -867,25 +1002,25 @@ function IntroGate(param) {
                                             className: "h-3.5 w-5 rounded-[2px] object-cover"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 144,
+                                            lineNumber: 168,
                                             columnNumber: 64
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "中文"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 144,
+                                            lineNumber: 168,
                                             columnNumber: 152
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/IntroGate.tsx",
-                                    lineNumber: 144,
+                                    lineNumber: 168,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 135,
+                                lineNumber: 159,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -901,31 +1036,31 @@ function IntroGate(param) {
                                             className: "h-3.5 w-5 rounded-[2px] object-cover"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 155,
+                                            lineNumber: 179,
                                             columnNumber: 64
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "English"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 155,
+                                            lineNumber: 179,
                                             columnNumber: 160
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/IntroGate.tsx",
-                                    lineNumber: 155,
+                                    lineNumber: 179,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 146,
+                                lineNumber: 170,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 134,
+                        lineNumber: 158,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -940,29 +1075,34 @@ function IntroGate(param) {
                                 children: "→"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 161,
+                                lineNumber: 185,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 159,
+                        lineNumber: 183,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/IntroGate.tsx",
-                lineNumber: 114,
+                lineNumber: 138,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/IntroGate.tsx",
-        lineNumber: 107,
+        lineNumber: 131,
         columnNumber: 5
     }, this);
 }
-_s(IntroGate, "hRnTF/BbYVR+uSLDoQTcK+QGx/k=");
+_s(IntroGate, "Nf0zc+FewYkRRGtRGUsqV88bCEQ=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["usePathname"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"]
+    ];
+});
 _c = IntroGate;
 var _c;
 __turbopack_context__.k.register(_c, "IntroGate");

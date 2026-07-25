@@ -2,12 +2,10 @@
   "pages": {
     "/categories/[slug]/page": [
       "static/chunks/[root-of-the-server]__2a43347e._.css",
-      "static/chunks/node_modules_next_f8eea6e7._.js",
+      "static/chunks/node_modules_next_c2247590._.js",
       "static/chunks/_9c554a69._.js",
       "static/chunks/app_layout_tsx_0a548d63._.js",
-      "static/chunks/node_modules_next_dist_client_components_builtin_global-error_f8d7bff2.js",
-      "static/chunks/node_modules_next_dist_619bb38e._.js",
-      "static/chunks/app_categories_[slug]_page_tsx_f8d7bff2._.js",
+      "static/chunks/node_modules_next_dist_client_components_builtin_global-error_80066bcf.js",
       "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_57d40746._.js",
       "static/chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js",
       "static/chunks/node_modules_next_dist_compiled_next-devtools_index_a9cb0712.js",

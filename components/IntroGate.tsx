@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { type Lang } from "@/lib/i18n-shared";
 
 const STORAGE_KEY = "edru_intro_seen";
@@ -21,6 +22,9 @@ const LOGO_CANDIDATES = [
 ];
 
 export default function IntroGate({ lang }: { lang: Lang }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const introFlag = searchParams.get("intro");
   const [visible, setVisible] = useState(true);
   const [exiting, setExiting] = useState(false);
   const [logoSrc, setLogoSrc] = useState<string | null>(null);
@@ -28,23 +32,34 @@ export default function IntroGate({ lang }: { lang: Lang }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    const forceIntro = introFlag === "1";
     const seen = sessionStorage.getItem(STORAGE_KEY) === "1";
-    if (seen) {
+
+    if (seen && !forceIntro) {
+      setExiting(false);
+      setSubmitting(false);
       setVisible(false);
       return;
     }
 
+    setExiting(false);
+    setSubmitting(false);
+    setVisible(true);
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, []);
+  }, [pathname, introFlag]);
 
   useEffect(() => {
     if (!visible) {
       document.body.style.overflow = "";
     }
   }, [visible]);
+
+  useEffect(() => {
+    setSelectedLang(lang);
+  }, [lang, visible]);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,21 +96,30 @@ export default function IntroGate({ lang }: { lang: Lang }) {
     setSubmitting(true);
 
     if (selectedLang !== lang) {
-      await fetch("/api/language", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lang: selectedLang }),
-      });
+      try {
+        await fetch("/api/language", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lang: selectedLang }),
+        });
+      } catch {
+        // Proceed anyway so user is never blocked by a temporary request failure.
+      }
     }
 
     sessionStorage.setItem(STORAGE_KEY, "1");
     setExiting(true);
     window.setTimeout(() => {
       if (selectedLang !== lang) {
-        window.location.reload();
+        setSubmitting(false);
+        window.location.replace(window.location.pathname);
         return;
       }
+      if (window.location.search) {
+        window.history.replaceState({}, "", window.location.pathname);
+      }
       setVisible(false);
+      setSubmitting(false);
     }, INTRO_DURATION_MS);
   }
 
