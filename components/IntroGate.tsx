@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { type Lang } from "@/lib/i18n-shared";
 
 const STORAGE_KEY = "edru_intro_seen";
@@ -39,8 +40,10 @@ export default function IntroGate({ lang }: { lang: Lang }) {
 
   useEffect(() => {
     const forceIntro = introFlag === "1";
+    const hasSeen = sessionStorage.getItem(STORAGE_KEY) === "1";
+    const shouldShowIntro = forceIntro || !hasSeen;
 
-    if (!forceIntro) {
+    if (!shouldShowIntro) {
       setExiting(false);
       setSubmitting(false);
       setVisible(false);
@@ -104,9 +107,12 @@ export default function IntroGate({ lang }: { lang: Lang }) {
       <div className="absolute inset-0 bg-[rgba(18,10,5,0.34)] backdrop-blur-[6px] intro-overlay-pulse" />
       <div className="fixed left-1/2 top-1/2 w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[color:var(--gold)]/28 bg-[#fdf7ee] px-6 py-8 sm:px-8 sm:py-10 text-center shadow-[0_12px_28px_rgba(47,31,16,0.1)] intro-panel-rise">
         {!logoBroken ? (
-          <img
+          <Image
             src={INTRO_LOGO}
             alt="ÈDRU Patisserie"
+            width={560}
+            height={420}
+            priority
             className="mx-auto h-auto w-auto max-h-[420px] max-w-full object-contain intro-logo-float"
             style={{ filter: "none", transform: "none" }}
             onError={() => setLogoBroken(true)}
@@ -136,7 +142,7 @@ export default function IntroGate({ lang }: { lang: Lang }) {
                 : "text-[color:var(--ink-soft)]"
             }`}
           >
-            <span className="inline-flex items-center gap-1.5"><img src="/flags/cn.svg" alt="China" className="h-3.5 w-5 rounded-[2px] object-cover" /><span>中文</span></span>
+            <span className="inline-flex items-center gap-1.5"><Image src="/flags/cn.svg" alt="China" width={20} height={14} className="h-3.5 w-5 rounded-[2px] object-cover" /><span>中文</span></span>
           </button>
           <button
             type="button"
@@ -147,7 +153,7 @@ export default function IntroGate({ lang }: { lang: Lang }) {
                 : "text-[color:var(--ink-soft)]"
             }`}
           >
-            <span className="inline-flex items-center gap-1.5"><img src="/flags/us.svg" alt="United States" className="h-3.5 w-5 rounded-[2px] object-cover" /><span>English</span></span>
+            <span className="inline-flex items-center gap-1.5"><Image src="/flags/us.svg" alt="United States" width={20} height={14} className="h-3.5 w-5 rounded-[2px] object-cover" /><span>English</span></span>
           </button>
         </div>
 

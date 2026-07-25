@@ -439,6 +439,27 @@ button:disabled {
   animation: noticeMarquee 18s linear infinite;
 }
 
+@media (max-width: 640px) {
+  .notice-marquee {
+    animation-duration: 26s;
+  }
+
+  .intro-logo-float,
+  .intro-overlay-pulse {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .home-category-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }

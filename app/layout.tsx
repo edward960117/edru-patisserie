@@ -42,11 +42,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Header lang={lang} />
             </div>
             <SellerNoticeBar enabled={announcement.enabled} message={announcementText} />
+          </div>
+          <div className="app-scroll">
             <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-3 sm:pt-6">
               <BackButton lang={lang} />
             </div>
-          </div>
-          <div className="app-scroll">
             <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">{children}</main>
             <Footer lang={lang} />
           </div>

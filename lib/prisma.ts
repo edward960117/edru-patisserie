@@ -8,6 +8,10 @@ declare global {
 
 let prismaClient: PrismaClient;
 
+if (process.env.NODE_ENV !== "production" && !process.env.NODE_TLS_REJECT_UNAUTHORIZED) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL || "";
 const adapter = new PrismaNeonHttp(connectionString, {});
 prismaClient = new PrismaClient({ adapter });

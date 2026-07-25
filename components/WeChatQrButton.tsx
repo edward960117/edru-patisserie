@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { t, type Lang } from "@/lib/i18n-shared";
 
 interface Props {
@@ -38,7 +39,13 @@ export default function WeChatQrButton({ lang, className, footerStyle = false }:
             <p className="mt-2 text-sm text-[color:var(--ink-soft)]">{copy.weChatScanHint}</p>
 
             <div className="mt-4 rounded-xl border border-[color:var(--gold)]/30 bg-white p-2">
-              <img src="/wechatcontact.jpg" alt="WeChat contact QR code" className="w-full h-auto rounded-lg object-contain" />
+              <Image
+                src="/wechatcontact.jpg"
+                alt="WeChat contact QR code"
+                width={720}
+                height={720}
+                className="h-auto w-full rounded-lg object-contain"
+              />
             </div>
 
             <button type="button" onClick={() => setOpen(false)} className="btn-lux-outline mt-4 w-full">

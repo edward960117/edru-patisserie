@@ -1,14 +1,4 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/api/admin/announcement/route": "app/api/admin/announcement/route.js",
-  "/api/admin/cakes/route": "app/api/admin/cakes/route.js",
-  "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/api/auth/logout/route": "app/api/auth/logout/route.js",
-  "/api/language/route": "app/api/language/route.js",
-  "/cakes/[slug]/page": "app/cakes/[slug]/page.js",
-  "/categories/[slug]/page": "app/categories/[slug]/page.js",
-  "/checkout/page": "app/checkout/page.js",
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/categories/[slug]/page": "app/categories/[slug]/page.js"
 }
