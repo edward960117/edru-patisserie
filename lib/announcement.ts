@@ -15,9 +15,14 @@ const DEFAULT_ANNOUNCEMENT: SiteAnnouncement = {
 const SETTING_KEY = "site_announcement";
 const ANNOUNCEMENT_CACHE_TTL_MS = 60_000;
 
+type PrismaLike = {
+  $executeRawUnsafe: (query: string, ...values: unknown[]) => Promise<unknown>;
+  $queryRawUnsafe: <T = unknown>(query: string, ...values: unknown[]) => Promise<T>;
+};
+
 let ensureTablePromise: Promise<void> | null = null;
 let announcementCache: { value: SiteAnnouncement; expiresAt: number } | null = null;
-let prismaClientPromise: Promise<{ $executeRawUnsafe: (...args: unknown[]) => Promise<unknown>; $queryRawUnsafe: <T>(...args: unknown[]) => Promise<T> } | null> | null = null;
+let prismaClientPromise: Promise<PrismaLike | null> | null = null;
 
 type DbAnnouncementRow = {
   value_json: unknown;
@@ -72,7 +77,7 @@ async function getPrismaClient() {
   }
 
   prismaClientPromise = import("@/lib/prisma")
-    .then((module) => module.prisma)
+    .then((module) => module.prisma as unknown as PrismaLike)
     .catch(() => null);
 
   return prismaClientPromise;
