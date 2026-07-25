@@ -1,14 +1,14 @@
 {
-  "/api/admin/cakes/route": "/api/admin/cakes",
-  "/_not-found/page": "/_not-found",
-  "/api/language/route": "/api/language",
   "/api/admin/cakes/[id]/route": "/api/admin/cakes/[id]",
-  "/api/auth/login/route": "/api/auth/login",
+  "/_not-found/page": "/_not-found",
+  "/api/admin/cakes/route": "/api/admin/cakes",
+  "/api/language/route": "/api/language",
   "/api/auth/logout/route": "/api/auth/logout",
+  "/api/auth/login/route": "/api/auth/login",
+  "/login/page": "/login",
   "/cakes/[slug]/page": "/cakes/[slug]",
   "/admin/page": "/admin",
-  "/login/page": "/login",
-  "/checkout/page": "/checkout",
+  "/page": "/",
   "/categories/[slug]/page": "/categories/[slug]",
-  "/page": "/"
+  "/checkout/page": "/checkout"
 }
