@@ -79,21 +79,6 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
-"[project]/lib/contact.ts [app-client] (ecmascript)", ((__turbopack_context__) => {
-"use strict";
-
-__turbopack_context__.s([
-    "INSTAGRAM_URL",
-    ()=>INSTAGRAM_URL,
-    "WHATSAPP_NUMBER",
-    ()=>WHATSAPP_NUMBER
-]);
-const WHATSAPP_NUMBER = "6581324886";
-const INSTAGRAM_URL = "https://www.instagram.com/xiaoru_0207?igsh=MWk1anlmNWl5bHR3NA==";
-if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
-    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
-}
-}),
 "[project]/lib/i18n-shared.ts [app-client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -306,6 +291,131 @@ const text = {
 function t(lang) {
     return text[lang];
 }
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/components/Header.tsx [app-client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>Header
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/app-dir/link.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/image.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$i18n$2d$shared$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/i18n-shared.ts [app-client] (ecmascript)");
+"use client";
+;
+;
+;
+;
+function Header(param) {
+    let { lang } = param;
+    const copy = (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$i18n$2d$shared$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["t"])(lang);
+    const homeHref = "/?intro=1";
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
+        className: "backdrop-blur bg-[color:var(--bg-soft)]/88 border-b border-[color:var(--gold)]/25 shadow-[0_10px_24px_rgba(48,31,13,0.08)]",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-15 sm:h-20 flex items-center justify-between gap-3",
+            children: [
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                    href: homeHref,
+                    className: "group inline-flex items-center gap-2 sm:gap-3 heading-serif text-[0.98rem] sm:text-[1.75rem] tracking-[0.1em] sm:tracking-[0.2em] uppercase leading-none whitespace-nowrap",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                            src: "/Designer.png",
+                            alt: "ÈDRU logo",
+                            width: 34,
+                            height: 34,
+                            className: "h-7 w-7 rounded-full border border-[color:var(--gold)]/40 bg-white/70 object-cover shadow-[0_4px_12px_rgba(38,24,11,0.15)] sm:h-9 sm:w-9",
+                            priority: true
+                        }, void 0, false, {
+                            fileName: "[project]/components/Header.tsx",
+                            lineNumber: 15,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                            children: [
+                                "ÈDRU ",
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                    className: "text-[color:var(--gold-deep)] max-[380px]:hidden",
+                                    children: "Patisserie"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/Header.tsx",
+                                    lineNumber: 24,
+                                    columnNumber: 18
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/Header.tsx",
+                            lineNumber: 23,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/Header.tsx",
+                    lineNumber: 14,
+                    columnNumber: 9
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
+                    className: "flex items-center gap-2 sm:gap-3 text-[0.76rem] sm:text-[0.8rem] uppercase tracking-[0.08em] sm:tracking-[0.2em] text-[color:var(--ink-soft)]",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                            href: homeHref,
+                            className: "nav-atelier px-3 py-1.5 hover:text-[color:var(--gold-deep)]",
+                            children: copy.navHome
+                        }, void 0, false, {
+                            fileName: "[project]/components/Header.tsx",
+                            lineNumber: 28,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                            href: "/admin",
+                            className: "nav-atelier px-3 py-1.5 hover:text-[color:var(--gold-deep)]",
+                            children: copy.navAdmin
+                        }, void 0, false, {
+                            fileName: "[project]/components/Header.tsx",
+                            lineNumber: 29,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/components/Header.tsx",
+                    lineNumber: 27,
+                    columnNumber: 9
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "[project]/components/Header.tsx",
+            lineNumber: 13,
+            columnNumber: 7
+        }, this)
+    }, void 0, false, {
+        fileName: "[project]/components/Header.tsx",
+        lineNumber: 12,
+        columnNumber: 5
+    }, this);
+}
+_c = Header;
+var _c;
+__turbopack_context__.k.register(_c, "Header");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
+"[project]/lib/contact.ts [app-client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "INSTAGRAM_URL",
+    ()=>INSTAGRAM_URL,
+    "WHATSAPP_NUMBER",
+    ()=>WHATSAPP_NUMBER
+]);
+const WHATSAPP_NUMBER = "6581324886";
+const INSTAGRAM_URL = "https://www.instagram.com/xiaoru_0207?igsh=MWk1anlmNWl5bHR3NA==";
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
@@ -783,20 +893,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 const STORAGE_KEY = "edru_intro_seen";
 const INTRO_DURATION_MS = 260;
-const LOGO_CANDIDATES = [
-    "/Designer.png",
-    "/edru-logo.png",
-    "/edru-logo.jpg",
-    "/edru-logo.jpeg",
-    "/edru-logo.webp",
-    "/company-logo.png",
-    "/company-logo.jpg",
-    "/company-logo.jpeg",
-    "/logo.png",
-    "/logo.jpg",
-    "/logo.jpeg",
-    "/logo.webp"
-];
+const INTRO_LOGO = "/Designer.png";
 function IntroGate(param) {
     let { lang } = param;
     _s();
@@ -805,9 +902,31 @@ function IntroGate(param) {
     const introFlag = searchParams.get("intro");
     const [visible, setVisible] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(true);
     const [exiting, setExiting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    const [logoSrc, setLogoSrc] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
+    const [logoBroken, setLogoBroken] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [selectedLang, setSelectedLang] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(lang);
     const [submitting, setSubmitting] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "IntroGate.useEffect": ()=>{
+            if (!visible) {
+                document.documentElement.style.overflow = "";
+                document.body.style.overflow = "";
+                document.body.classList.remove("intro-active");
+                return;
+            }
+            document.documentElement.style.overflow = "hidden";
+            document.body.style.overflow = "hidden";
+            document.body.classList.add("intro-active");
+            return ({
+                "IntroGate.useEffect": ()=>{
+                    document.documentElement.style.overflow = "";
+                    document.body.style.overflow = "";
+                    document.body.classList.remove("intro-active");
+                }
+            })["IntroGate.useEffect"];
+        }
+    }["IntroGate.useEffect"], [
+        visible
+    ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "IntroGate.useEffect": ()=>{
             const forceIntro = introFlag === "1";
@@ -834,40 +953,6 @@ function IntroGate(param) {
         lang,
         visible
     ]);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "IntroGate.useEffect": ()=>{
-            let cancelled = false;
-            async function resolveLogo() {
-                for (const candidate of LOGO_CANDIDATES){
-                    const loaded = await new Promise({
-                        "IntroGate.useEffect.resolveLogo": (resolve)=>{
-                            const image = new Image();
-                            image.onload = ({
-                                "IntroGate.useEffect.resolveLogo": ()=>resolve(true)
-                            })["IntroGate.useEffect.resolveLogo"];
-                            image.onerror = ({
-                                "IntroGate.useEffect.resolveLogo": ()=>resolve(false)
-                            })["IntroGate.useEffect.resolveLogo"];
-                            image.src = candidate;
-                        }
-                    }["IntroGate.useEffect.resolveLogo"]);
-                    if (loaded && !cancelled) {
-                        setLogoSrc(candidate);
-                        return;
-                    }
-                }
-                if (!cancelled) {
-                    setLogoSrc(null);
-                }
-            }
-            void resolveLogo();
-            return ({
-                "IntroGate.useEffect": ()=>{
-                    cancelled = true;
-                }
-            })["IntroGate.useEffect"];
-        }
-    }["IntroGate.useEffect"], []);
     async function enterSite() {
         if (submitting) return;
         setSubmitting(true);
@@ -905,30 +990,35 @@ function IntroGate(param) {
         return null;
     }
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "fixed inset-0 z-[120] flex items-center justify-center px-5 transition-opacity duration-300 ".concat(exiting ? "opacity-0" : "opacity-100"),
+        className: "fixed inset-0 z-[220] px-5 transition-opacity duration-300 overscroll-contain ".concat(exiting ? "opacity-0" : "opacity-100"),
+        style: {
+            minHeight: "100dvh",
+            touchAction: "none"
+        },
         "aria-label": "site-intro",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "absolute inset-0 bg-black/12 backdrop-blur-md intro-overlay-pulse"
+                className: "absolute inset-0 bg-[rgba(18,10,5,0.34)] backdrop-blur-[6px] intro-overlay-pulse"
             }, void 0, false, {
                 fileName: "[project]/components/IntroGate.tsx",
-                lineNumber: 127,
+                lineNumber: 104,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "relative w-full max-w-md rounded-[20px] border border-[color:var(--gold)]/28 bg-[#fdf7ee] px-6 py-8 sm:px-8 sm:py-10 text-center shadow-[0_12px_28px_rgba(47,31,16,0.1)] intro-panel-rise",
+                className: "fixed left-1/2 top-1/2 w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[color:var(--gold)]/28 bg-[#fdf7ee] px-6 py-8 sm:px-8 sm:py-10 text-center shadow-[0_12px_28px_rgba(47,31,16,0.1)] intro-panel-rise",
                 children: [
-                    logoSrc ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                        src: logoSrc,
+                    !logoBroken ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                        src: INTRO_LOGO,
                         alt: "ÈDRU Patisserie",
                         className: "mx-auto h-auto w-auto max-h-[420px] max-w-full object-contain intro-logo-float",
                         style: {
                             filter: "none",
                             transform: "none"
-                        }
+                        },
+                        onError: ()=>setLogoBroken(true)
                     }, void 0, false, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 130,
+                        lineNumber: 107,
                         columnNumber: 11
                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "mx-auto max-w-[320px] py-7",
@@ -938,7 +1028,7 @@ function IntroGate(param) {
                                 children: "ÈDRU"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 138,
+                                lineNumber: 116,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -946,7 +1036,7 @@ function IntroGate(param) {
                                 children: "Patisserie"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 139,
+                                lineNumber: 117,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -954,13 +1044,13 @@ function IntroGate(param) {
                                 children: "Logo file not found in public folder."
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 140,
+                                lineNumber: 118,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 137,
+                        lineNumber: 115,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -968,7 +1058,7 @@ function IntroGate(param) {
                         children: selectedLang === "zh" ? "进入网站" : "Enter Website"
                     }, void 0, false, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 144,
+                        lineNumber: 122,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -976,7 +1066,7 @@ function IntroGate(param) {
                         children: selectedLang === "zh" ? "欢迎来到甜品工作室" : "Welcome to the patisserie"
                     }, void 0, false, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 147,
+                        lineNumber: 125,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -995,25 +1085,25 @@ function IntroGate(param) {
                                             className: "h-3.5 w-5 rounded-[2px] object-cover"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 161,
+                                            lineNumber: 139,
                                             columnNumber: 64
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "中文"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 161,
+                                            lineNumber: 139,
                                             columnNumber: 152
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/IntroGate.tsx",
-                                    lineNumber: 161,
+                                    lineNumber: 139,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 152,
+                                lineNumber: 130,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1029,31 +1119,31 @@ function IntroGate(param) {
                                             className: "h-3.5 w-5 rounded-[2px] object-cover"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 172,
+                                            lineNumber: 150,
                                             columnNumber: 64
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                             children: "English"
                                         }, void 0, false, {
                                             fileName: "[project]/components/IntroGate.tsx",
-                                            lineNumber: 172,
+                                            lineNumber: 150,
                                             columnNumber: 160
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/IntroGate.tsx",
-                                    lineNumber: 172,
+                                    lineNumber: 150,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 163,
+                                lineNumber: 141,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 151,
+                        lineNumber: 129,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1068,29 +1158,29 @@ function IntroGate(param) {
                                 children: "→"
                             }, void 0, false, {
                                 fileName: "[project]/components/IntroGate.tsx",
-                                lineNumber: 178,
+                                lineNumber: 156,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/IntroGate.tsx",
-                        lineNumber: 176,
+                        lineNumber: 154,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/IntroGate.tsx",
-                lineNumber: 128,
+                lineNumber: 105,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/IntroGate.tsx",
-        lineNumber: 121,
+        lineNumber: 97,
         columnNumber: 5
     }, this);
 }
-_s(IntroGate, "3xvhohdIG9UVmFq0x/7fmglxbiw=", false, function() {
+_s(IntroGate, "0sCKJhuVWiOdn/lJS1lHBYJkKgI=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["usePathname"],
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"]
@@ -1171,4 +1261,4 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 }),
 ]);
 
-//# sourceMappingURL=_9c554a69._.js.map
+//# sourceMappingURL=_57bbe4d1._.js.map
