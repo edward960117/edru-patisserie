@@ -17,14 +17,14 @@ export default function LanguageSwitcher({ lang }: { lang: "zh" | "en" }) {
   }
 
   return (
-    <div className="text-xs sm:text-sm text-white/95 rounded-full border border-[#e3c89d]/35 bg-[#ffffff12] px-2 py-0.5">
+    <div className="text-[0.72rem] sm:text-sm text-white/95 rounded-full border border-[#e3c89d]/35 bg-[#ffffff12] px-2.5 py-1 backdrop-blur-sm whitespace-nowrap">
       <button
         onClick={() => switchLanguage("zh")}
         className={lang === "zh" ? "font-semibold text-[#ffe8c3]" : "opacity-85 hover:opacity-100"}
       >
         中文
       </button>
-      <span className="mx-2 opacity-70">|</span>
+      <span className="mx-1.5 sm:mx-2 opacity-70">|</span>
       <button
         onClick={() => switchLanguage("en")}
         className={lang === "en" ? "font-semibold text-[#ffe8c3]" : "opacity-85 hover:opacity-100"}

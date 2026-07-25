@@ -45,16 +45,16 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
 
   return (
-    <section className="max-w-3xl card-lux p-7 sm:p-9">
+    <section className="max-w-3xl card-lux p-5 sm:p-9">
       <p className="lux-kicker">Order Concierge</p>
-      <h1 className="heading-serif mt-1 text-4xl sm:text-5xl">{copy.checkoutTitle}</h1>
+      <h1 className="heading-serif mt-1 text-[2rem] sm:text-5xl">{copy.checkoutTitle}</h1>
       {cake && size ? (
         <div className="mt-6 space-y-2 rounded-2xl border border-[color:var(--gold)]/20 bg-[rgba(255,250,241,0.7)] p-5">
           <p><span className="text-[color:var(--ink-soft)]">Cake:</span> {cakeName}</p>
           <p><span className="text-[color:var(--ink-soft)]">Size:</span> {size.size}</p>
           <p><span className="text-[color:var(--ink-soft)]">Price:</span> S${size.price.toFixed(2)}</p>
           <p className="text-sm text-[color:var(--ink-soft)] mt-4">{copy.proceedOrderViaWhatsApp}</p>
-          <div className="flex flex-wrap items-center gap-2 mt-2">
+          <div className="mt-3 grid grid-cols-1 sm:flex gap-2.5">
             <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux">
               {copy.orderViaWhatsApp}
             </a>
@@ -67,7 +67,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       ) : (
         <div className="mt-6 space-y-3">
           <p className="text-[color:var(--ink-soft)]">{copy.chooseCakeBeforeCheckout}</p>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="mt-1 grid grid-cols-1 sm:flex gap-2.5">
             <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux">
               {copy.orderViaWhatsApp}
             </a>
