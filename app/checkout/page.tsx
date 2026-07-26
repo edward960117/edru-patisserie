@@ -24,7 +24,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   let cake = null;
   try {
     cake = cakeSlug
-      ? await withTimeout(getCheckoutCakeBySlug(cakeSlug), 1600)
+      ? await withTimeout(getCheckoutCakeBySlug(cakeSlug), 5000)
       : null;
   } catch {
     // Database unavailable — render checkout without cake details.

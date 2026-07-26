@@ -100,8 +100,6 @@ body > * {
 
 body.intro-active > *:not([aria-label="site-intro"]) {
   filter: blur(8px) saturate(0.92);
-  transform: scale(1.01);
-  transform-origin: center top;
   pointer-events: none;
   user-select: none;
   transition: filter 220ms ease, transform 220ms ease;

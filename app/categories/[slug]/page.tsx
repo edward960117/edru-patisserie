@@ -45,7 +45,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const fallback = getFallbackCategoryWithCakes(slug);
 
   try {
-    category = await withTimeout(getCategoryBySlug(slug), 1600);
+    category = await withTimeout(getCategoryBySlug(slug), 5000);
   } catch {
     category = null;
   }

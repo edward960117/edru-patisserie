@@ -592,23 +592,23 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
         </h2>
         <form onSubmit={saveCategory} className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm">{lang === "zh" ? "英文名称" : "English Name"}
-            <input value={categoryForm.name} onChange={(event) => setCategoryForm((prev) => ({ ...prev, name: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" required />
+            <input value={categoryForm.name} onChange={(event) => setCategoryForm((prev) => ({ ...prev, name: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2 text-base leading-normal" required />
           </label>
           <label className="text-sm">{lang === "zh" ? "中文名称" : "Chinese Name"}
-            <input value={categoryForm.nameCn} onChange={(event) => setCategoryForm((prev) => ({ ...prev, nameCn: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" required />
+            <input value={categoryForm.nameCn} onChange={(event) => setCategoryForm((prev) => ({ ...prev, nameCn: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2 text-base leading-normal" required />
           </label>
           <label className="text-sm">Slug
-            <input value={categoryForm.slug} onChange={(event) => setCategoryForm((prev) => ({ ...prev, slug: slugify(event.target.value) }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" required />
+            <input value={categoryForm.slug} onChange={(event) => setCategoryForm((prev) => ({ ...prev, slug: slugify(event.target.value) }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2 text-base leading-normal" required />
           </label>
           <label className="text-sm">Emoji
-            <input value={categoryForm.emoji} onChange={(event) => setCategoryForm((prev) => ({ ...prev, emoji: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" required />
+            <input value={categoryForm.emoji} onChange={(event) => setCategoryForm((prev) => ({ ...prev, emoji: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2 text-base leading-normal" required />
           </label>
           <label className="text-sm sm:col-span-2">{lang === "zh" ? "分类简介" : "Category Description"}
-            <textarea value={categoryForm.description} onChange={(event) => setCategoryForm((prev) => ({ ...prev, description: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" rows={2} required />
+            <textarea value={categoryForm.description} onChange={(event) => setCategoryForm((prev) => ({ ...prev, description: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2 text-base leading-normal" rows={2} required />
           </label>
 
           <div className="sm:col-span-2 flex flex-wrap gap-3">
-            <button disabled={savingCategory || dbUnavailable} className="rounded-xl bg-[#2f2419] px-5 py-2 text-white disabled:opacity-70">
+            <button disabled={savingCategory} className="rounded-xl bg-[#2f2419] px-5 py-2 text-white disabled:opacity-70">
               {savingCategory ? copy.adminSaving : editingCategoryId ? (lang === "zh" ? "更新分类" : "Update Category") : (lang === "zh" ? "创建分类" : "Create Category")}
             </button>
             {editingCategoryId ? (
@@ -645,7 +645,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
         <h2 className="heading-serif text-3xl mb-4">{editingId ? copy.adminEditCake : copy.adminAddCake}</h2>
         <form onSubmit={saveCake} className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm">{copy.adminCategory}
-            <select value={form.categoryId} onChange={(event) => setForm((prev) => ({ ...prev, categoryId: Number(event.target.value) }))} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90" required>
+            <select value={form.categoryId} onChange={(event) => setForm((prev) => ({ ...prev, categoryId: Number(event.target.value) }))} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal" required>
               {categoryList.map((category) => <option key={category.id} value={category.id}>{category.name_cn} / {category.name}</option>)}
             </select>
           </label>
@@ -660,12 +660,12 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
                   slug: slugEdited ? prev.slug : slugify(nextName),
                 }));
               }}
-              className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90"
+              className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal"
               required
             />
           </label>
           <label className="text-sm">{copy.adminNameChinese}
-            <input value={form.nameCn} onChange={(event) => setForm((prev) => ({ ...prev, nameCn: event.target.value }))} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90" required />
+            <input value={form.nameCn} onChange={(event) => setForm((prev) => ({ ...prev, nameCn: event.target.value }))} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal" required />
           </label>
           <label className="text-sm">{copy.adminSlug}
             <div className="mt-1 flex gap-2">
@@ -675,7 +675,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
                   setSlugEdited(true);
                   setForm((prev) => ({ ...prev, slug: slugify(event.target.value) }));
                 }}
-                className="w-full border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90"
+                className="w-full border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal"
                 required
               />
               <button
@@ -693,23 +693,23 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
             </div>
           </label>
           <label className="text-sm">{copy.adminLeadTimeDays}
-            <input type="number" min={1} value={form.leadTimeDays} onChange={(event) => setForm((prev) => ({ ...prev, leadTimeDays: Number(event.target.value) }))} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90" required />
+            <input type="number" min={1} value={form.leadTimeDays} onChange={(event) => setForm((prev) => ({ ...prev, leadTimeDays: Number(event.target.value) }))} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal" required />
           </label>
           <label className="text-sm sm:col-span-2">{copy.adminDescription}
-            <textarea value={form.description} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} placeholder={copy.adminDescriptionPlaceholder} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90" rows={3} required />
+            <textarea value={form.description} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} placeholder={copy.adminDescriptionPlaceholder} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal" rows={3} required />
           </label>
           <label className="text-sm sm:col-span-2">{copy.adminDescriptionChinese}
-            <textarea value={form.descriptionCn} onChange={(event) => setForm((prev) => ({ ...prev, descriptionCn: event.target.value }))} placeholder={copy.adminDescriptionChinesePlaceholder} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90" rows={3} required />
+            <textarea value={form.descriptionCn} onChange={(event) => setForm((prev) => ({ ...prev, descriptionCn: event.target.value }))} placeholder={copy.adminDescriptionChinesePlaceholder} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal" rows={3} required />
           </label>
           <label className="text-sm sm:col-span-2">{copy.adminIngredients}
-            <textarea value={form.ingredients} onChange={(event) => setForm((prev) => ({ ...prev, ingredients: event.target.value }))} placeholder={copy.adminIngredientsPlaceholder} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90" rows={3} required />
+            <textarea value={form.ingredients} onChange={(event) => setForm((prev) => ({ ...prev, ingredients: event.target.value }))} placeholder={copy.adminIngredientsPlaceholder} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal" rows={3} required />
           </label>
           <label className="text-sm sm:col-span-2">{copy.adminUploadImage}
             <input
               type="file"
               accept="image/*"
               onChange={(event) => void handleUpload(event.target.files?.[0] ?? null)}
-              className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90"
+              className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90 text-base leading-normal"
               required={!editingId}
             />
             <p className="mt-1 text-xs text-[color:var(--ink-soft)]">
@@ -736,7 +736,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
                     const next = [...form.sizes];
                     next[index] = { ...next[index], price: normalizePriceInput(event.target.value) };
                     setForm((prev) => ({ ...prev, sizes: next }));
-                  }} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-lg px-2 py-1" />
+                  }} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-lg px-2 py-1 text-base leading-normal" />
                 </label>
                 <label className="text-xs inline-flex items-center gap-2 mt-2">
                   <input type="checkbox" checked={size.available} onChange={(event) => {
@@ -754,7 +754,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
           <label className="text-sm inline-flex items-center gap-2"><input type="checkbox" checked={form.active} onChange={(event) => setForm((prev) => ({ ...prev, active: event.target.checked }))} /> {copy.adminActive}</label>
 
           <div className="sm:col-span-2 flex gap-3">
-            <button disabled={savingCake || dbUnavailable} className="px-5 py-2 rounded-xl bg-[#2f2419] text-white disabled:opacity-70">{savingCake ? copy.adminSaving : editingId ? copy.adminUpdate : copy.adminCreate}</button>
+            <button disabled={savingCake} className="px-5 py-2 rounded-xl bg-[#2f2419] text-white disabled:opacity-70">{savingCake ? copy.adminSaving : editingId ? copy.adminUpdate : copy.adminCreate}</button>
             {editingId ? <button type="button" onClick={resetForm} className="px-5 py-2 rounded-xl border border-[color:var(--gold)]/40">{copy.adminCancel}</button> : null}
           </div>
         </form>
@@ -772,12 +772,12 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
             value={cakeSearch}
             onChange={(event) => setCakeSearch(event.target.value)}
             placeholder={lang === "zh" ? "搜索蛋糕名称或 slug" : "Search by cake name or slug"}
-            className="w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2"
+            className="w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2 text-base leading-normal"
           />
           <select
             value={cakeCategoryFilter}
             onChange={(event) => setCakeCategoryFilter(event.target.value === "all" ? "all" : Number(event.target.value))}
-            className="rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2"
+            className="rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2 text-base leading-normal"
           >
             <option value="all">{lang === "zh" ? "全部分类" : "All Categories"}</option>
             {categoryList.map((category) => (

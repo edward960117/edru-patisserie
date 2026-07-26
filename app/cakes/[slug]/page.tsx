@@ -29,7 +29,7 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
   let cake = null;
 
   try {
-    cake = await withTimeout(getCakeBySlug(slug), 1600);
+    cake = await withTimeout(getCakeBySlug(slug), 5000);
   } catch {
     cake = null;
   }
