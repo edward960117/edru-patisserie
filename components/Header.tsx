@@ -6,7 +6,7 @@ import { t } from "@/lib/i18n-shared";
 
 export default function Header({ lang }: { lang: "zh" | "en" }) {
   const copy = t(lang);
-  const homeHref = "/?intro=1";
+  const homeHref = "/";
 
   return (
     <header className="sticky top-0 z-[70] bg-[color:var(--bg-soft)]/70 py-2 backdrop-blur-xl sm:py-3">
