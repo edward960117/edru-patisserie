@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { getLang, t } from "@/lib/i18n";
-import { INSTAGRAM_URL, WHATSAPP_NUMBER } from "@/lib/contact";
+import { INSTAGRAM_URL, REDNOTE_URL, WHATSAPP_NUMBER } from "@/lib/contact";
 import WeChatQrButton from "@/components/WeChatQrButton";
 import BackButton from "@/components/BackButton";
 import { withTimeout } from "@/lib/with-timeout";
@@ -110,6 +110,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
               {copy.orderViaInstagram}
             </a>
             <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderDetails={whatsappRawMessage} />
+            <a href={REDNOTE_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
+              {copy.orderViaRednote}
+            </a>
           </div>
         </div>
       ) : (
@@ -123,6 +126,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
               {copy.orderViaInstagram}
             </a>
             <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderDetails={whatsappRawMessage} />
+            <a href={REDNOTE_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
+              {copy.orderViaRednote}
+            </a>
           </div>
         </div>
       )}

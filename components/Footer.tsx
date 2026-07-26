@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { INSTAGRAM_URL, WHATSAPP_NUMBER } from "@/lib/contact";
+import { INSTAGRAM_URL, REDNOTE_URL, WHATSAPP_NUMBER } from "@/lib/contact";
 import { t } from "@/lib/i18n-shared";
 import WeChatQrButton from "@/components/WeChatQrButton";
 
@@ -74,6 +74,22 @@ export default function Footer({ lang }: { lang: "zh" | "en" }) {
                 </a>
 
                 <WeChatQrButton lang={lang} className="inline-flex h-12 w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 text-[0.88rem] font-medium text-white/80 transition hover:border-white/20 hover:bg-white/10 hover:text-white" footerStyle />
+
+                <a
+                  href={REDNOTE_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Rednote 小红书"
+                  className="inline-flex h-12 w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 text-[0.88rem] font-medium text-white/80 transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+                >
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#ff2442]/20 text-[#ff2442]">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <rect x="3" y="2" width="18" height="20" rx="3" />
+                      <path d="M8 8h8M8 12h5M8 16h7" stroke="white" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+                    </svg>
+                  </span>
+                  {lang === "zh" ? "小红书" : "Rednote"}
+                </a>
               </div>
             </div>
           )}
