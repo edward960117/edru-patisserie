@@ -101,7 +101,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       {cake && size ? (
         <div className="mt-5 space-y-2 rounded-2xl border border-[color:var(--gold)]/20 bg-[rgba(255,250,241,0.7)] p-4 sm:p-5">
           <p><span className="text-[color:var(--ink-soft)]">{copy.cakeLabel}:</span> {cakeName}</p>
-          <p><span className="text-[color:var(--ink-soft)]">{copy.sizeLabel}:</span> {size.size}</p>
+          <p><span className="text-[color:var(--ink-soft)]">{copy.sizeLabel}:</span> {weChatCakeSize}</p>
           <p><span className="text-[color:var(--ink-soft)]">{copy.priceLabel}:</span> {formattedPrice}</p>
           <p className={`${helperTextClass} mt-4`}>{copy.proceedOrderViaWhatsApp}</p>
           <div className="mt-3 flex flex-wrap gap-2.5">
