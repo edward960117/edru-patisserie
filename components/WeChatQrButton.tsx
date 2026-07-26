@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { t, type Lang } from "@/lib/i18n-shared";
 
+const COPY_FEEDBACK_DURATION_MS = 1800;
+
 interface Props {
   lang: Lang;
   className?: string;
@@ -15,24 +17,26 @@ export default function WeChatQrButton({ lang, className, footerStyle = false, o
   const copy = t(lang);
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const fallbackOrderDetails = lang === "zh"
-    ? "你好 BLUE ISLET，我想咨询蛋糕下单。"
-    : "Hello BLUE ISLET, I would like to place a cake order enquiry.";
-  const draftOrderDetails = orderDetails ?? fallbackOrderDetails;
+  const draftOrderDetails = orderDetails ?? copy.weChatDefaultOrderDetails;
 
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(draftOrderDetails);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
+      window.setTimeout(() => setCopied(false), COPY_FEEDBACK_DURATION_MS);
     } catch {
       setCopied(false);
     }
   }
 
+  function closeModal() {
+    setOpen(false);
+    setCopied(false);
+  }
+
   return (
     <>
-      <button type="button" onClick={() => { setCopied(false); setOpen(true); }} className={className ?? "btn-lux-outline"}>
+      <button type="button" onClick={() => setOpen(true)} className={className ?? "btn-lux-outline"}>
         {footerStyle ? (
           <span className="inline-flex items-center gap-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#e9f7f0] text-[#169256]">
@@ -48,7 +52,7 @@ export default function WeChatQrButton({ lang, className, footerStyle = false, o
 
       {open ? (
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="WeChat QR">
-          <button type="button" aria-label="Close WeChat QR" className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={() => setOpen(false)} />
+          <button type="button" aria-label="Close WeChat QR" className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={closeModal} />
 
           <div className="relative z-[1] w-full max-w-sm rounded-2xl border border-[color:var(--gold)]/35 bg-[#fdf7ee] p-5 shadow-[0_20px_40px_rgba(47,31,16,0.22)]">
             <p className="heading-serif text-2xl text-[color:var(--ink)]">{copy.orderViaWeChat}</p>
@@ -65,7 +69,7 @@ export default function WeChatQrButton({ lang, className, footerStyle = false, o
             </div>
 
             <p className="mt-4 text-xs text-[color:var(--ink-soft)]">
-              {lang === "zh" ? "可复制以下预填订单内容，再贴到微信聊天窗口。" : "Copy the pre-drafted order details below and paste them into WeChat chat."}
+              {copy.weChatOrderCopyHint}
             </p>
             <textarea
               readOnly
@@ -73,11 +77,11 @@ export default function WeChatQrButton({ lang, className, footerStyle = false, o
               className="mt-2 h-28 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 p-3 text-sm leading-relaxed text-[color:var(--ink)]"
             />
 
-            <button type="button" onClick={() => void handleCopy()} className="btn-lux mt-3 w-full">
-              {copied ? (lang === "zh" ? "已复制订单内容" : "Order details copied") : (lang === "zh" ? "复制订单内容" : "Copy Order Details")}
+            <button type="button" onClick={handleCopy} className="btn-lux mt-3 w-full">
+              {copied ? copy.orderDetailsCopied : copy.copyOrderDetails}
             </button>
 
-            <button type="button" onClick={() => setOpen(false)} className="btn-lux-outline mt-3 w-full">
+            <button type="button" onClick={closeModal} className="btn-lux-outline mt-3 w-full">
               {lang === "zh" ? "关闭" : "Close"}
             </button>
           </div>
