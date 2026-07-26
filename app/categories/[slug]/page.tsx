@@ -1,10 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
+import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { getFallbackCategoryWithCakes } from "@/lib/fallback-catalog";
+import { withTimeout } from "@/lib/with-timeout";
+import BackButton from "@/components/BackButton";
 
 type CategoryWithCakes = Prisma.CategoryGetPayload<{
   include: {
@@ -16,16 +19,9 @@ type CategoryWithCakes = Prisma.CategoryGetPayload<{
 
 export const revalidate = 60;
 
-export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const lang = await getLang();
-  const copy = t(lang);
-
-  let category: CategoryWithCakes | null = null;
-  const fallback = getFallbackCategoryWithCakes(slug);
-
-  try {
-    category = await prisma.category.findUnique({
+const getCategoryBySlug = unstable_cache(
+  async (slug: string) => {
+    return prisma.category.findUnique({
       where: { slug },
       include: {
         cakes: {
@@ -35,6 +31,21 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         },
       },
     });
+  },
+  ["category-by-slug"],
+  { revalidate: 300 }
+);
+
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const lang = await getLang();
+  const copy = t(lang);
+
+  let category: CategoryWithCakes | null = null;
+  const fallback = getFallbackCategoryWithCakes(slug);
+
+  try {
+    category = await withTimeout(getCategoryBySlug(slug), 1600);
   } catch {
     category = null;
   }
@@ -53,7 +64,10 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   return (
     <section>
       <div className="card-lux atelier-frame px-5 py-6 sm:px-8 sm:py-8">
-        <p className="text-2xl">{categoryMeta.emoji}</p>
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-2xl">{categoryMeta.emoji}</p>
+          <BackButton lang={lang} fallbackHref="/" className="whitespace-nowrap" />
+        </div>
         <h1 className="heading-serif text-[1.9rem] sm:text-5xl leading-tight">{categoryMeta.name_cn}</h1>
         <p className="text-[color:var(--ink-soft)] mt-2 text-base sm:text-lg">{categoryMeta.name}</p>
         {!category ? (

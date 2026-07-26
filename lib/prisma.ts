@@ -11,6 +11,12 @@ let prismaClient: PrismaClient;
 const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL;
 const fallbackConnectionString = "postgresql://user:password@localhost:5432/db";
 
+// Temporary local workaround: some Windows environments cannot validate Neon TLS chain.
+// Disable TLS verification only outside production unless explicitly opted out.
+if (process.env.NODE_ENV !== "production" && process.env.TEMP_ALLOW_INSECURE_TLS_FOR_DB !== "false") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 try {
   const adapter = new PrismaNeonHttp(connectionString || fallbackConnectionString, {});
   prismaClient = new PrismaClient({ adapter });

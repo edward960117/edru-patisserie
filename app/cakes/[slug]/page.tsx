@@ -1,11 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
+import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { getFallbackCakeBySlug } from "@/lib/fallback-catalog";
+import { withTimeout } from "@/lib/with-timeout";
+import BackButton from "@/components/BackButton";
 
 export const revalidate = 60;
+
+const getCakeBySlug = unstable_cache(
+  async (slug: string) => {
+    return prisma.cake.findUnique({
+      where: { slug },
+      include: { sizes: { where: { available: true }, orderBy: { size: "asc" } } },
+    });
+  },
+  ["cake-by-slug"],
+  { revalidate: 300 }
+);
 
 export default async function CakeDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -15,10 +29,7 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
   let cake = null;
 
   try {
-    cake = await prisma.cake.findUnique({
-      where: { slug },
-      include: { sizes: { where: { available: true }, orderBy: { size: "asc" } } },
-    });
+    cake = await withTimeout(getCakeBySlug(slug), 1600);
   } catch {
     cake = null;
   }
@@ -49,7 +60,10 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
       </div>
 
       <article className="detail-card card-lux atelier-frame p-5 sm:p-8">
-        <p className="lux-kicker">{copy.artisanSelection}</p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="lux-kicker">{copy.artisanSelection}</p>
+          <BackButton lang={lang} fallbackHref="/" className="whitespace-nowrap" />
+        </div>
         <h1 className="heading-serif mt-2 text-[1.86rem] sm:text-5xl leading-tight">{cakeName}</h1>
         <p className="mt-3 text-[color:var(--ink-faint)] leading-relaxed text-[0.98rem]">{cakeDescription}</p>
 

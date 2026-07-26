@@ -1,10 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { fallbackCategories } from "@/lib/fallback-catalog";
+import { withTimeout } from "@/lib/with-timeout";
 
 export const revalidate = 60;
+
+const HOME_CATEGORY_SLUGS = [
+  "todays-recommendation",
+  "for-him",
+  "for-her",
+  "custom-cakes",
+  "birthday-cakes",
+  "seasonal-specials",
+];
+
+const getHomeCategories = unstable_cache(
+  async () => {
+    return prisma.category.findMany({
+      where: {
+        slug: { in: HOME_CATEGORY_SLUGS },
+      },
+      orderBy: { id: "asc" },
+    });
+  },
+  ["home-categories"],
+  { revalidate: 300 }
+);
 
 export default async function HomePage() {
   const lang = await getLang();
@@ -12,12 +36,7 @@ export default async function HomePage() {
 
   let categories = fallbackCategories;
   try {
-    const dbCategories = await prisma.category.findMany({
-      where: {
-        slug: { in: ["todays-recommendation", "for-him", "for-her", "custom-cakes", "birthday-cakes", "seasonal-specials"] },
-      },
-      orderBy: { id: "asc" },
-    });
+    const dbCategories = await withTimeout(getHomeCategories(), 1400);
     if (dbCategories.length > 0) {
       // Merge: use DB results, fill any missing slugs from fallback
       const dbSlugs = new Set(dbCategories.map((c) => c.slug));

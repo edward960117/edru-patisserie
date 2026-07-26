@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { t, type Lang } from "@/lib/i18n-shared";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
-type Category = { id: number; name: string; name_cn: string };
+type Category = { id: number; slug: string; name: string; name_cn: string; emoji: string; description: string };
 type CakeSize = { size: '6"' | '8"' | '10"'; price: string; available: boolean };
 type Cake = {
   id: number;
@@ -27,6 +27,7 @@ interface Props {
   lang: Lang;
   categories: Category[];
   initialCakes: Cake[];
+  dbUnavailable?: boolean;
   initialAnnouncement: {
     enabled: boolean;
     messageEn: string;
@@ -53,6 +54,14 @@ const emptyForm = {
   active: true,
   featured: false,
   sizes: defaultSizes,
+};
+
+const emptyCategoryForm = {
+  slug: "",
+  name: "",
+  nameCn: "",
+  emoji: "🎂",
+  description: "",
 };
 
 const MAX_UPLOAD_EDGE = 1200;
@@ -85,17 +94,24 @@ function parsePrice(raw: string) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-export default function AdminDashboard({ lang, categories, initialCakes, initialAnnouncement }: Props) {
+export default function AdminDashboard({ lang, categories, initialCakes, dbUnavailable = false, initialAnnouncement }: Props) {
   const router = useRouter();
   const copy = t(lang);
+  const [categoryList, setCategoryList] = useState(categories);
   const [cakes, setCakes] = useState(initialCakes);
-  const [form, setForm] = useState({ ...emptyForm, categoryId: categories[0]?.id ?? 0 });
+  const [form, setForm] = useState({ ...emptyForm, categoryId: categoryList[0]?.id ?? 0 });
+  const [categoryForm, setCategoryForm] = useState(emptyCategoryForm);
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [message, setMessage] = useState<string>("");
+  const [categoryMessage, setCategoryMessage] = useState("");
   const [announcement, setAnnouncement] = useState(initialAnnouncement);
   const [announcementMessage, setAnnouncementMessage] = useState("");
   const [savingCake, setSavingCake] = useState(false);
+  const [savingCategory, setSavingCategory] = useState(false);
   const [savingAnnouncement, setSavingAnnouncement] = useState(false);
+  const [cakeSearch, setCakeSearch] = useState("");
+  const [cakeCategoryFilter, setCakeCategoryFilter] = useState<number | "all">("all");
   const [slugEdited, setSlugEdited] = useState(false);
   const [confirmState, setConfirmState] = useState<{ message: string; danger?: boolean } | null>(null);
   const [errorPopupMessage, setErrorPopupMessage] = useState<string | null>(null);
@@ -103,24 +119,51 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
 
   const stats = useMemo(() => ({
     totalCakes: cakes.length,
-    totalCategories: categories.length,
+    totalCategories: categoryList.length,
     activeCakes: cakes.filter((cake) => cake.active).length,
-  }), [cakes, categories.length]);
+  }), [cakes, categoryList.length]);
+
+  const filteredCakes = useMemo(() => {
+    const keyword = cakeSearch.trim().toLowerCase();
+    return cakes.filter((cake) => {
+      const categoryMatched = cakeCategoryFilter === "all" ? true : cake.category_id === cakeCategoryFilter;
+      if (!categoryMatched) return false;
+      if (!keyword) return true;
+      const target = `${cake.name} ${cake.name_cn} ${cake.slug}`.toLowerCase();
+      return target.includes(keyword);
+    });
+  }, [cakes, cakeSearch, cakeCategoryFilter]);
+
+  const offlineMessage = lang === "zh"
+    ? "数据库目前离线，暂时无法保存修改。"
+    : "Database is currently offline, so changes cannot be saved right now.";
 
   function resetForm() {
     setForm({
       ...emptyForm,
-      categoryId: categories[0]?.id ?? 0,
+      categoryId: categoryList[0]?.id ?? 0,
       sizes: defaultSizes.map((size) => ({ ...size })),
     });
     setEditingId(null);
     setSlugEdited(false);
   }
 
+  function resetCategoryForm() {
+    setCategoryForm(emptyCategoryForm);
+    setEditingCategoryId(null);
+  }
+
   async function refreshCakes() {
     const response = await fetch("/api/admin/cakes");
     const result = (await response.json()) as { cakes: Cake[] };
     setCakes(result.cakes);
+  }
+
+  async function refreshCategories() {
+    const response = await fetch("/api/admin/categories");
+    const result = (await response.json()) as { categories: Category[] };
+    setCategoryList(result.categories);
+    return result.categories;
   }
 
   async function compressImageFile(file: File) {
@@ -200,6 +243,11 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
   async function saveCake(event: React.FormEvent) {
     event.preventDefault();
     if (savingCake) return;
+    if (dbUnavailable) {
+      setMessage(offlineMessage);
+      showErrorPopup(offlineMessage);
+      return;
+    }
     setMessage("");
 
     if (!editingId && !form.imageUrl.startsWith("data:image/")) {
@@ -315,7 +363,120 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
     }
   }
 
+  async function saveCategory(event: React.FormEvent) {
+    event.preventDefault();
+    if (savingCategory) return;
+    if (dbUnavailable) {
+      setCategoryMessage(offlineMessage);
+      return;
+    }
+    setCategoryMessage("");
+
+    if (!categoryForm.slug.trim() || !categoryForm.name.trim() || !categoryForm.nameCn.trim() || !categoryForm.emoji.trim() || !categoryForm.description.trim()) {
+      setCategoryMessage(lang === "zh" ? "请填写所有分类字段。" : "Please fill in all category fields.");
+      return;
+    }
+
+    const confirmText = editingCategoryId
+      ? (lang === "zh" ? "确认更新此分类？" : "Update this category?")
+      : (lang === "zh" ? "确认新增此分类？" : "Create this category?");
+    const confirmed = await askConfirm(confirmText);
+    if (!confirmed) return;
+
+    setSavingCategory(true);
+    try {
+      const response = await fetch(editingCategoryId ? `/api/admin/categories/${editingCategoryId}` : "/api/admin/categories", {
+        method: editingCategoryId ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...categoryForm,
+          slug: slugify(categoryForm.slug),
+        }),
+      });
+
+      if (!response.ok) {
+        const result = (await response.json().catch(() => ({}))) as { error?: string };
+        if (response.status === 401) {
+          window.location.assign("/login?next=/admin");
+          return;
+        }
+        setCategoryMessage(result.error ?? (lang === "zh" ? "保存分类失败。" : "Failed to save category."));
+        return;
+      }
+
+      const nextCategories = await refreshCategories();
+      await refreshCakes();
+      resetCategoryForm();
+      if (!nextCategories.some((category) => category.id === form.categoryId)) {
+        setForm((prev) => ({ ...prev, categoryId: nextCategories[0]?.id ?? 0 }));
+      }
+      setCategoryMessage(lang === "zh" ? "分类保存成功。" : "Category saved successfully.");
+    } catch {
+      setCategoryMessage(lang === "zh" ? "保存分类失败。" : "Failed to save category.");
+    } finally {
+      setSavingCategory(false);
+    }
+  }
+
+  async function editCategory(category: Category) {
+    if (dbUnavailable) {
+      setCategoryMessage(offlineMessage);
+      return;
+    }
+    const confirmed = await askConfirm(lang === "zh" ? "开始编辑此分类？" : "Edit this category?");
+    if (!confirmed) return;
+
+    setEditingCategoryId(category.id);
+    setCategoryForm({
+      slug: category.slug,
+      name: category.name,
+      nameCn: category.name_cn,
+      emoji: category.emoji,
+      description: category.description,
+    });
+  }
+
+  async function deleteCategory(category: Category) {
+    if (dbUnavailable) {
+      setCategoryMessage(offlineMessage);
+      return;
+    }
+    const confirmed = await askConfirm(
+      lang === "zh"
+        ? `确认删除分类「${category.name_cn}」？若有蛋糕关联将无法删除。`
+        : `Delete category "${category.name}"? It cannot be deleted if cakes are linked.`,
+      true
+    );
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`/api/admin/categories/${category.id}`, { method: "DELETE" });
+      if (!response.ok) {
+        const result = (await response.json().catch(() => ({}))) as { error?: string };
+        if (response.status === 401) {
+          window.location.assign("/login?next=/admin");
+          return;
+        }
+        setCategoryMessage(result.error ?? (lang === "zh" ? "删除分类失败。" : "Failed to delete category."));
+        return;
+      }
+
+      const nextCategories = await refreshCategories();
+      if (form.categoryId === category.id) {
+        setForm((prev) => ({ ...prev, categoryId: nextCategories[0]?.id ?? 0 }));
+      }
+      setCategoryMessage(lang === "zh" ? "分类已删除。" : "Category deleted.");
+    } catch {
+      setCategoryMessage(lang === "zh" ? "删除分类失败。" : "Failed to delete category.");
+    }
+  }
+
   async function deleteCake(id: number) {
+    if (dbUnavailable) {
+      setMessage(offlineMessage);
+      showErrorPopup(offlineMessage);
+      return;
+    }
     const confirmed = await askConfirm(copy.adminConfirmDeleteCake, true);
     if (!confirmed) {
       return;
@@ -426,11 +587,66 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
       </div>
 
       <section className="card-lux p-6">
+        <h2 className="heading-serif mb-4 text-3xl">
+          {lang === "zh" ? (editingCategoryId ? "编辑分类" : "新增分类") : (editingCategoryId ? "Edit Category" : "Add Category")}
+        </h2>
+        <form onSubmit={saveCategory} className="grid gap-4 sm:grid-cols-2">
+          <label className="text-sm">{lang === "zh" ? "英文名称" : "English Name"}
+            <input value={categoryForm.name} onChange={(event) => setCategoryForm((prev) => ({ ...prev, name: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" required />
+          </label>
+          <label className="text-sm">{lang === "zh" ? "中文名称" : "Chinese Name"}
+            <input value={categoryForm.nameCn} onChange={(event) => setCategoryForm((prev) => ({ ...prev, nameCn: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" required />
+          </label>
+          <label className="text-sm">Slug
+            <input value={categoryForm.slug} onChange={(event) => setCategoryForm((prev) => ({ ...prev, slug: slugify(event.target.value) }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" required />
+          </label>
+          <label className="text-sm">Emoji
+            <input value={categoryForm.emoji} onChange={(event) => setCategoryForm((prev) => ({ ...prev, emoji: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" required />
+          </label>
+          <label className="text-sm sm:col-span-2">{lang === "zh" ? "分类简介" : "Category Description"}
+            <textarea value={categoryForm.description} onChange={(event) => setCategoryForm((prev) => ({ ...prev, description: event.target.value }))} className="mt-1 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2" rows={2} required />
+          </label>
+
+          <div className="sm:col-span-2 flex flex-wrap gap-3">
+            <button disabled={savingCategory || dbUnavailable} className="rounded-xl bg-[#2f2419] px-5 py-2 text-white disabled:opacity-70">
+              {savingCategory ? copy.adminSaving : editingCategoryId ? (lang === "zh" ? "更新分类" : "Update Category") : (lang === "zh" ? "创建分类" : "Create Category")}
+            </button>
+            {editingCategoryId ? (
+              <button type="button" onClick={resetCategoryForm} className="rounded-xl border border-[color:var(--gold)]/40 px-5 py-2">
+                {copy.adminCancel}
+              </button>
+            ) : null}
+          </div>
+        </form>
+
+        {categoryMessage ? (
+          <div className="mt-4 rounded-xl border border-[color:var(--gold)]/35 bg-[#fff8ea] px-4 py-3 text-sm text-[color:var(--ink-soft)]" role="status" aria-live="polite">
+            {categoryMessage}
+          </div>
+        ) : null}
+
+        <div className="mt-5 space-y-3">
+          {categoryList.map((category) => (
+            <article key={category.id} className="flex flex-col gap-3 rounded-xl border border-[color:var(--gold)]/20 bg-white/80 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-medium">{category.emoji} {category.name_cn} / {category.name}</p>
+                <p className="text-sm text-[color:var(--ink-soft)]">/{category.slug}</p>
+              </div>
+              <div className="flex gap-2">
+                <button type="button" disabled={dbUnavailable} onClick={() => void editCategory(category)} className="rounded-lg border border-[color:var(--gold)]/40 px-4 py-1.5 disabled:cursor-not-allowed disabled:opacity-60">{copy.adminEdit}</button>
+                <button type="button" disabled={dbUnavailable} onClick={() => void deleteCategory(category)} className="rounded-lg bg-red-700 px-4 py-1.5 text-white disabled:cursor-not-allowed disabled:opacity-60">{copy.adminDelete}</button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="card-lux p-6">
         <h2 className="heading-serif text-3xl mb-4">{editingId ? copy.adminEditCake : copy.adminAddCake}</h2>
         <form onSubmit={saveCake} className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm">{copy.adminCategory}
             <select value={form.categoryId} onChange={(event) => setForm((prev) => ({ ...prev, categoryId: Number(event.target.value) }))} className="w-full mt-1 border border-[color:var(--gold)]/30 rounded-xl px-3 py-2 bg-white/90" required>
-              {categories.map((category) => <option key={category.id} value={category.id}>{category.name_cn} / {category.name}</option>)}
+              {categoryList.map((category) => <option key={category.id} value={category.id}>{category.name_cn} / {category.name}</option>)}
             </select>
           </label>
           <label className="text-sm">{copy.adminName}
@@ -463,13 +679,14 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
                 required
               />
               <button
+                disabled={dbUnavailable}
                 type="button"
                 onClick={() => {
                   const nextSlug = slugify(form.name);
                   setForm((prev) => ({ ...prev, slug: nextSlug }));
                   setSlugEdited(false);
                 }}
-                className="shrink-0 rounded-xl border border-[color:var(--gold)]/40 bg-white/85 px-3 py-2 text-xs text-[color:var(--ink-soft)] hover:bg-white hover:text-[color:var(--ink)]"
+                className="shrink-0 rounded-xl border border-[color:var(--gold)]/40 bg-white/85 px-3 py-2 text-xs text-[color:var(--ink-soft)] hover:bg-white hover:text-[color:var(--ink)] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {copy.adminSlugAuto}
               </button>
@@ -537,7 +754,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
           <label className="text-sm inline-flex items-center gap-2"><input type="checkbox" checked={form.active} onChange={(event) => setForm((prev) => ({ ...prev, active: event.target.checked }))} /> {copy.adminActive}</label>
 
           <div className="sm:col-span-2 flex gap-3">
-            <button disabled={savingCake} className="px-5 py-2 rounded-xl bg-[#2f2419] text-white disabled:opacity-70">{savingCake ? copy.adminSaving : editingId ? copy.adminUpdate : copy.adminCreate}</button>
+            <button disabled={savingCake || dbUnavailable} className="px-5 py-2 rounded-xl bg-[#2f2419] text-white disabled:opacity-70">{savingCake ? copy.adminSaving : editingId ? copy.adminUpdate : copy.adminCreate}</button>
             {editingId ? <button type="button" onClick={resetForm} className="px-5 py-2 rounded-xl border border-[color:var(--gold)]/40">{copy.adminCancel}</button> : null}
           </div>
         </form>
@@ -550,12 +767,33 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
 
       <section className="card-lux p-6">
         <h2 className="heading-serif text-3xl mb-4">{copy.adminCakeManagement}</h2>
+        <div className="mb-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+          <input
+            value={cakeSearch}
+            onChange={(event) => setCakeSearch(event.target.value)}
+            placeholder={lang === "zh" ? "搜索蛋糕名称或 slug" : "Search by cake name or slug"}
+            className="w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2"
+          />
+          <select
+            value={cakeCategoryFilter}
+            onChange={(event) => setCakeCategoryFilter(event.target.value === "all" ? "all" : Number(event.target.value))}
+            className="rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2"
+          >
+            <option value="all">{lang === "zh" ? "全部分类" : "All Categories"}</option>
+            {categoryList.map((category) => (
+              <option key={category.id} value={category.id}>{category.name_cn}</option>
+            ))}
+          </select>
+        </div>
         <div className="space-y-3">
-          {cakes.map((cake) => (
+          {filteredCakes.map((cake) => (
             <article key={cake.id} className="border border-[color:var(--gold)]/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white/80">
               <div>
                 <p className="font-medium">{cake.name} / {cake.name_cn}</p>
                 <p className="text-sm text-[color:var(--ink-soft)]">/{cake.slug} • {copy.adminLeadTimeShort}: {cake.lead_time_days} {copy.adminDays}</p>
+                <p className="text-xs text-[color:var(--ink-soft)]">
+                  {(categoryList.find((category) => category.id === cake.category_id)?.name_cn) ?? "-"}
+                </p>
                 <p className="mt-1 text-xs text-[color:var(--ink-soft)]">
                   <span className={cake.active ? "font-semibold text-green-700" : "font-semibold text-red-700"}>
                     {cake.active ? copy.adminActive : copy.adminDisabled}
@@ -564,11 +802,16 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
                 </p>
               </div>
               <div className="flex gap-2">
-                <button type="button" onClick={() => void editCake(cake)} className="px-4 py-1.5 rounded-lg border border-[color:var(--gold)]/40">{copy.adminEdit}</button>
-                <button type="button" onClick={() => void deleteCake(cake.id)} className="px-4 py-1.5 rounded-lg bg-red-700 text-white">{copy.adminDelete}</button>
+                <button type="button" disabled={dbUnavailable} onClick={() => void editCake(cake)} className="px-4 py-1.5 rounded-lg border border-[color:var(--gold)]/40 disabled:cursor-not-allowed disabled:opacity-60">{copy.adminEdit}</button>
+                <button type="button" disabled={dbUnavailable} onClick={() => void deleteCake(cake.id)} className="px-4 py-1.5 rounded-lg bg-red-700 text-white disabled:cursor-not-allowed disabled:opacity-60">{copy.adminDelete}</button>
               </div>
             </article>
           ))}
+          {filteredCakes.length === 0 ? (
+            <p className="rounded-xl border border-[color:var(--gold)]/20 bg-white/70 px-4 py-3 text-sm text-[color:var(--ink-soft)]">
+              {lang === "zh" ? "没有符合筛选条件的蛋糕。" : "No cakes match your current filters."}
+            </p>
+          ) : null}
         </div>
       </section>
 
@@ -606,7 +849,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
             />
           </label>
 
-          <button disabled={savingAnnouncement} className="px-5 py-2 rounded-xl bg-[#2f2419] text-white disabled:opacity-70">
+          <button disabled={savingAnnouncement || dbUnavailable} className="px-5 py-2 rounded-xl bg-[#2f2419] text-white disabled:opacity-70">
             {savingAnnouncement ? copy.adminSaving : lang === "zh" ? "保存公告" : "Save Announcement"}
           </button>
         </form>

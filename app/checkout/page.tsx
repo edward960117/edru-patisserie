@@ -1,7 +1,18 @@
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 import { getLang, t } from "@/lib/i18n";
 import { INSTAGRAM_URL, WHATSAPP_NUMBER } from "@/lib/contact";
 import WeChatQrButton from "@/components/WeChatQrButton";
+import BackButton from "@/components/BackButton";
+import { withTimeout } from "@/lib/with-timeout";
+
+const getCheckoutCakeBySlug = unstable_cache(
+  async (slug: string) => {
+    return prisma.cake.findUnique({ where: { slug }, include: { sizes: true } });
+  },
+  ["checkout-cake-by-slug"],
+  { revalidate: 300 }
+);
 
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ cake?: string; size?: string }> }) {
   const params = await searchParams;
@@ -13,7 +24,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   let cake = null;
   try {
     cake = cakeSlug
-      ? await prisma.cake.findUnique({ where: { slug: cakeSlug }, include: { sizes: true } })
+      ? await withTimeout(getCheckoutCakeBySlug(cakeSlug), 1600)
       : null;
   } catch {
     // Database unavailable — render checkout without cake details.
@@ -82,8 +93,11 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
 
   return (
     <section className="max-w-3xl card-lux p-5 sm:p-9">
-      <p className="lux-kicker">{copy.orderConcierge}</p>
-      <h1 className="heading-serif font-bold mt-1 text-[1.9rem] sm:text-5xl">{copy.checkoutTitle}</h1>
+      <div className="mb-3 flex items-center justify-between gap-3 sm:mb-2">
+        <p className="lux-kicker">{copy.orderConcierge}</p>
+        <BackButton lang={lang} fallbackHref="/" className="whitespace-nowrap" />
+      </div>
+      <h1 className="heading-serif mt-1 text-[1.9rem] font-bold leading-tight sm:text-5xl">{copy.checkoutTitle}</h1>
       {cake && size ? (
         <div className="mt-5 space-y-2 rounded-2xl border border-[color:var(--gold)]/20 bg-[rgba(255,250,241,0.7)] p-4 sm:p-5">
           <p><span className="text-[color:var(--ink-soft)]">{copy.cakeLabel}:</span> {cakeName}</p>
