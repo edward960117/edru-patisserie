@@ -8,17 +8,15 @@ declare global {
 
 let prismaClient: PrismaClient;
 
-const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL || "";
+const connectionString = process.env.DATABASE_URL || process.env.DIRECT_URL;
+const fallbackConnectionString = "postgresql://user:password@localhost:5432/db";
 
 try {
-  if (connectionString) {
-    const adapter = new PrismaNeonHttp(connectionString, {});
-    prismaClient = new PrismaClient({ adapter });
-  } else {
-    prismaClient = new PrismaClient();
-  }
+  const adapter = new PrismaNeonHttp(connectionString || fallbackConnectionString, {});
+  prismaClient = new PrismaClient({ adapter });
 } catch {
-  prismaClient = new PrismaClient();
+  const adapter = new PrismaNeonHttp(fallbackConnectionString, {});
+  prismaClient = new PrismaClient({ adapter });
 }
 
 export const prisma = global.prisma ?? prismaClient;
