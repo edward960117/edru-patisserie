@@ -31,6 +31,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   }
   const size = cake && sizeId ? cake.sizes.find((item) => item.id === sizeId) : null;
   const cakeName = cake ? (lang === "zh" ? (cake.name_cn || cake.name) : cake.name) : "";
+  const weChatCakeSize = size ? (lang === "zh" ? `${size.size} 英寸` : `${size.size} inches`) : "";
   const fulfillmentTitle = lang === "zh" ? "取货与配送" : "Pickup and Delivery";
   const pickupLabel = lang === "zh" ? "取货费用：" : "Pickup fee:";
   const pickupValue = lang === "zh" ? "免费。" : "Free.";
@@ -112,7 +113,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             <WeChatQrButton
               lang={lang}
               className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center"
-              orderDetails={{ cakeName, cakeSize: size.size, cakePrice: `S$${size.price.toFixed(2)}` }}
+              orderDetails={{ cakeName, cakeSize: weChatCakeSize, cakePrice: `S$${size.price.toFixed(2)}` }}
             />
           </div>
         </div>
