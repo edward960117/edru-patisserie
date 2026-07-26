@@ -19,7 +19,10 @@ export default async function HomePage() {
       orderBy: { id: "asc" },
     });
     if (dbCategories.length > 0) {
-      categories = dbCategories;
+      // Merge: use DB results, fill any missing slugs from fallback
+      const dbSlugs = new Set(dbCategories.map((c) => c.slug));
+      const missing = fallbackCategories.filter((c) => !dbSlugs.has(c.slug));
+      categories = [...dbCategories, ...missing];
     }
   } catch {
     // Keep homepage available if the database is unavailable.
