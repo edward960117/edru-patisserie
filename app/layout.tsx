@@ -8,6 +8,7 @@ import IntroGate from "@/components/IntroGate";
 import { getLang } from "@/lib/i18n";
 import { readSiteAnnouncement } from "@/lib/announcement";
 import SellerNoticeBar from "@/components/SellerNoticeBar";
+import ProgressBar from "@/components/ProgressBar";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={lang === "zh" ? "zh-CN" : "en"} className={`${cormorant.variable} ${inter.variable}`}>
       <body>
+        <ProgressBar />
         <div className="app-shell">
           <div className="app-top">
             <div className="sticky top-0 z-[70]">

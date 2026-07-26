@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { fallbackCategories } from "@/lib/fallback-catalog";
 
+export const revalidate = 60;
+
 export default async function HomePage() {
   const lang = await getLang();
   const copy = t(lang);

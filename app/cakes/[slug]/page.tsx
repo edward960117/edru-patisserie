@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { getFallbackCakeBySlug } from "@/lib/fallback-catalog";
 
+export const revalidate = 60;
+
 export default async function CakeDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const lang = await getLang();
