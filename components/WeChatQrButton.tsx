@@ -8,9 +8,14 @@ interface Props {
   lang: Lang;
   className?: string;
   footerStyle?: boolean;
+  orderDetails?: {
+    cakeName: string;
+    cakeSize: string;
+    cakePrice: string;
+  };
 }
 
-export default function WeChatQrButton({ lang, className, footerStyle = false }: Props) {
+export default function WeChatQrButton({ lang, className, footerStyle = false, orderDetails }: Props) {
   const copy = t(lang);
   const [open, setOpen] = useState(false);
 
@@ -37,6 +42,14 @@ export default function WeChatQrButton({ lang, className, footerStyle = false }:
           <div className="relative z-[1] w-full max-w-sm rounded-2xl border border-[color:var(--gold)]/35 bg-[#fdf7ee] p-5 shadow-[0_20px_40px_rgba(47,31,16,0.22)]">
             <p className="heading-serif text-2xl text-[color:var(--ink)]">{copy.orderViaWeChat}</p>
             <p className="mt-2 text-sm text-[color:var(--ink-soft)]">{copy.weChatScanHint}</p>
+
+            {orderDetails ? (
+              <div className="mt-4 rounded-xl border border-[color:var(--gold)]/30 bg-white/80 p-3 text-sm leading-relaxed text-[color:var(--ink)] select-text">
+                <p><span className="text-[color:var(--ink-soft)]">{copy.cakeLabel}:</span> {orderDetails.cakeName}</p>
+                <p><span className="text-[color:var(--ink-soft)]">{copy.sizeLabel}:</span> {orderDetails.cakeSize}</p>
+                <p><span className="text-[color:var(--ink-soft)]">{copy.priceLabel}:</span> {orderDetails.cakePrice}</p>
+              </div>
+            ) : null}
 
             <div className="mt-4 rounded-xl border border-[color:var(--gold)]/30 bg-white p-2">
               <Image

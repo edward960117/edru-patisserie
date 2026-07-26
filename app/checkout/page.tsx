@@ -31,6 +31,8 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   }
   const size = cake && sizeId ? cake.sizes.find((item) => item.id === sizeId) : null;
   const cakeName = cake ? (lang === "zh" ? (cake.name_cn || cake.name) : cake.name) : "";
+  const weChatCakeSize = size ? (lang === "zh" ? `${size.size} 英寸` : `${size.size} inches`) : "";
+  const formattedPrice = size ? `S$${size.price.toFixed(2)}` : "";
   const fulfillmentTitle = lang === "zh" ? "取货与配送" : "Pickup and Delivery";
   const pickupLabel = lang === "zh" ? "取货费用：" : "Pickup fee:";
   const pickupValue = lang === "zh" ? "免费。" : "Free.";
@@ -44,15 +46,13 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             "你好 BLUE ISLET，我想咨询下单：",
             `蛋糕：${cakeName}`,
             `尺寸（英寸）：${size.size}`,
-            `价格：S$${size.price.toFixed(2)}`,
-            "请问最快可取货日期是？",
+            `价格：${formattedPrice}`,
           ].join("\n")
         : [
             "Hello BLUE ISLET, I would like to place an order enquiry:",
             `Cake: ${cakeName}`,
             `Size (inches): ${size.size}`,
-            `Price: S$${size.price.toFixed(2)}`,
-            "May I know the earliest available pickup date?",
+            `Price: ${formattedPrice}`,
           ].join("\n"))
     : cake
       ? (lang === "zh"
@@ -101,8 +101,8 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       {cake && size ? (
         <div className="mt-5 space-y-2 rounded-2xl border border-[color:var(--gold)]/20 bg-[rgba(255,250,241,0.7)] p-4 sm:p-5">
           <p><span className="text-[color:var(--ink-soft)]">{copy.cakeLabel}:</span> {cakeName}</p>
-          <p><span className="text-[color:var(--ink-soft)]">{copy.sizeLabel}:</span> {size.size}</p>
-          <p><span className="text-[color:var(--ink-soft)]">{copy.priceLabel}:</span> S${size.price.toFixed(2)}</p>
+          <p><span className="text-[color:var(--ink-soft)]">{copy.sizeLabel}:</span> {weChatCakeSize}</p>
+          <p><span className="text-[color:var(--ink-soft)]">{copy.priceLabel}:</span> {formattedPrice}</p>
           <p className={`${helperTextClass} mt-4`}>{copy.proceedOrderViaWhatsApp}</p>
           <div className="mt-3 flex flex-wrap gap-2.5">
             <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux w-full sm:w-auto whitespace-normal text-center">
@@ -111,7 +111,11 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
               {copy.orderViaInstagram}
             </a>
-            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" />
+            <WeChatQrButton
+              lang={lang}
+              className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center"
+              orderDetails={{ cakeName, cakeSize: weChatCakeSize, cakePrice: formattedPrice }}
+            />
           </div>
         </div>
       ) : (
