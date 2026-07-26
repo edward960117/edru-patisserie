@@ -8,15 +8,31 @@ interface Props {
   lang: Lang;
   className?: string;
   footerStyle?: boolean;
+  orderDetails?: string;
 }
 
-export default function WeChatQrButton({ lang, className, footerStyle = false }: Props) {
+export default function WeChatQrButton({ lang, className, footerStyle = false, orderDetails }: Props) {
   const copy = t(lang);
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const fallbackOrderDetails = lang === "zh"
+    ? "你好 BLUE ISLET，我想咨询蛋糕下单。"
+    : "Hello BLUE ISLET, I would like to place a cake order enquiry.";
+  const draftOrderDetails = orderDetails ?? fallbackOrderDetails;
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(draftOrderDetails);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={className ?? "btn-lux-outline"}>
+      <button type="button" onClick={() => { setCopied(false); setOpen(true); }} className={className ?? "btn-lux-outline"}>
         {footerStyle ? (
           <span className="inline-flex items-center gap-2">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#e9f7f0] text-[#169256]">
@@ -48,7 +64,20 @@ export default function WeChatQrButton({ lang, className, footerStyle = false }:
               />
             </div>
 
-            <button type="button" onClick={() => setOpen(false)} className="btn-lux-outline mt-4 w-full">
+            <p className="mt-4 text-xs text-[color:var(--ink-soft)]">
+              {lang === "zh" ? "可复制以下预填订单内容，再贴到微信聊天窗口。" : "Copy the pre-drafted order details below and paste them into WeChat chat."}
+            </p>
+            <textarea
+              readOnly
+              value={draftOrderDetails}
+              className="mt-2 h-28 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 p-3 text-sm leading-relaxed text-[color:var(--ink)]"
+            />
+
+            <button type="button" onClick={() => void handleCopy()} className="btn-lux mt-3 w-full">
+              {copied ? (lang === "zh" ? "已复制订单内容" : "Order details copied") : (lang === "zh" ? "复制订单内容" : "Copy Order Details")}
+            </button>
+
+            <button type="button" onClick={() => setOpen(false)} className="btn-lux-outline mt-3 w-full">
               {lang === "zh" ? "关闭" : "Close"}
             </button>
           </div>
