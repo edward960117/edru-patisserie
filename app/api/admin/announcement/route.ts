@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getSessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import { readSiteAnnouncement, writeSiteAnnouncement } from "@/lib/announcement";
 
@@ -39,6 +40,7 @@ export async function PUT(request: Request) {
     };
 
     await writeSiteAnnouncement(next);
+    revalidatePath("/", "layout");
     return NextResponse.json({ ok: true, announcement: next });
   } catch {
     return NextResponse.json({ error: "Failed to update announcement. Please try again." }, { status: 500 });

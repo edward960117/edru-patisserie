@@ -27,7 +27,7 @@ const getHomeCategories = unstable_cache(
     });
   },
   ["home-categories"],
-  { revalidate: 300 }
+  { revalidate: 300, tags: ["catalog"] }
 );
 
 export default async function HomePage() {

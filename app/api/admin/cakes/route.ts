@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import { cakeInputSchema } from "@/lib/validation/cake";
@@ -108,6 +109,15 @@ export async function POST(request: Request) {
       const detail = error instanceof Error ? error.message : "Unknown cake size creation error";
       throw new Error(`Failed to create cake sizes: ${detail}`);
     }
+
+    const category = await prisma.category.findUnique({ where: { id: data.categoryId }, select: { slug: true } });
+    revalidateTag("cakes");
+    revalidatePath("/");
+    revalidatePath("/checkout");
+    if (category?.slug) {
+      revalidatePath(`/categories/${category.slug}`);
+    }
+    revalidatePath(`/cakes/${data.slug}`);
 
     return NextResponse.json({ cake }, { status: 201 });
   } catch (error) {

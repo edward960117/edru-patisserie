@@ -18,7 +18,7 @@ const getCakeBySlug = unstable_cache(
     });
   },
   ["cake-by-slug"],
-  { revalidate: 300 }
+  { revalidate: 300, tags: ["cakes"] }
 );
 
 export default async function CakeDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -53,8 +53,8 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
             alt={cakeName}
             fill
             priority
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 45vw"
+            className="object-cover scale-150 sm:scale-150"
           />
         </div>
       </div>

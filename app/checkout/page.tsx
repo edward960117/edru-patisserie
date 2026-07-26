@@ -11,7 +11,7 @@ const getCheckoutCakeBySlug = unstable_cache(
     return prisma.cake.findUnique({ where: { slug }, include: { sizes: true } });
   },
   ["checkout-cake-by-slug"],
-  { revalidate: 300 }
+  { revalidate: 300, tags: ["cakes"] }
 );
 
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ cake?: string; size?: string }> }) {

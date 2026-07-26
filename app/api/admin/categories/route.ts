@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import { categoryInputSchema } from "@/lib/validation/category";
@@ -57,6 +58,10 @@ export async function POST(request: Request) {
         description: data.description,
       },
     });
+
+    revalidateTag("catalog");
+    revalidatePath("/");
+    revalidatePath(`/categories/${data.slug}`);
 
     return NextResponse.json({ category }, { status: 201 });
   } catch (error) {

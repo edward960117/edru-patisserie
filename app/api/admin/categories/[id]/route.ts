@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import { categoryInputSchema } from "@/lib/validation/category";
@@ -33,6 +34,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 
   try {
+    const existingCategory = await prisma.category.findUnique({ where: { id: categoryId }, select: { slug: true } });
     const body = await request.json();
     const parsed = categoryInputSchema.safeParse(body);
     if (!parsed.success) {
@@ -50,6 +52,13 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         description: data.description,
       },
     });
+
+    revalidateTag("catalog");
+    revalidatePath("/");
+    if (existingCategory?.slug) {
+      revalidatePath(`/categories/${existingCategory.slug}`);
+    }
+    revalidatePath(`/categories/${data.slug}`);
 
     return NextResponse.json({ category });
   } catch (error) {
@@ -74,7 +83,15 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   }
 
   try {
+    const existingCategory = await prisma.category.findUnique({ where: { id: categoryId }, select: { slug: true } });
     await prisma.category.delete({ where: { id: categoryId } });
+
+    revalidateTag("catalog");
+    revalidatePath("/");
+    if (existingCategory?.slug) {
+      revalidatePath(`/categories/${existingCategory.slug}`);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message.toLowerCase() : "";

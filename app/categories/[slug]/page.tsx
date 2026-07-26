@@ -33,7 +33,7 @@ const getCategoryBySlug = unstable_cache(
     });
   },
   ["category-by-slug"],
-  { revalidate: 300 }
+  { revalidate: 300, tags: ["catalog", "cakes"] }
 );
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -91,7 +91,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                   alt={cakeName}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover"
+                  className="object-cover scale-125"
                 />
               </div>
               <div className="flex flex-1 flex-col p-4 sm:p-5">

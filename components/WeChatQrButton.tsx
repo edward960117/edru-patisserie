@@ -51,39 +51,45 @@ export default function WeChatQrButton({ lang, className, footerStyle = false, o
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="WeChat QR">
+        <div className="fixed inset-0 z-[130] flex items-center justify-center p-3 sm:p-4" role="dialog" aria-modal="true" aria-label="WeChat QR">
           <button type="button" aria-label="Close WeChat QR" className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={closeModal} />
 
-          <div className="relative z-[1] w-full max-w-sm rounded-2xl border border-[color:var(--gold)]/35 bg-[#fdf7ee] p-5 shadow-[0_20px_40px_rgba(47,31,16,0.22)]">
-            <p className="heading-serif text-2xl text-[color:var(--ink)]">{copy.orderViaWeChat}</p>
-            <p className="mt-2 text-sm text-[color:var(--ink-soft)]">{copy.weChatScanHint}</p>
+          <div className="relative z-[1] w-full max-w-xl rounded-2xl border border-[color:var(--gold)]/35 bg-[#fdf7ee] p-2.5 shadow-[0_20px_40px_rgba(47,31,16,0.22)] sm:p-3">
+            <div className="flex max-h-[calc(100vh-1rem)] flex-col gap-2.5 overflow-hidden md:grid md:grid-cols-[minmax(0,1fr)_minmax(220px,0.88fr)] md:items-start md:gap-3">
+              <div className="min-w-0">
+                <p className="heading-serif text-[1.05rem] text-[color:var(--ink)] sm:text-lg">{copy.orderViaWeChat}</p>
+                <p className="mt-1 text-[0.8rem] leading-snug text-[color:var(--ink-soft)]">{copy.weChatScanHint}</p>
 
-            <div className="mt-4 rounded-xl border border-[color:var(--gold)]/30 bg-white p-2">
-              <Image
-                src="/wechatcontact.jpg"
-                alt="WeChat contact QR code"
-                width={720}
-                height={720}
-                className="h-auto w-full rounded-lg object-contain"
-              />
+                <div className="mt-2 rounded-xl border border-[color:var(--gold)]/30 bg-white p-1.5 sm:p-2">
+                  <Image
+                    src="/wechatcontact.jpg"
+                    alt="WeChat contact QR code"
+                    width={680}
+                    height={680}
+                    className="mx-auto h-auto w-full max-w-[240px] rounded-lg object-contain sm:max-w-[260px]"
+                  />
+                </div>
+              </div>
+
+              <div className="min-w-0 md:flex md:h-full md:flex-col">
+                <p className="text-[0.72rem] leading-snug text-[color:var(--ink-soft)]">{copy.weChatOrderCopyHint}</p>
+                <textarea
+                  readOnly
+                  value={draftOrderDetails}
+                  className="mt-1.5 h-14 w-full resize-none rounded-xl border border-[color:var(--gold)]/30 bg-white/90 p-1.5 text-[0.8rem] leading-relaxed text-[color:var(--ink)] sm:h-16 md:flex-1"
+                />
+
+                <div className="mt-2 grid gap-1.5 sm:grid-cols-2 md:mt-2.5 md:grid-cols-1">
+                  <button type="button" onClick={handleCopy} className="btn-lux w-full py-1.5 text-sm">
+                    {copied ? copy.orderDetailsCopied : copy.copyOrderDetails}
+                  </button>
+
+                  <button type="button" onClick={closeModal} className="btn-lux-outline w-full py-1.5 text-sm">
+                    {lang === "zh" ? "关闭" : "Close"}
+                  </button>
+                </div>
+              </div>
             </div>
-
-            <p className="mt-4 text-xs text-[color:var(--ink-soft)]">
-              {copy.weChatOrderCopyHint}
-            </p>
-            <textarea
-              readOnly
-              value={draftOrderDetails}
-              className="mt-2 h-28 w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 p-3 text-sm leading-relaxed text-[color:var(--ink)]"
-            />
-
-            <button type="button" onClick={handleCopy} className="btn-lux mt-3 w-full">
-              {copied ? copy.orderDetailsCopied : copy.copyOrderDetails}
-            </button>
-
-            <button type="button" onClick={closeModal} className="btn-lux-outline mt-3 w-full">
-              {lang === "zh" ? "关闭" : "Close"}
-            </button>
           </div>
         </div>
       ) : null}

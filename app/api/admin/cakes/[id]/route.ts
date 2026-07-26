@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import { cakeInputSchema } from "@/lib/validation/cake";
@@ -62,6 +63,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 
   try {
+    const existingCake = await prisma.cake.findUnique({ where: { id: cakeId }, select: { slug: true, category_id: true } });
     const body = await request.json();
     const parsed = cakeInputSchema.safeParse(body);
     if (!parsed.success) {
@@ -92,6 +94,24 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     await prisma.cakeSize.createMany({
       data: data.sizes.map((size) => ({ cake_id: cakeId, size: size.size, price: size.price, available: size.available })),
     });
+
+    const category = await prisma.category.findUnique({ where: { id: data.categoryId }, select: { slug: true } });
+    revalidateTag("cakes");
+    revalidatePath("/");
+    revalidatePath("/checkout");
+    if (existingCake?.slug) {
+      revalidatePath(`/cakes/${existingCake.slug}`);
+    }
+    revalidatePath(`/cakes/${data.slug}`);
+    if (category?.slug) {
+      revalidatePath(`/categories/${category.slug}`);
+    }
+    if (existingCake?.category_id && category?.slug) {
+      const previousCategory = await prisma.category.findUnique({ where: { id: existingCake.category_id }, select: { slug: true } });
+      if (previousCategory?.slug && previousCategory.slug !== category.slug) {
+        revalidatePath(`/categories/${previousCategory.slug}`);
+      }
+    }
 
     return NextResponse.json({ cake });
   } catch (error) {
@@ -125,7 +145,22 @@ export async function DELETE(_: Request, { params }: { params: Promise<{ id: str
   }
 
   try {
+    const existingCake = await prisma.cake.findUnique({ where: { id: cakeId }, select: { slug: true, category_id: true } });
     await prisma.cake.delete({ where: { id: cakeId } });
+
+    revalidateTag("cakes");
+    revalidatePath("/");
+    revalidatePath("/checkout");
+    if (existingCake?.slug) {
+      revalidatePath(`/cakes/${existingCake.slug}`);
+    }
+    if (existingCake?.category_id) {
+      const category = await prisma.category.findUnique({ where: { id: existingCake.category_id }, select: { slug: true } });
+      if (category?.slug) {
+        revalidatePath(`/categories/${category.slug}`);
+      }
+    }
+
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Failed to delete cake. Please try again." }, { status: 500 });
