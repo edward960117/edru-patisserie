@@ -37,6 +37,8 @@ export default function WeChatQrButton({ lang, className, footerStyle = false, o
     navigator.clipboard.writeText(orderMessage).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      // Clipboard access denied — silently ignore
     });
   }
 
