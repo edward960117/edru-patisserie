@@ -111,7 +111,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
               {copy.orderViaInstagram}
             </a>
-            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" />
+            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderSummary={{ cakeName, size: size.size, price: size.price }} />
           </div>
         </div>
       ) : (
