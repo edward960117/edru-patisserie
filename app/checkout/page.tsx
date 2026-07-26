@@ -45,14 +45,12 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             `蛋糕：${cakeName}`,
             `尺寸（英寸）：${size.size}`,
             `价格：S$${size.price.toFixed(2)}`,
-            "请问最快可取货日期是？",
           ].join("\n")
         : [
             "Hello BLUE ISLET, I would like to place an order enquiry:",
             `Cake: ${cakeName}`,
             `Size (inches): ${size.size}`,
             `Price: S$${size.price.toFixed(2)}`,
-            "May I know the earliest available pickup date?",
           ].join("\n"))
     : cake
       ? (lang === "zh"
@@ -111,7 +109,11 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
               {copy.orderViaInstagram}
             </a>
-            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" />
+            <WeChatQrButton
+              lang={lang}
+              className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center"
+              orderDetails={{ cakeName, cakeSize: size.size, cakePrice: `S$${size.price.toFixed(2)}` }}
+            />
           </div>
         </div>
       ) : (
