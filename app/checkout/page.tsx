@@ -10,9 +10,14 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const cakeSlug = params.cake;
   const sizeId = params.size ? Number(params.size) : null;
 
-  const cake = cakeSlug
-    ? await prisma.cake.findUnique({ where: { slug: cakeSlug }, include: { sizes: true } })
-    : null;
+  let cake = null;
+  try {
+    cake = cakeSlug
+      ? await prisma.cake.findUnique({ where: { slug: cakeSlug }, include: { sizes: true } })
+      : null;
+  } catch {
+    // Database unavailable — render checkout without cake details.
+  }
   const size = cake && sizeId ? cake.sizes.find((item) => item.id === sizeId) : null;
   const cakeName = cake ? (lang === "zh" ? (cake.name_cn || cake.name) : cake.name) : "";
   const fulfillmentTitle = lang === "zh" ? "取货与配送" : "Pickup and Delivery";
@@ -25,14 +30,14 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const whatsappRawMessage = cake && size
     ? (lang === "zh"
         ? [
-            "你好 ÈDRU，我想咨询下单：",
+            "你好 BLUE ISLET，我想咨询下单：",
             `蛋糕：${cakeName}`,
             `尺寸（英寸）：${size.size}`,
             `价格：S$${size.price.toFixed(2)}`,
             "请问最快可取货日期是？",
           ].join("\n")
         : [
-            "Hello ÈDRU, I would like to place an order enquiry:",
+            "Hello BLUE ISLET, I would like to place an order enquiry:",
             `Cake: ${cakeName}`,
             `Size (inches): ${size.size}`,
             `Price: S$${size.price.toFixed(2)}`,
@@ -41,18 +46,18 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
     : cake
       ? (lang === "zh"
           ? [
-              "你好 ÈDRU，我想咨询蛋糕下单：",
+              "你好 BLUE ISLET，我想咨询蛋糕下单：",
               `蛋糕：${cakeName}`,
               "我还没决定尺寸，请推荐。",
             ].join("\n")
           : [
-              "Hello ÈDRU, I would like to place a cake order enquiry:",
+              "Hello BLUE ISLET, I would like to place a cake order enquiry:",
               `Cake: ${cakeName}`,
               "I have not decided on the size yet. Please recommend.",
             ].join("\n"))
       : (lang === "zh"
-          ? "你好 ÈDRU，我想咨询蛋糕下单。"
-          : "Hello ÈDRU, I would like to place a cake order enquiry.");
+          ? "你好 BLUE ISLET，我想咨询蛋糕下单。"
+          : "Hello BLUE ISLET, I would like to place a cake order enquiry.");
   const whatsappMessage = encodeURIComponent(whatsappRawMessage);
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
   const helperTextClass = "text-left text-sm leading-relaxed text-[color:var(--ink-soft)]";

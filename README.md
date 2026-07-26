@@ -1,6 +1,6 @@
-# EDRU PATISSERIE
+# BLUE ISLET
 
-Modern storefront and admin experience for a patisserie, built with Next.js App Router, React 19, TypeScript, Tailwind CSS v4, and Prisma.
+Modern storefront and admin experience for BLUE ISLET, built with Next.js App Router, React 19, TypeScript, Tailwind CSS v4, and Prisma.
 
 ## Current Tech Stack
 

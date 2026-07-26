@@ -5,12 +5,15 @@ export default function AnnouncementBar({ lang }: { lang: "zh" | "en" }) {
   const copy = t(lang);
 
   return (
-    <div className="bg-gradient-to-r from-[#2f2215] via-[#3f2f1f] to-[#2f2215] text-[#f8ebd7] border-b border-[#d8ba89]/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-2.5 sm:gap-3">
-        <p className="text-[0.74rem] sm:text-[0.95rem] tracking-[0.03em] sm:tracking-[0.07em] leading-snug text-[#f9e6c8]">
-          <span className="sm:hidden">{copy.announcementShort}</span>
-          <span className="hidden sm:inline">{copy.announcementLong}</span>
-        </p>
+    <div className="min-h-[40px] border-b border-[color:var(--gold)]/45 bg-[color:var(--primary)] text-white shadow-[inset_0_-1px_0_rgba(255,255,255,0.08)]">
+      <div className="mx-auto flex h-[40px] max-w-7xl items-center justify-between gap-2.5 px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-2 text-[0.72rem] sm:text-[0.9rem] tracking-[0.03em] sm:tracking-[0.06em] text-white/95">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--gold)]" />
+          <p className="leading-snug">
+            <span className="sm:hidden">{copy.announcementShort}</span>
+            <span className="hidden sm:inline">{copy.announcementLong}</span>
+          </p>
+        </div>
         <LanguageSwitcher lang={lang} />
       </div>
     </div>

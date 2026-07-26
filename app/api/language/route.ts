@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   const lang = body.lang === "en" ? "en" : "zh";
 
   const response = NextResponse.json({ ok: true });
-  response.cookies.set("edru_lang", lang, {
+  response.cookies.set("blue_islet_lang", lang, {
     path: "/",
     httpOnly: false,
     sameSite: "lax",

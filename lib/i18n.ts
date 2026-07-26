@@ -5,6 +5,6 @@ export { t, type Lang };
 
 export async function getLang(): Promise<Lang> {
   const cookieStore = await cookies();
-  const value = cookieStore.get("edru_lang")?.value;
+  const value = cookieStore.get("blue_islet_lang")?.value;
   return value === "en" ? "en" : "zh";
 }

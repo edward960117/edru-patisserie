@@ -7,13 +7,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (lang === "zh") {
     return {
-      title: "员工登录 | ÈDRU Patisserie",
+      title: "员工登录 | BLUE ISLET",
       description: "员工后台登录页面",
     };
   }
 
   return {
-    title: "Staff Login | ÈDRU Patisserie",
+    title: "Staff Login | BLUE ISLET",
     description: "Staff admin login page",
   };
 }

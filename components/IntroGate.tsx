@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { type Lang } from "@/lib/i18n-shared";
 
-const STORAGE_KEY = "edru_intro_seen";
+const STORAGE_KEY = "blue_islet_intro_seen";
 const INTRO_DURATION_MS = 260;
 const INTRO_LOGO = "/Designer.png";
 
@@ -109,7 +109,7 @@ export default function IntroGate({ lang }: { lang: Lang }) {
         {!logoBroken ? (
           <Image
             src={INTRO_LOGO}
-            alt="ÈDRU Patisserie"
+            alt="BLUE ISLET"
             width={560}
             height={420}
             priority
@@ -119,8 +119,7 @@ export default function IntroGate({ lang }: { lang: Lang }) {
           />
         ) : (
           <div className="mx-auto max-w-[320px] py-7">
-            <p className="heading-serif text-5xl text-[color:var(--gold-deep)]">ÈDRU</p>
-            <p className="mt-2 tracking-[0.22em] text-[color:var(--ink-soft)] text-xs uppercase">Patisserie</p>
+            <p className="heading-serif text-5xl text-[color:var(--gold-deep)]">BLUE ISLET</p>
             <p className="mt-4 text-xs text-[color:var(--ink-soft)]">Logo file not found in public folder.</p>
           </div>
         )}
@@ -129,7 +128,7 @@ export default function IntroGate({ lang }: { lang: Lang }) {
           {selectedLang === "zh" ? "进入网站" : "Enter Website"}
         </h1>
         <p className="mt-1 text-sm text-[color:var(--ink-soft)]">
-          {selectedLang === "zh" ? "欢迎来到甜品工作室" : "Welcome to the patisserie"}
+          {selectedLang === "zh" ? "欢迎来到 BLUE ISLET" : "Welcome to BLUE ISLET"}
         </p>
 
         <div className="mt-5 inline-flex items-center rounded-full border border-[color:var(--gold)]/40 bg-white/70 p-1.5">
