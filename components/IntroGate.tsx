@@ -7,7 +7,7 @@ import { type Lang } from "@/lib/i18n-shared";
 
 const STORAGE_KEY = "blue_islet_intro_seen";
 const INTRO_DURATION_MS = 260;
-const INTRO_LOGO = "/Designer.png";
+const INTRO_LOGO = "/Designer-blue.png";
 
 export default function IntroGate({ lang }: { lang: Lang }) {
   const pathname = usePathname();
@@ -39,9 +39,13 @@ export default function IntroGate({ lang }: { lang: Lang }) {
   }, [visible]);
 
   useEffect(() => {
+    // Only show intro on the homepage (/) or when explicitly requested with ?intro=1
+    const isHomepage = pathname === "/";
     const forceIntro = introFlag === "1";
     const hasSeen = sessionStorage.getItem(STORAGE_KEY) === "1";
-    const shouldShowIntro = forceIntro || !hasSeen;
+    
+    // Only show intro on homepage if not seen before, or if forced
+    const shouldShowIntro = (isHomepage || forceIntro) && (!hasSeen || forceIntro);
 
     if (!shouldShowIntro) {
       setExiting(false);
@@ -104,8 +108,8 @@ export default function IntroGate({ lang }: { lang: Lang }) {
       style={{ minHeight: "100dvh", touchAction: "none" }}
       aria-label="site-intro"
     >
-      <div className="absolute inset-0 bg-[rgba(18,10,5,0.34)] backdrop-blur-[6px] intro-overlay-pulse" />
-      <div className="fixed left-1/2 top-1/2 w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[color:var(--gold)]/28 bg-[#fdf7ee] px-6 py-8 sm:px-8 sm:py-10 text-center shadow-[0_12px_28px_rgba(47,31,16,0.1)] intro-panel-rise">
+      <div className="absolute inset-0 bg-[rgba(12,42,68,0.34)] backdrop-blur-[6px] intro-overlay-pulse" />
+      <div className="fixed left-1/2 top-1/2 w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[color:var(--gold)]/28 bg-[color:var(--card)] px-6 py-8 sm:px-8 sm:py-10 text-center shadow-[0_12px_28px_rgba(20,86,128,0.16)] intro-panel-rise">
         {!logoBroken ? (
           <Image
             src={INTRO_LOGO}

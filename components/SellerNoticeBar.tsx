@@ -17,7 +17,7 @@ export default function SellerNoticeBar({ enabled, message }: Props) {
   const display = `• ${message.trim()} • ${message.trim()} • ${message.trim()} •`;
 
   return (
-    <div className="relative overflow-hidden border-b border-[color:var(--gold)]/28 bg-[#f6e8d0] text-[#5a4228]">
+    <div className="relative overflow-hidden border-b border-[color:var(--gold)]/28 bg-[color:var(--bg-deep)] text-[color:var(--primary-hover)]">
       <div className="px-3 py-2 pr-12 sm:px-5 sm:pr-14">
         <p className="notice-marquee whitespace-nowrap text-[0.78rem] sm:text-[0.88rem] tracking-[0.05em]" aria-label="Seller announcement">
           {display}

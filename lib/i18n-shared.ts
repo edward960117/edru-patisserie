@@ -107,6 +107,13 @@ const text = {
     logoutLabel: "退出登录",
     loggingOutLabel: "退出中...",
     logoutConfirmMessage: "确认要退出登录吗？",
+    messageResponseLabel: "回复信息时间",
+    messageResponseHours: "9am 到 9pm",
+    workingHoursLabel: "工作时间",
+    workingHours: "9am 到 8pm",
+    customerCareTitle: "蛋糕护理",
+    cakeCareInstructions: "蛋糕应保存在阴凉干燥处。打开后请在2-3小时内享用，或冷藏最多3天。避免长时间暴露于阳光或高温环境。",
+    storageHint: "冷藏保存，食用前30分钟取出最佳口感。",
   },
   en: {
     homeTitle: "Cake Categories",
@@ -214,6 +221,13 @@ const text = {
     logoutLabel: "Logout",
     loggingOutLabel: "Logging out...",
     logoutConfirmMessage: "Are you sure you want to logout?",
+    messageResponseLabel: "Message Response",
+    messageResponseHours: "9am - 9pm",
+    workingHoursLabel: "Working Hours",
+    workingHours: "9am - 8pm",
+    customerCareTitle: "Cake Care",
+    cakeCareInstructions: "Keep cakes in a cool, dry place away from direct sunlight. Once opened, enjoy within 2-3 hours or refrigerate for up to 3 days. Avoid prolonged exposure to heat.",
+    storageHint: "Store chilled; remove 30 minutes before serving for optimal flavor.",
   },
 } as const;
 

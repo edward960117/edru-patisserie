@@ -2,35 +2,88 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { t } from "@/lib/i18n-shared";
 
 export default function Header({ lang }: { lang: "zh" | "en" }) {
   const copy = t(lang);
   const homeHref = "/?intro=1";
+  const pathname = usePathname();
+  
+  const isHome = pathname === "/" || pathname.startsWith("/?");
+  const isAdmin = pathname === "/admin";
 
   return (
-    <header className="sticky top-0 z-[70] bg-[color:var(--bg-soft)]/70 py-2 backdrop-blur-xl sm:py-3">
+    <header className="sticky top-0 z-[70] bg-gradient-to-b from-[color:var(--bg-soft)]/90 to-[color:var(--bg-soft)]/70 backdrop-blur-xl border-b border-[color:var(--border)]/40 py-3 sm:py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-15 items-center justify-between gap-3 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)]/90 px-3 shadow-[0_10px_26px_rgba(23,61,115,0.08)] sm:h-20 sm:px-5">
-          <Link href={homeHref} className="group inline-flex items-center gap-2 whitespace-nowrap leading-none sm:gap-3">
-            <Image
-              src="/Designer.png"
-              alt="BLUE ISLET logo"
-              width={34}
-              height={34}
-              className="h-7 w-7 rounded-full border border-[color:var(--border)] bg-white object-cover shadow-[0_4px_10px_rgba(23,61,115,0.12)] sm:h-9 sm:w-9"
-              priority
-            />
-            <span className="heading-serif text-[0.98rem] uppercase tracking-[0.12em] text-[color:var(--primary)] sm:text-[1.45rem] sm:tracking-[0.2em]">
+        <div className="flex h-16 sm:h-20 items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)]/60 bg-[color:var(--surface)]/95 backdrop-blur-sm px-4 sm:px-6 shadow-[0_12px_32px_rgba(23,61,115,0.1),inset_0_1px_0_rgba(255,255,255,0.8)]">
+          
+          {/* Logo section with hover effect */}
+          <Link 
+            href={homeHref} 
+            className="group inline-flex items-center gap-2.5 sm:gap-3 leading-none transition-all duration-300"
+          >
+            <div className="relative">
+              {/* Glow backdrop on hover */}
+              <div className="absolute inset-0 rounded-full bg-[color:var(--primary)]/15 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              <Image
+                src="/Designer-mark-blue.png"
+                alt="BLUE ISLET logo"
+                width={36}
+                height={36}
+                className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full border border-[color:var(--border)]/60 bg-white/70 object-contain p-1 shadow-[0_6px_16px_rgba(23,61,115,0.15)] transition-all duration-300 group-hover:border-[color:var(--primary)]/40 group-hover:shadow-[0_8px_20px_rgba(23,61,115,0.2)]"
+                priority
+              />
+            </div>
+            
+            <span className="heading-serif text-[0.95rem] sm:text-[1.2rem] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[color:var(--primary)] font-semibold transition-all duration-300 group-hover:tracking-[0.22em]">
               BLUE ISLET
             </span>
           </Link>
-          <nav className="flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.08em] text-[color:var(--ink-soft)] sm:gap-3 sm:text-[0.8rem] sm:tracking-[0.15em]">
-            <Link href={homeHref} className="nav-atelier px-3 py-1.5 hover:text-[color:var(--primary)]">{copy.navHome}</Link>
-            <Link href="/admin" className="nav-atelier px-3 py-1.5 hover:text-[color:var(--primary)]">{copy.navAdmin}</Link>
+
+          {/* Navigation with active state indicators */}
+          <nav className="flex items-center gap-1 sm:gap-2 text-[0.8rem] sm:text-[0.9rem] uppercase tracking-[0.12em] sm:tracking-[0.15em] text-[color:var(--ink-soft)]">
+            <NavLink href={homeHref} active={isHome} label={copy.navHome} />
+            <div className="h-4 w-px bg-[color:var(--border)] mx-1" />
+            <NavLink href="/admin" active={isAdmin} label={copy.navAdmin} />
           </nav>
         </div>
       </div>
     </header>
+  );
+}
+
+/**
+ * Navigation Link with Active State Indicator
+ */
+function NavLink({ 
+  href, 
+  active, 
+  label 
+}: { 
+  href: string; 
+  active?: boolean; 
+  label: string 
+}) {
+  return (
+    <Link
+      href={href}
+      className={`
+        relative px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all duration-300
+        focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/30 focus:ring-offset-2
+        ${active 
+          ? 'text-[color:var(--primary)] bg-[color:var(--bg-soft)]/70 font-semibold' 
+          : 'hover:text-[color:var(--primary)] hover:bg-[color:var(--bg-soft)]/40'
+        }
+      `}
+    >
+      {label}
+      
+      {/* Animated underline indicator for active state */}
+      {active && (
+        <div className="absolute bottom-0 left-3 sm:left-4 right-3 sm:right-4 h-0.5 bg-gradient-to-r from-[color:var(--primary)] to-transparent rounded-full animate-fade-in-up" />
+      )}
+    </Link>
   );
 }

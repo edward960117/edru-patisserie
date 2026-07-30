@@ -1,0 +1,28 @@
+<svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="120" height="200" fill="#f5f5f5" rx="8"/>
+  
+  <!-- Spiral Candle - Twisted Design -->
+  <defs>
+    <linearGradient id="spiralGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF69B4;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF1493;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF69B4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Spiral twisted candle body -->
+  <path d="M 40 90 Q 45 85 50 90 Q 55 95 60 90 Q 65 85 70 90 Q 75 95 80 90 L 80 160 Q 70 170 60 170 Q 50 170 40 160 Z" fill="url(#spiralGrad)" stroke="#C71585" stroke-width="0.5"/>
+  
+  <!-- Spiral pattern lines -->
+  <path d="M 42 100 Q 50 95 68 110" stroke="#ffffff" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M 42 120 Q 50 115 68 130" stroke="#ffffff" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M 42 140 Q 50 135 68 150" stroke="#ffffff" stroke-width="1" fill="none" opacity="0.5"/>
+  
+  <!-- Wick -->
+  <rect x="58" y="50" width="4" height="42" fill="#4a4a4a" rx="2"/>
+  
+  <!-- Flame -->
+  <path d="M 60 48 Q 55 40 56 28 Q 58 36 60 25 Q 62 36 64 28 Q 65 40 60 48" fill="#FFD700" opacity="0.95"/>
+  <path d="M 60 51 Q 52 42 53 25 Q 56 38 60 20 Q 64 38 67 25 Q 68 42 60 51" fill="#FF8C00" opacity="0.8"/>
+</svg>

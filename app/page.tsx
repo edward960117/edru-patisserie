@@ -9,12 +9,14 @@ import { withTimeout } from "@/lib/with-timeout";
 export const revalidate = 60;
 
 const HOME_CATEGORY_SLUGS = [
-  "todays-recommendation",
-  "for-him",
   "for-her",
+  "for-him",
+  "mousse-cakes",
+  "lifes-four-joys",
+  "designer-collection",
+  "afternoon-tea-series",
   "custom-cakes",
-  "birthday-cakes",
-  "seasonal-specials",
+  "cake-accessories",
 ];
 
 const getHomeCategories = unstable_cache(
@@ -49,50 +51,96 @@ export default async function HomePage() {
 
   return (
     <section className="space-y-8 sm:space-y-10">
-      {/* Combined hero banner */}
-      <div className="relative overflow-hidden rounded-[32px] shadow-[0_28px_60px_rgba(0,0,0,0.22)]"
-        style={{ background: "linear-gradient(135deg, #2b3a2e 0%, #3f4a3a 40%, #2a3328 70%, #1e2820 100%)" }}
+      {/* Enhanced Hero Banner - Premium Gradient & Spacing */}
+      <div 
+        className="relative overflow-hidden rounded-[32px] shadow-[0_32px_72px_rgba(20,86,128,0.15)]"
+        style={{ 
+          background: "linear-gradient(135deg, #fbfeff 0%, #e8f4fb 40%, #7db8d8 90%, #4a9bca 100%)"
+        }}
       >
-        <div className="pointer-events-none absolute inset-0 opacity-[0.05]"
-          style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(180,155,118,0.14),_transparent_55%)]" />
-
-        <div className="relative flex flex-col items-start gap-0 sm:flex-row sm:items-center">
-          {/* Left: text content */}
-          <div className="flex flex-1 flex-col gap-4 px-6 py-7 sm:px-10 sm:py-9">
-            <p className="text-[0.7rem] uppercase tracking-[0.34em] text-[color:var(--gold-pale)]/70">{copy.homeTagline}</p>
-            <div className="space-y-3">
-              <h1 className="heading-serif text-[2rem] font-semibold leading-tight tracking-tight text-white sm:text-[2.6rem]">
+        {/* Subtle overlay for depth */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at 30% -20%, rgba(255,255,255,0.5), transparent 50%), " +
+              "radial-gradient(ellipse at 100% 100%, rgba(31,103,148,0.1), transparent 60%)",
+          }}
+        />
+        
+        <div className="relative flex flex-col gap-0 sm:flex-row sm:items-center">
+          {/* Left Content - Improved Spacing */}
+          <div className="flex flex-1 flex-col gap-6 sm:gap-8 px-8 py-12 sm:px-12 sm:py-14">
+            {/* Kicker tagline */}
+            <p className="text-[0.65rem] uppercase tracking-[0.35em] text-[color:var(--primary)]/70 font-medium">
+              {copy.homeTagline}
+            </p>
+            
+            {/* Title & subtitle with better spacing */}
+            <div className="space-y-4 sm:space-y-5">
+              <h1 className="heading-serif text-[2.2rem] sm:text-[3.2rem] font-semibold leading-[1.1] tracking-[-0.015em] text-[color:var(--ink)]">
                 {copy.homeTitle}
               </h1>
-              <p className="max-w-md text-[0.97rem] leading-7 text-white/60 sm:text-base">
+              <p className="max-w-md text-[0.98rem] sm:text-lg leading-[1.7] text-[color:var(--ink-soft)]">
                 {copy.homeSubtitle}
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+
+            {/* Working Hours & Response Time Info */}
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-2">
+              <div className="flex flex-col gap-1">
+                <p className="text-[0.72rem] uppercase tracking-[0.18em] text-[color:var(--ink-soft)]/60 font-medium">
+                  {copy.messageResponseLabel}
+                </p>
+                <p className="text-[0.95rem] font-semibold text-[color:var(--ink)]">
+                  {copy.messageResponseHours}
+                </p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-[0.72rem] uppercase tracking-[0.18em] text-[color:var(--ink-soft)]/60 font-medium">
+                  {copy.workingHoursLabel}
+                </p>
+                <p className="text-[0.95rem] font-semibold text-[color:var(--ink)]">
+                  {copy.workingHours}
+                </p>
+              </div>
+            </div>
+            
+            {/* Enhanced Button Hierarchy */}
+            <div className="flex flex-wrap items-center gap-3 pt-2 sm:pt-4">
               <Link
                 href="/categories/todays-recommendation"
-                className="inline-flex min-h-[48px] items-center justify-center rounded-[14px] border border-[color:var(--gold)]/60 bg-[color:var(--gold)]/25 px-5 py-3 text-[0.95rem] font-semibold tracking-[0.02em] text-white backdrop-blur-sm transition hover:bg-[color:var(--gold)]/40"
+                className="btn-lux-primary inline-flex items-center"
               >
                 {copy.discoverToday}
               </Link>
-              <span className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[0.75rem] uppercase tracking-[0.18em] text-white/60 backdrop-blur-sm">
+              <button
+                className="inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/30 bg-white/70 backdrop-blur-sm px-5 py-2.5 text-[0.75rem] uppercase tracking-[0.2em] text-[color:var(--primary)]/85 font-medium transition hover:bg-white/85 hover:border-[color:var(--primary)]/50 focus:ring-2 focus:ring-[color:var(--primary)]/20"
+              >
+                <span>✨</span>
                 {copy.signatureCollection}
-              </span>
+              </button>
             </div>
-            <div className="mt-2 h-px w-20 bg-gradient-to-r from-[color:var(--gold)] to-transparent" />
+            
+            {/* Decorative accent line */}
+            <div className="mt-4 h-0.5 w-24 bg-gradient-to-r from-[color:var(--secondary)] via-[color:var(--primary)]/60 to-transparent rounded-full" />
           </div>
 
-          {/* Right: logo image */}
-          <div className="hidden sm:flex sm:w-[200px] lg:w-[240px] sm:shrink-0 items-center justify-center px-6 py-7">
+          {/* Right: Premium Logo Presentation */}
+          <div className="hidden sm:flex sm:w-[200px] lg:w-[280px] sm:shrink-0 items-center justify-center px-8 py-12">
             <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-[color:var(--gold)]/10 blur-2xl scale-110" />
+              {/* Subtle background glow */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[color:var(--primary)]/12 to-[color:var(--secondary)]/8 blur-3xl scale-125" />
+              
+              {/* Premium border treatment */}
+              <div className="absolute inset-0 rounded-full border border-gradient-to-br from-[color:var(--primary)]/40 to-[color:var(--secondary)]/20" />
+              
               <Image
-                src="/Designer.png"
+                src="/Designer-blue.png"
                 alt="BLUE ISLET signature cake"
-                width={180}
-                height={180}
-                className="relative rounded-full border border-[color:var(--gold)]/30 object-cover shadow-[0_16px_40px_rgba(0,0,0,0.4)]"
+                width={200}
+                height={200}
+                className="relative rounded-full border-2 border-white/80 bg-white/40 object-cover shadow-[0_20px_48px_rgba(19,77,114,0.25),inset_0_1px_0_rgba(255,255,255,0.8)] hover-zoom"
                 priority
               />
             </div>
@@ -100,23 +148,98 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {categories.map((category) => (
-          <Link
-            key={category.id}
-            href={`/categories/${category.slug}`}
-            className="group category-card card-lux flex flex-col overflow-hidden p-5 sm:p-6 hover:-translate-y-0.5 hover:shadow-[0_20px_36px_rgba(23,61,115,0.08)] active:scale-[0.995] transition-transform duration-300"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-[1.8rem]">{category.emoji}</p>
-              <span className="rounded-full border border-[color:var(--border)] bg-[color:var(--bg-soft)] px-3 py-1 text-[0.72rem] uppercase tracking-[0.18em] text-[color:var(--primary)]">
-                {copy.viewCategoryShort}
-              </span>
-            </div>
-            <h2 className="mt-4 heading-serif text-[1.5rem] leading-tight text-[color:var(--ink)]">{category.name_cn}</h2>
-            <p className="mt-2 text-[color:var(--ink-soft)] text-[0.95rem]">{category.name}</p>
-          </Link>
-        ))}
+      {/* Category Cards Grid - 2x2 Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 lg:gap-7">
+        {categories.map((category, index) => {
+          // Handle custom cakes - redirect to WhatsApp instead of category page
+          if (category.slug === "custom-cakes") {
+            const whatsappMessage = lang === "zh" ? "需要私人定制蛋糕" : "I need a custom cake";
+            return (
+              <a
+                key={category.id}
+                href={`https://wa.me/6581324886?text=${encodeURIComponent(whatsappMessage)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="group relative overflow-hidden rounded-[28px] border card-lux transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_48px_rgba(23,61,115,0.16)] active:scale-[0.98] animate-fade-in-up cursor-pointer"
+                style={{ 
+                  animationDelay: `${index * 80}ms`,
+                  borderColor: "rgba(45, 132, 187, 0.18)"
+                }}
+              >
+                {/* Animated overlay on hover */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-br from-white/0 to-[color:var(--primary)]/0 group-hover:from-white/5 group-hover:to-[color:var(--primary)]/5 transition-all duration-500"
+                />
+
+                {/* Content with improved spacing */}
+                <div className="relative p-6 sm:p-7 flex flex-col h-full gap-4">
+                  {/* Header row with emoji and badge */}
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="text-4xl drop-shadow-sm">{category.emoji}</span>
+                    <span className="inline-flex rounded-full border border-[color:var(--primary)]/20 bg-white/60 px-3 py-1 text-[0.68rem] uppercase tracking-[0.2em] font-semibold backdrop-blur-sm whitespace-nowrap transition-all duration-300 group-hover:bg-white/80">
+                      {lang === "zh" ? "联系我们" : "Contact Us"}
+                    </span>
+                  </div>
+
+                  {/* Text content with improved hierarchy */}
+                  <div className="flex-1">
+                    <h2 className="heading-serif text-[1.65rem] leading-[1.15] text-[color:var(--ink)]">
+                      {category.name_cn}
+                    </h2>
+                    <p className="mt-2 text-[0.92rem] leading-[1.5] text-[color:var(--ink-soft)]">
+                      {category.name}
+                    </p>
+                  </div>
+
+                  {/* Visual indicator - shows on hover */}
+                  <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[color:var(--primary)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+              </a>
+            );
+          }
+
+          // Regular category links
+          return (
+            <Link
+              key={category.id}
+              href={`/categories/${category.slug}`}
+              className="group relative overflow-hidden rounded-[28px] border card-lux transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_48px_rgba(23,61,115,0.16)] active:scale-[0.98] animate-fade-in-up"
+              style={{ 
+                animationDelay: `${index * 80}ms`,
+                borderColor: "rgba(45, 132, 187, 0.18)"
+              }}
+            >
+              {/* Animated overlay on hover */}
+              <div 
+                className="absolute inset-0 bg-gradient-to-br from-white/0 to-[color:var(--primary)]/0 group-hover:from-white/5 group-hover:to-[color:var(--primary)]/5 transition-all duration-500"
+              />
+
+              {/* Content with improved spacing */}
+              <div className="relative p-6 sm:p-7 flex flex-col h-full gap-4">
+                {/* Header row with emoji and badge */}
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-4xl drop-shadow-sm">{category.emoji}</span>
+                  <span className="inline-flex rounded-full border border-[color:var(--primary)]/20 bg-white/60 px-3 py-1 text-[0.68rem] uppercase tracking-[0.2em] font-semibold backdrop-blur-sm whitespace-nowrap transition-all duration-300 group-hover:bg-white/80">
+                    {copy.viewCategoryShort}
+                  </span>
+                </div>
+
+                {/* Text content with improved hierarchy */}
+                <div className="flex-1">
+                  <h2 className="heading-serif text-[1.65rem] leading-[1.15] text-[color:var(--ink)]">
+                    {category.name_cn}
+                  </h2>
+                  <p className="mt-2 text-[0.92rem] leading-[1.5] text-[color:var(--ink-soft)]">
+                    {category.name}
+                  </p>
+                </div>
+
+                {/* Visual indicator - shows on hover */}
+                <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[color:var(--primary)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

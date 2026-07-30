@@ -1,0 +1,25 @@
+<svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="120" height="200" fill="#f5f5f5" rx="8"/>
+  
+  <!-- Candle Wax - Elegant Tapered -->
+  <path d="M 35 80 L 32 120 Q 30 140 40 160 L 80 160 Q 90 140 88 120 L 85 80 Z" fill="#FFD700" stroke="#E6B800" stroke-width="0.5"/>
+  
+  <!-- Candle Base/Top -->
+  <ellipse cx="60" cy="80" rx="25" ry="8" fill="#F0C000" stroke="#E6B800" stroke-width="0.5"/>
+  
+  <!-- Wick -->
+  <rect x="58" y="50" width="4" height="32" fill="#4a4a4a" rx="2"/>
+  
+  <!-- Flame Base -->
+  <ellipse cx="60" cy="50" rx="6" ry="4" fill="#FF8C00" opacity="0.9"/>
+  
+  <!-- Flame - Inner Yellow -->
+  <path d="M 60 45 Q 55 40 56 30 Q 58 35 60 28 Q 62 35 64 30 Q 65 40 60 45" fill="#FFD700" opacity="0.95"/>
+  
+  <!-- Flame - Outer Orange -->
+  <path d="M 60 48 Q 52 42 53 28 Q 56 38 60 25 Q 64 38 67 28 Q 68 42 60 48" fill="#FF8C00" opacity="0.8"/>
+  
+  <!-- Glow effect -->
+  <circle cx="60" cy="45" r="15" fill="#FFD700" opacity="0.1"/>
+</svg>

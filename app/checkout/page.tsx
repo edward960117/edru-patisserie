@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { unstable_cache } from "next/cache";
 import { getLang, t } from "@/lib/i18n";
-import { INSTAGRAM_URL, WHATSAPP_NUMBER } from "@/lib/contact";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
+import { getFallbackCakeBySlug } from "@/lib/fallback-catalog";
+import CheckoutOrderForm from "@/components/CheckoutOrderForm";
 import WeChatQrButton from "@/components/WeChatQrButton";
 import BackButton from "@/components/BackButton";
 import { withTimeout } from "@/lib/with-timeout";
@@ -27,9 +29,26 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       ? await withTimeout(getCheckoutCakeBySlug(cakeSlug), 5000)
       : null;
   } catch {
-    // Database unavailable — render checkout without cake details.
+    // Database unavailable — try fallback
+    cake = null;
   }
-  const size = cake && sizeId ? cake.sizes.find((item) => item.id === sizeId) : null;
+  
+  // Use fallback cake data if database unavailable
+  if (!cake && cakeSlug) {
+    const fallbackCake = getFallbackCakeBySlug(cakeSlug);
+    if (fallbackCake) {
+      cake = {
+        id: fallbackCake.id,
+        slug: fallbackCake.slug,
+        name: fallbackCake.name,
+        name_cn: fallbackCake.name_cn,
+        image_url: fallbackCake.image_url,
+        sizes: fallbackCake.sizes || [],
+      } as any;
+    }
+  }
+  
+  const size = cake && sizeId ? cake.sizes.find((item: any) => item.id === sizeId) : null;
   const cakeName = cake ? (lang === "zh" ? (cake.name_cn || cake.name) : cake.name) : "";
   const fulfillmentTitle = lang === "zh" ? "取货与配送" : "Pickup and Delivery";
   const pickupLabel = lang === "zh" ? "取货费用：" : "Pickup fee:";
@@ -101,16 +120,17 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <p><span className="text-[color:var(--ink-soft)]">{copy.cakeLabel}:</span> {cakeName}</p>
           <p><span className="text-[color:var(--ink-soft)]">{copy.sizeLabel}:</span> {size.size}</p>
           <p><span className="text-[color:var(--ink-soft)]">{copy.priceLabel}:</span> S${size.price.toFixed(2)}</p>
-          <p className={`${helperTextClass} mt-4`}>{copy.proceedOrderViaWhatsApp}</p>
-          <div className="mt-3 flex flex-wrap gap-2.5">
-            <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux w-full sm:w-auto whitespace-normal text-center">
-              {copy.orderViaWhatsApp}
-            </a>
-            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
-              {copy.orderViaInstagram}
-            </a>
-            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderDetails={whatsappRawMessage} />
-          </div>
+          <CheckoutOrderForm
+            cakeName={cakeName}
+            cakeSlug={cakeSlug || ""}
+            sizeId={sizeId || 0}
+            sizeSize={size.size}
+            sizePrice={size.price}
+            lang={lang}
+            whatsappNumber={WHATSAPP_NUMBER}
+            baseMessage={whatsappRawMessage}
+            copy={copy}
+          />
         </div>
       ) : (
         <div className="mt-5 space-y-3">
@@ -118,9 +138,6 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
           <div className="mt-1 flex flex-wrap gap-2.5">
             <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux w-full sm:w-auto whitespace-normal text-center">
               {copy.orderViaWhatsApp}
-            </a>
-            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center">
-              {copy.orderViaInstagram}
             </a>
             <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderDetails={whatsappRawMessage} />
           </div>

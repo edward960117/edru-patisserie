@@ -11,9 +11,10 @@ interface Props {
   className?: string;
   footerStyle?: boolean;
   orderDetails?: string;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export default function WeChatQrButton({ lang, className, footerStyle = false, orderDetails }: Props) {
+export default function WeChatQrButton({ lang, className, footerStyle = false, orderDetails, onClick }: Props) {
   const copy = t(lang);
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -34,12 +35,19 @@ export default function WeChatQrButton({ lang, className, footerStyle = false, o
     setCopied(false);
   }
 
+  function handleButtonClick(e: React.MouseEvent<HTMLButtonElement>) {
+    onClick?.(e);
+    if (!e.defaultPrevented) {
+      setOpen(true);
+    }
+  }
+
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={className ?? "btn-lux-outline"}>
+      <button type="button" onClick={handleButtonClick} className={className ?? "btn-lux-outline"}>
         {footerStyle ? (
           <span className="inline-flex items-center gap-2">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#e9f7f0] text-[#169256]">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#d8eefb] text-[#2a86bd]">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M8.5 9.2c.7 0 1.2-.5 1.2-1.2 0-.6-.5-1.1-1.2-1.1-.6 0-1.1.5-1.1 1.1 0 .7.5 1.2 1.1 1.2Zm6.9 0c.7 0 1.2-.5 1.2-1.2 0-.6-.5-1.1-1.2-1.1-.6 0-1.1.5-1.1 1.1 0 .7.5 1.2 1.1 1.2Z" />
                 <path d="M12.1 2.2c-5.2 0-9.4 3.2-9.4 7.2 0 2.3 1.4 4.3 3.7 5.6l-.8 3.1 3.8-2.1c.9.2 1.8.4 2.7.4 5.2 0 9.4-3.2 9.4-7.2s-4.2-7-9.4-7Zm0 12.5c-.9 0-1.8-.2-2.7-.4l-.4-.1-2.2 1.2.4-1.9-.4-.2c-1.9-1-3-2.5-3-4.1 0-3 3.7-5.5 8.3-5.5s8.3 2.5 8.3 5.5-3.7 5.5-8.3 5.5Z" />
@@ -54,7 +62,7 @@ export default function WeChatQrButton({ lang, className, footerStyle = false, o
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-3 sm:p-4" role="dialog" aria-modal="true" aria-label="WeChat QR">
           <button type="button" aria-label="Close WeChat QR" className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={closeModal} />
 
-          <div className="relative z-[1] w-full max-w-xl rounded-2xl border border-[color:var(--gold)]/35 bg-[#fdf7ee] p-2.5 shadow-[0_20px_40px_rgba(47,31,16,0.22)] sm:p-3">
+          <div className="relative z-[1] w-full max-w-xl rounded-2xl border border-[color:var(--gold)]/35 bg-[color:var(--card)] p-2.5 shadow-[0_20px_40px_rgba(20,86,128,0.22)] sm:p-3">
             <div className="flex max-h-[calc(100vh-1rem)] flex-col gap-2.5 overflow-hidden md:grid md:grid-cols-[minmax(0,1fr)_minmax(220px,0.88fr)] md:items-start md:gap-3">
               <div className="min-w-0">
                 <p className="heading-serif text-[1.05rem] text-[color:var(--ink)] sm:text-lg">{copy.orderViaWeChat}</p>
