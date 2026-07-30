@@ -47,14 +47,14 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
   return (
     <section className="grid gap-5 sm:gap-8 lg:grid-cols-2">
       <div className="card-lux atelier-frame overflow-hidden">
-        <div className="product-media relative min-h-[250px] sm:min-h-[360px] h-full w-full">
+        <div className="product-media relative aspect-[16/10] w-full overflow-hidden rounded-[20px]">
           <Image
             src={resolvedCake.image_url}
             alt={cakeName}
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 45vw"
-            className="object-cover scale-150 sm:scale-150"
+            className="object-cover"
           />
         </div>
       </div>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Dark Opera Signature</title>
+  <desc id="desc">Illustrated dark chocolate layered opera cake.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2c2d33"/>
+      <stop offset="1" stop-color="#17181d"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f4d188"/>
+      <stop offset="1" stop-color="#d5a94e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <ellipse cx="600" cy="650" rx="320" ry="72" fill="#000" opacity="0.38"/>
+  <rect x="340" y="345" width="520" height="280" rx="24" fill="#2f211c"/>
+  <rect x="340" y="405" width="520" height="22" fill="#68473c"/>
+  <rect x="340" y="458" width="520" height="22" fill="#1f1612"/>
+  <rect x="340" y="512" width="520" height="22" fill="#68473c"/>
+  <ellipse cx="600" cy="345" rx="260" ry="68" fill="#3e2a23"/>
+  <rect x="430" y="314" width="340" height="10" fill="url(#gold)"/>
+  <circle cx="600" cy="300" r="14" fill="#f4d188"/>
+</svg>

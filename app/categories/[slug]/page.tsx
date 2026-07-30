@@ -85,13 +85,13 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           const minPrice = pricedSizes.length ? Math.min(...pricedSizes.map((size) => size.price)) : null;
           return (
             <Link key={cake.id} href={`/cakes/${cake.slug}`} className="group card-lux flex h-full flex-col overflow-hidden hover:-translate-y-1 hover:shadow-[0_18px_32px_rgba(23,61,115,0.14)] active:scale-[0.995]">
-              <div className="product-media relative h-44 sm:h-52 w-full overflow-hidden">
+              <div className="product-media relative aspect-[16/10] w-full overflow-hidden">
                 <Image
                   src={cake.image_url}
                   alt={cakeName}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover scale-125"
+                  className="object-cover"
                 />
               </div>
               <div className="flex flex-1 flex-col p-4 sm:p-5">

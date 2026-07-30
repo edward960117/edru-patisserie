@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Hazelnut Noir Crunch</title>
+  <desc id="desc">Illustrated chocolate cake with hazelnut crunch accents.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a2a22"/>
+      <stop offset="1" stop-color="#241813"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <ellipse cx="600" cy="650" rx="320" ry="72" fill="#000" opacity="0.35"/>
+  <rect x="340" y="350" width="520" height="270" rx="30" fill="#4c342a"/>
+  <rect x="340" y="430" width="520" height="20" fill="#d59d57"/>
+  <rect x="340" y="500" width="520" height="20" fill="#2a1b15"/>
+  <ellipse cx="600" cy="350" rx="260" ry="70" fill="#5b3f31"/>
+  <circle cx="470" cy="338" r="14" fill="#b6793e"/>
+  <circle cx="525" cy="322" r="18" fill="#c88a4a"/>
+  <circle cx="600" cy="334" r="16" fill="#b6793e"/>
+  <circle cx="675" cy="320" r="18" fill="#c88a4a"/>
+  <circle cx="730" cy="338" r="14" fill="#b6793e"/>
+</svg>

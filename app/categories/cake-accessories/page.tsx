@@ -11,6 +11,7 @@ interface Candle {
   description_cn: string;
   price: number;
   color?: string;
+  image_path: string;
 }
 
 const CANDLES: Candle[] = [
@@ -22,6 +23,7 @@ const CANDLES: Candle[] = [
     description_cn: "优雅经典的细长蜡烛，为精致庆典增添韵味",
     price: 8,
     color: "#FFD700",
+    image_path: "/candles/slim-taper.svg",
   },
   {
     id: "spiral-twist",
@@ -31,6 +33,7 @@ const CANDLES: Candle[] = [
     description_cn: "现代螺旋纹设计，充满视觉吸引力的缠绕图案",
     price: 10,
     color: "#FF6B9D",
+    image_path: "/candles/spiral-twist.svg",
   },
   {
     id: "mini-birthday",
@@ -40,6 +43,7 @@ const CANDLES: Candle[] = [
     description_cn: "五彩缤纷的迷你蜡烛，完美装饰蛋糕，12支装",
     price: 6,
     color: "#FF6B6B",
+    image_path: "/candles/mini-birthday.svg",
   },
   {
     id: "number-candles",
@@ -49,6 +53,7 @@ const CANDLES: Candle[] = [
     description_cn: "优雅的数字蜡烛，庆祝周年和里程碑时刻",
     price: 12,
     color: "#FFE66D",
+    image_path: "/candles/number-candles.svg",
   },
   {
     id: "pearl-cluster",
@@ -58,6 +63,7 @@ const CANDLES: Candle[] = [
     description_cn: "精致珍珠球蜡烛簇，彰显高端奢华感",
     price: 15,
     color: "#E2B4D9",
+    image_path: "/candles/mini-birthday.svg",
   },
   {
     id: "glitter-candles",
@@ -67,6 +73,7 @@ const CANDLES: Candle[] = [
     description_cn: "闪闪发光的闪粉蜡烛，光彩璀璨",
     price: 11,
     color: "#87CEEB",
+    image_path: "/candles/spiral-twist.svg",
   },
 ];
 
@@ -157,21 +164,12 @@ export default function CakeAccessoriesPage() {
                 background: `linear-gradient(135deg, ${candle.color}20, ${candle.color}05)`
               }}
             >
-              <svg
-                viewBox="0 0 100 150"
-                className="w-24 h-32 opacity-80"
+              <img
+                src={candle.image_path}
+                alt={lang === "zh" ? candle.name_cn : candle.name_en}
+                className="h-32 w-24 object-contain opacity-90"
                 style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.1))" }}
-              >
-                {/* Candle Wax */}
-                <rect x="20" y="40" width="60" height="80" rx="4" fill={candle.color} />
-                
-                {/* Candle Wick */}
-                <line x1="50" y1="35" x2="50" y2="45" stroke="#333" strokeWidth="2" strokeLinecap="round" />
-                
-                {/* Flame */}
-                <ellipse cx="50" cy="30" rx="5" ry="8" fill="#FFA500" opacity="0.8" />
-                <path d="M 50 25 Q 47 20 48 15 Q 50 22 52 15 Q 53 20 50 25" fill="#FFD700" opacity="0.9" />
-              </svg>
+              />
               
               {/* Price Badge */}
               <div className="absolute top-3 right-3 bg-[color:var(--primary)] text-white rounded-full px-3 py-1 text-sm font-bold shadow-lg">

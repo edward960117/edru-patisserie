@@ -19,6 +19,18 @@ const HOME_CATEGORY_SLUGS = [
   "cake-accessories",
 ];
 
+const HOME_CATEGORY_ORDER = new Map(
+  HOME_CATEGORY_SLUGS.map((slug, index) => [slug, index])
+);
+
+function sortByHomeCategoryOrder<T extends { slug: string }>(items: T[]): T[] {
+  return [...items].sort((a, b) => {
+    const aIndex = HOME_CATEGORY_ORDER.get(a.slug) ?? Number.MAX_SAFE_INTEGER;
+    const bIndex = HOME_CATEGORY_ORDER.get(b.slug) ?? Number.MAX_SAFE_INTEGER;
+    return aIndex - bIndex;
+  });
+}
+
 const getHomeCategories = unstable_cache(
   async () => {
     return prisma.category.findMany({
@@ -36,14 +48,14 @@ export default async function HomePage() {
   const lang = await getLang();
   const copy = t(lang);
 
-  let categories = fallbackCategories;
+  let categories = sortByHomeCategoryOrder(fallbackCategories);
   try {
     const dbCategories = await withTimeout(getHomeCategories(), 1400);
     if (dbCategories.length > 0) {
       // Merge: use DB results, fill any missing slugs from fallback
       const dbSlugs = new Set(dbCategories.map((c) => c.slug));
       const missing = fallbackCategories.filter((c) => !dbSlugs.has(c.slug));
-      categories = [...dbCategories, ...missing];
+      categories = sortByHomeCategoryOrder([...dbCategories, ...missing]);
     }
   } catch {
     // Keep homepage available if the database is unavailable.
