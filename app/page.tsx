@@ -149,7 +149,7 @@ export default async function HomePage() {
       </div>
 
       {/* Category Cards Grid - 2x2 Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 lg:gap-7">
+      <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:gap-7">
         {categories.map((category, index) => {
           // Handle custom cakes - redirect to WhatsApp instead of category page
           if (category.slug === "custom-cakes") {
@@ -172,21 +172,21 @@ export default async function HomePage() {
                 />
 
                 {/* Content with improved spacing */}
-                <div className="relative p-6 sm:p-7 flex flex-col h-full gap-4">
+                <div className="relative p-4 sm:p-7 flex flex-col h-full gap-3 sm:gap-4">
                   {/* Header row with emoji and badge */}
                   <div className="flex items-start justify-between gap-3">
-                    <span className="text-4xl drop-shadow-sm">{category.emoji}</span>
-                    <span className="inline-flex rounded-full border border-[color:var(--primary)]/20 bg-white/60 px-3 py-1 text-[0.68rem] uppercase tracking-[0.2em] font-semibold backdrop-blur-sm whitespace-nowrap transition-all duration-300 group-hover:bg-white/80">
+                    <span className="text-3xl sm:text-4xl drop-shadow-sm">{category.emoji}</span>
+                    <span className="inline-flex rounded-full border border-[color:var(--primary)]/20 bg-white/60 px-2 py-1 sm:px-3 text-[0.6rem] sm:text-[0.68rem] uppercase tracking-[0.16em] sm:tracking-[0.2em] font-semibold backdrop-blur-sm whitespace-nowrap transition-all duration-300 group-hover:bg-white/80">
                       {lang === "zh" ? "联系我们" : "Contact Us"}
                     </span>
                   </div>
 
                   {/* Text content with improved hierarchy */}
                   <div className="flex-1">
-                    <h2 className="heading-serif text-[1.65rem] leading-[1.15] text-[color:var(--ink)]">
+                    <h2 className="heading-serif text-[1.15rem] sm:text-[1.65rem] leading-[1.15] text-[color:var(--ink)]">
                       {category.name_cn}
                     </h2>
-                    <p className="mt-2 text-[0.92rem] leading-[1.5] text-[color:var(--ink-soft)]">
+                    <p className="mt-1 sm:mt-2 text-[0.78rem] sm:text-[0.92rem] leading-[1.45] sm:leading-[1.5] text-[color:var(--ink-soft)]">
                       {category.name}
                     </p>
                   </div>
@@ -215,21 +215,21 @@ export default async function HomePage() {
               />
 
               {/* Content with improved spacing */}
-              <div className="relative p-6 sm:p-7 flex flex-col h-full gap-4">
+              <div className="relative p-4 sm:p-7 flex flex-col h-full gap-3 sm:gap-4">
                 {/* Header row with emoji and badge */}
                 <div className="flex items-start justify-between gap-3">
-                  <span className="text-4xl drop-shadow-sm">{category.emoji}</span>
-                  <span className="inline-flex rounded-full border border-[color:var(--primary)]/20 bg-white/60 px-3 py-1 text-[0.68rem] uppercase tracking-[0.2em] font-semibold backdrop-blur-sm whitespace-nowrap transition-all duration-300 group-hover:bg-white/80">
+                  <span className="text-3xl sm:text-4xl drop-shadow-sm">{category.emoji}</span>
+                  <span className="inline-flex rounded-full border border-[color:var(--primary)]/20 bg-white/60 px-2 py-1 sm:px-3 text-[0.6rem] sm:text-[0.68rem] uppercase tracking-[0.16em] sm:tracking-[0.2em] font-semibold backdrop-blur-sm whitespace-nowrap transition-all duration-300 group-hover:bg-white/80">
                     {copy.viewCategoryShort}
                   </span>
                 </div>
 
                 {/* Text content with improved hierarchy */}
                 <div className="flex-1">
-                  <h2 className="heading-serif text-[1.65rem] leading-[1.15] text-[color:var(--ink)]">
+                  <h2 className="heading-serif text-[1.15rem] sm:text-[1.65rem] leading-[1.15] text-[color:var(--ink)]">
                     {category.name_cn}
                   </h2>
-                  <p className="mt-2 text-[0.92rem] leading-[1.5] text-[color:var(--ink-soft)]">
+                  <p className="mt-1 sm:mt-2 text-[0.78rem] sm:text-[0.92rem] leading-[1.45] sm:leading-[1.5] text-[color:var(--ink-soft)]">
                     {category.name}
                   </p>
                 </div>
