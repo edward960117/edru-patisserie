@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import WeChatQrButton from "@/components/WeChatQrButton";
+import BankTransferButton from "@/components/BankTransferButton";
 import { type Lang } from "@/lib/i18n-shared";
 import { CANDLES } from "@/lib/candles";
 
@@ -32,6 +33,7 @@ interface CheckoutOrderFormProps {
   whatsappNumber: string;
   baseMessage: string;
   copy: any;
+  bankTransferEnabled: boolean;
 }
 
 function formatDateInput(date: Date) {
@@ -52,6 +54,7 @@ export default function CheckoutOrderForm({
   whatsappNumber,
   baseMessage,
   copy,
+  bankTransferEnabled,
 }: CheckoutOrderFormProps) {
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + leadTimeDays);
@@ -64,11 +67,50 @@ export default function CheckoutOrderForm({
   const fulfillmentSectionRef = useRef<HTMLDivElement>(null);
   const [pickupDate, setPickupDate] = useState(""); // Empty by default so user must actively pick a date
   const [dateError, setDateError] = useState(false);
-  const dateInputRef = useRef<HTMLInputElement>(null);
+  const dateInputRef = useRef<HTMLButtonElement>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarViewDate, setCalendarViewDate] = useState(() => new Date(minDate.getFullYear(), minDate.getMonth(), 1));
+  const calendarRef = useRef<HTMLDivElement>(null);
   const addOnsSectionRef = useRef<HTMLDivElement>(null);
   const [showCandleModal, setShowCandleModal] = useState(false);
   const [selectedCandleId, setSelectedCandleId] = useState<string | null>(null);
   const [pendingCandleId, setPendingCandleId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!calendarOpen) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+        setCalendarOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [calendarOpen]);
+
+  const weekdayLabels = lang === "zh" ? ["日", "一", "二", "三", "四", "五", "六"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const calendarCells = useMemo(() => {
+    const year = calendarViewDate.getFullYear();
+    const month = calendarViewDate.getMonth();
+    const firstDayOfMonth = new Date(year, month, 1);
+    const startWeekday = firstDayOfMonth.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const cells: Array<{ dateStr: string; day: number } | null> = [];
+    for (let i = 0; i < startWeekday; i += 1) cells.push(null);
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      cells.push({ dateStr: formatDateInput(new Date(year, month, day)), day });
+    }
+    return cells;
+  }, [calendarViewDate]);
+
+  const calendarMonthLabel = calendarViewDate.toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", {
+    month: "long",
+    year: "numeric",
+  });
+
+  function goToCalendarMonth(offset: number) {
+    setCalendarViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + offset, 1));
+  }
 
   const toggleAddOn = (id: string) => {
     setHasError(false); // Clear error when user interacts
@@ -155,6 +197,7 @@ export default function CheckoutOrderForm({
     } else if (shouldFocusDate) {
       dateInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       dateInputRef.current?.focus();
+      setCalendarOpen(true);
     } else if (shouldFocusAddOns) {
       addOnsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
@@ -275,24 +318,104 @@ export default function CheckoutOrderForm({
         <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
           {lang === "zh" ? "取货/配送日期" : "Pickup / Delivery Date"}
         </h3>
-        <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
-          {lang === "zh"
-            ? `\u6b64\u86cb\u7cd5\u9700\u63d0\u524d ${leadTimeDays} \u5929\u4e0b\u5355\uff0c\u6700\u65e9\u53ef\u9009\u65e5\u671f\u4e3a ${minDateStr}\u3002`
-            : `This cake requires ${leadTimeDays} day${leadTimeDays > 1 ? "s" : ""} advance notice. Earliest available date is ${minDateStr}.`}
+        <p className="mt-2 text-xs leading-relaxed text-[color:var(--ink-soft)] break-words">
+          {lang === "zh" ? (
+            <>
+              此蛋糕需提前 {leadTimeDays} 天下单。
+              <br />
+              最早可选日期：{minDateStr}
+            </>
+          ) : (
+            <>
+              This cake requires {leadTimeDays} day{leadTimeDays > 1 ? "s" : ""} advance notice.
+              <br />
+              Earliest available date: {minDateStr}
+            </>
+          )}
         </p>
-        <input
-          ref={dateInputRef}
-          type="date"
-          value={pickupDate}
-          min={minDateStr}
-          onChange={(e) => {
-            setPickupDate(e.target.value);
-            setDateError(false);
-          }}
-          className={`mt-3 w-full sm:w-64 rounded-lg border bg-white/90 px-3 py-2 text-sm text-[color:var(--ink)] ${
-            dateError ? "border-[color:var(--accent-red)]" : "border-[color:var(--gold)]/30"
-          }`}
-        />
+        <div ref={calendarRef} className="relative mt-3 w-full sm:w-72">
+          <button
+            ref={dateInputRef}
+            type="button"
+            onClick={() => setCalendarOpen((open) => !open)}
+            aria-haspopup="dialog"
+            aria-expanded={calendarOpen}
+            className={`flex w-full items-center justify-between rounded-lg border bg-white/90 px-3 py-2 text-base text-left text-[color:var(--ink)] ${
+              dateError ? "border-[color:var(--accent-red)]" : "border-[color:var(--gold)]/30"
+            }`}
+          >
+            <span className={pickupDate ? "" : "text-[color:var(--ink-faint)]"}>
+              {pickupDate || (lang === "zh" ? "选择日期" : "Select a date")}
+            </span>
+            <span aria-hidden="true" className="text-[color:var(--ink-soft)]">📅</span>
+          </button>
+
+          {calendarOpen && (
+            <div
+              role="dialog"
+              aria-label={lang === "zh" ? "选择取货/配送日期" : "Select pickup/delivery date"}
+              className="absolute z-20 mt-2 w-full min-w-[280px] rounded-xl border border-[color:var(--gold)]/30 bg-white p-3 shadow-lg"
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => goToCalendarMonth(-1)}
+                  className="rounded-lg border border-[color:var(--gold)]/30 px-3 py-1.5 text-sm hover:bg-[color:var(--bg-soft)]"
+                  aria-label={lang === "zh" ? "上一个月" : "Previous month"}
+                >
+                  ‹
+                </button>
+                <p className="text-sm font-medium text-[color:var(--ink)]">{calendarMonthLabel}</p>
+                <button
+                  type="button"
+                  onClick={() => goToCalendarMonth(1)}
+                  className="rounded-lg border border-[color:var(--gold)]/30 px-3 py-1.5 text-sm hover:bg-[color:var(--bg-soft)]"
+                  aria-label={lang === "zh" ? "下一个月" : "Next month"}
+                >
+                  ›
+                </button>
+              </div>
+              <div className="grid grid-cols-7 gap-1 text-center text-xs text-[color:var(--ink-soft)]">
+                {weekdayLabels.map((label) => (
+                  <div key={label} className="py-1">
+                    {label}
+                  </div>
+                ))}
+                {calendarCells.map((cell, index) => {
+                  if (!cell) return <div key={`empty-${index}`} />;
+                  const isUnavailable = cell.dateStr < minDateStr;
+                  const isSelected = cell.dateStr === pickupDate;
+                  return (
+                    <button
+                      key={cell.dateStr}
+                      type="button"
+                      disabled={isUnavailable}
+                      aria-disabled={isUnavailable}
+                      aria-current={isSelected ? "date" : undefined}
+                      onClick={() => {
+                        setPickupDate(cell.dateStr);
+                        setDateError(false);
+                        setCalendarOpen(false);
+                      }}
+                      className={`aspect-square rounded-lg text-sm transition-colors ${
+                        isUnavailable
+                          ? "cursor-not-allowed text-[color:var(--ink-faint)]/50 bg-[color:var(--bg-soft)]/60"
+                          : isSelected
+                            ? "bg-[color:var(--primary)] text-white"
+                            : "bg-white text-[color:var(--ink)] hover:bg-[color:var(--bg-soft)]"
+                      }`}
+                    >
+                      {cell.day}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
+                {lang === "zh" ? "灰色日期不可选择（提前期不足）。" : "Greyed-out dates are unavailable (inside the lead time)."}
+              </p>
+            </div>
+          )}
+        </div>
         {dateError && (
           <p className="mt-2 text-sm font-medium text-[color:var(--accent-red)]">
             {!pickupDate
@@ -419,6 +542,13 @@ export default function CheckoutOrderForm({
           orderDetails={finalMessage}
           onClick={handleOrderClick}
         />
+        {bankTransferEnabled ? (
+          <BankTransferButton
+            lang={lang}
+            className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center"
+            onClick={handleOrderClick}
+          />
+        ) : null}
       </div>
       <p className="mt-2 text-left text-xs text-[color:var(--ink-soft)]/80">
         {lang === "zh"

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
@@ -7,6 +6,7 @@ import { getLang, t } from "@/lib/i18n";
 import { getFallbackCakeBySlug } from "@/lib/fallback-catalog";
 import { withResilientTimeout } from "@/lib/with-timeout";
 import BackButton from "@/components/BackButton";
+import SizeSelector from "@/components/SizeSelector";
 
 export const revalidate = 60;
 
@@ -45,59 +45,65 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
   const cakeDescription = lang === "zh" ? (resolvedCake.description_cn || resolvedCake.description) : resolvedCake.description;
 
   return (
-    <section className="grid gap-5 sm:gap-8 lg:grid-cols-2">
-      <div className="card-lux atelier-frame overflow-hidden">
-        <div className="product-media relative aspect-[16/10] w-full overflow-hidden rounded-[20px]">
+    <section className="md:grid md:gap-8 md:grid-cols-[2fr_3fr]">
+      <div className="hidden md:block card-lux atelier-frame overflow-hidden">
+        <div className="product-media relative aspect-[4/3] w-full max-h-[300px] overflow-hidden rounded-[20px]">
           <Image
             src={resolvedCake.image_url}
             alt={cakeName}
             fill
             priority
-            sizes="(max-width: 1024px) 100vw, 45vw"
+            sizes="32vw"
             className="object-cover"
           />
         </div>
       </div>
 
-      <article className="detail-card card-lux atelier-frame p-5 sm:p-8">
-        <div className="mb-3 flex items-center justify-between gap-3 sm:mb-2">
-          <p className="lux-kicker">{copy.artisanSelection}</p>
-          <BackButton lang={lang} fallbackHref="/" className="whitespace-nowrap" />
+      <article className="detail-card card-lux atelier-frame p-4 sm:p-8">
+        <div className="flex items-start gap-3 md:block">
+          <div className="md:hidden relative w-16 h-16 shrink-0 overflow-hidden rounded-xl product-media">
+            <Image src={resolvedCake.image_url} alt={cakeName} fill sizes="64px" className="object-cover" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-3">
+              <p className="lux-kicker">{copy.artisanSelection}</p>
+              <BackButton lang={lang} fallbackHref="/" className="whitespace-nowrap" />
+            </div>
+            <h1 className="heading-serif text-xl sm:text-3xl md:text-5xl leading-tight">{cakeName}</h1>
+          </div>
         </div>
-        <h1 className="heading-serif text-[1.86rem] sm:text-5xl leading-tight">{cakeName}</h1>
-        <p className="mt-3 text-[color:var(--ink-faint)] leading-relaxed text-[0.98rem]">{cakeDescription}</p>
+        <p className="mt-2 text-[color:var(--ink-faint)] leading-relaxed text-[0.92rem] line-clamp-2 md:line-clamp-none">{cakeDescription}</p>
 
-        <h2 className="mt-6 text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.ingredients}</h2>
-        <p className="mt-2">{resolvedCake.ingredients}</p>
+        <details className="mt-3 group" open>
+          <summary className="cursor-pointer select-none text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">
+            {copy.ingredients}
+          </summary>
+          <p className="mt-2">{resolvedCake.ingredients}</p>
+        </details>
 
-        <p className="mt-7 text-[color:var(--ink-soft)]">
+        <p className="mt-3 text-[0.9rem] text-[color:var(--ink-soft)]">
           {copy.leadTimePrefix}{" "}
-          <span className="font-bold text-[color:var(--accent-red)] text-[1.32em]">{resolvedCake.lead_time_days}</span>
+          <span className="font-bold text-[color:var(--accent-red)] text-[1.2em]">{resolvedCake.lead_time_days}</span>
           {" "}{copy.leadTimeSuffix}
         </p>
 
         {!cake ? (
-          <p className="mt-3 text-[0.86rem] text-[color:var(--ink-faint)]">
+          <p className="mt-2 text-[0.86rem] text-[color:var(--ink-faint)]">
             {lang === "zh" ? "当前显示离线商品信息。" : "Showing offline product data while database reconnects."}
           </p>
         ) : null}
 
-        <div className="divider-ornate mt-7" />
+        <div className="divider-ornate mt-4" />
 
-        <h2 className="mt-7 text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.availableSizes}</h2>
-        <ul className="mt-3 space-y-2.5">
-          {resolvedCake.sizes.filter((size) => size.available).map((size) => (
-            <li key={size.id} className="size-row rounded-xl border border-[color:var(--gold)]/28 px-4 py-3.5 bg-[color:var(--surface)]/92">
-              <div className="relative grid w-full gap-2 sm:flex sm:items-center sm:justify-between sm:gap-3">
-                <span className="font-medium heading-serif text-lg">{size.size}</span>
-                <span className="price-callout text-[color:var(--gold-deep)] font-semibold">S${size.price.toFixed(2)}</span>
-                <Link href={`/checkout?cake=${resolvedCake.slug}&size=${size.id}`} className="btn-lux text-xs w-full sm:w-auto">
-                  {copy.checkout}
-                </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <h2 className="mt-4 text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.availableSizes}</h2>
+        <div className="mt-3">
+          <SizeSelector
+            lang={lang}
+            cakeSlug={resolvedCake.slug}
+            sizes={resolvedCake.sizes.filter((size) => size.available).map((size) => ({ id: size.id, size: size.size, price: size.price }))}
+            checkoutLabel={copy.checkout}
+          />
+        </div>
       </article>
     </section>
   );

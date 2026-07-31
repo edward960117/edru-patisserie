@@ -800,6 +800,15 @@ button:disabled {
    FORM ELEMENTS & INPUT STYLING
    ═════════════════════════════════════════════════════════════ */
 
+/* iOS Safari auto-zooms the whole page when a focused form control has
+   font-size < 16px. Force 16px as a floor on every control so focusing
+   any input/select/textarea/calendar picker never triggers page zoom. */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
 .form-container {
   @apply max-w-md mx-auto;
   background: linear-gradient(180deg, #fbfcfe 0%, #f0f6fa 100%);

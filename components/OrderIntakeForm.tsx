@@ -49,7 +49,11 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
   const [reviewing, setReviewing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ customerName?: boolean; cakeName?: boolean; eventDate?: boolean }>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const cakeNameInputRef = useRef<HTMLInputElement>(null);
+  const eventDateInputRef = useRef<HTMLInputElement>(null);
 
   function resetAll() {
     setImageDataUrl("");
@@ -57,6 +61,7 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
     setDraft(emptyDraft);
     setReviewing(false);
     setStatusMessage("");
+    setFieldErrors({});
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -140,14 +145,25 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
 
   async function handleConfirm() {
     if (submitting) return;
-    if (!draft.customerName.trim() || !draft.cakeName.trim() || !draft.eventDate) {
+    const errors: { customerName?: boolean; cakeName?: boolean; eventDate?: boolean } = {};
+    if (!draft.customerName.trim()) errors.customerName = true;
+    if (!draft.cakeName.trim()) errors.cakeName = true;
+    if (!draft.eventDate) errors.eventDate = true;
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       setStatusMessage(
         lang === "zh"
           ? "请至少填写客户姓名、蛋糕名称与取货/配送日期。"
           : "Please fill in at least customer name, cake name, and the pickup/delivery date."
       );
+      // Scroll to whichever required field is missing, in the order it appears on the form
+      const targetRef = errors.customerName ? nameInputRef : errors.cakeName ? cakeNameInputRef : eventDateInputRef;
+      targetRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      targetRef.current?.focus();
       return;
     }
+    setFieldErrors({});
 
     setSubmitting(true);
     try {
@@ -222,7 +238,6 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              capture="environment"
               disabled={disabled || scanning}
               onChange={(event) => void handleFile(event.target.files?.[0] ?? null)}
               className="w-full rounded-xl border border-[color:var(--gold)]/30 bg-white/90 px-3 py-2 text-base leading-normal"
@@ -260,13 +275,32 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="text-sm">{lang === "zh" ? "客户姓名 *" : "Customer Name *"}
-              <input value={draft.customerName} onChange={(event) => setDraft((prev) => ({ ...prev, customerName: event.target.value }))} className="input-lux mt-1" required />
+              <input
+                ref={nameInputRef}
+                value={draft.customerName}
+                onChange={(event) => {
+                  setDraft((prev) => ({ ...prev, customerName: event.target.value }));
+                  setFieldErrors((prev) => ({ ...prev, customerName: false }));
+                }}
+                className={`input-lux mt-1 ${fieldErrors.customerName ? "input-error" : ""}`}
+                required
+              />
             </label>
             <label className="text-sm">{lang === "zh" ? "联系电话" : "Phone"}
               <input value={draft.customerPhone} onChange={(event) => setDraft((prev) => ({ ...prev, customerPhone: event.target.value }))} className="input-lux mt-1" />
             </label>
             <label className="text-sm">{lang === "zh" ? "蛋糕名称 *" : "Cake Name *"}
-              <input value={draft.cakeName} onChange={(event) => setDraft((prev) => ({ ...prev, cakeName: event.target.value }))} className="input-lux mt-1" list="known-cake-names" required />
+              <input
+                ref={cakeNameInputRef}
+                value={draft.cakeName}
+                onChange={(event) => {
+                  setDraft((prev) => ({ ...prev, cakeName: event.target.value }));
+                  setFieldErrors((prev) => ({ ...prev, cakeName: false }));
+                }}
+                className={`input-lux mt-1 ${fieldErrors.cakeName ? "input-error" : ""}`}
+                list="known-cake-names"
+                required
+              />
               <datalist id="known-cake-names">
                 {knownCakeNames.map((name) => <option key={name} value={name} />)}
               </datalist>
@@ -281,7 +315,17 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
               <input type="number" min={1} value={draft.quantity} onChange={(event) => setDraft((prev) => ({ ...prev, quantity: event.target.value }))} className="input-lux mt-1" />
             </label>
             <label className="text-sm">{lang === "zh" ? "取货/配送日期 *" : "Pickup/Delivery Date *"}
-              <input type="date" value={draft.eventDate} onChange={(event) => setDraft((prev) => ({ ...prev, eventDate: event.target.value }))} className="input-lux mt-1" required />
+              <input
+                ref={eventDateInputRef}
+                type="date"
+                value={draft.eventDate}
+                onChange={(event) => {
+                  setDraft((prev) => ({ ...prev, eventDate: event.target.value }));
+                  setFieldErrors((prev) => ({ ...prev, eventDate: false }));
+                }}
+                className={`input-lux mt-1 ${fieldErrors.eventDate ? "input-error" : ""}`}
+                required
+              />
             </label>
             <label className="text-sm">{lang === "zh" ? "取货方式" : "Fulfillment"}
               <select value={draft.fulfillment} onChange={(event) => setDraft((prev) => ({ ...prev, fulfillment: event.target.value }))} className="select-premium mt-1">

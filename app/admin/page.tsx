@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { getSessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import { getLang, t } from "@/lib/i18n";
 import { readSiteAnnouncement } from "@/lib/announcement";
+import { readPaymentSettings } from "@/lib/payment-settings";
 import { fallbackCategories } from "@/lib/fallback-catalog";
 import { withResilientTimeout } from "@/lib/with-timeout";
 
@@ -48,9 +49,10 @@ export default async function AdminPage() {
   } satisfies Prisma.OrderSelect;
   let orders: Prisma.OrderGetPayload<{ select: typeof orderListSelect }>[] = [];
   let announcement = await readSiteAnnouncement();
+  let paymentSettings = await readPaymentSettings();
 
   try {
-    const [dbCategories, dbCakes, dbOrders, dbAnnouncement] = await Promise.all([
+    const [dbCategories, dbCakes, dbOrders, dbAnnouncement, dbPaymentSettings] = await Promise.all([
       withResilientTimeout(() => prisma.category.findMany({ orderBy: { id: "asc" } }), 1600),
       withResilientTimeout(() => prisma.cake.findMany({ include: { sizes: true }, orderBy: { id: "desc" } }), 1800),
       withResilientTimeout(
@@ -62,12 +64,14 @@ export default async function AdminPage() {
         1800
       ),
       readSiteAnnouncement(),
+      readPaymentSettings(),
     ]);
 
     categories = dbCategories;
     cakes = dbCakes;
     orders = dbOrders;
     announcement = dbAnnouncement;
+    paymentSettings = dbPaymentSettings;
   } catch {
     dbUnavailable = true;
   }
@@ -109,6 +113,7 @@ export default async function AdminPage() {
         }))}
         dbUnavailable={dbUnavailable}
         initialAnnouncement={announcement}
+        initialPaymentSettings={paymentSettings}
       />
     </section>
   );

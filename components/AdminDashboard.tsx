@@ -36,6 +36,9 @@ interface Props {
     messageEn: string;
     messageZh: string;
   };
+  initialPaymentSettings: {
+    bankTransferEnabled: boolean;
+  };
 }
 
 const defaultSizes: CakeSize[] = [
@@ -97,7 +100,7 @@ function parsePrice(raw: string) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-export default function AdminDashboard({ lang, categories, initialCakes, initialOrders = [], dbUnavailable = false, initialAnnouncement }: Props) {
+export default function AdminDashboard({ lang, categories, initialCakes, initialOrders = [], dbUnavailable = false, initialAnnouncement, initialPaymentSettings }: Props) {
   const router = useRouter();
   const copy = t(lang);
   const [categoryList, setCategoryList] = useState(categories);
@@ -112,6 +115,9 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
   const [categoryMessage, setCategoryMessage] = useState("");
   const [announcement, setAnnouncement] = useState(initialAnnouncement);
   const [announcementMessage, setAnnouncementMessage] = useState("");
+  const [paymentSettings, setPaymentSettings] = useState(initialPaymentSettings);
+  const [paymentSettingsMessage, setPaymentSettingsMessage] = useState("");
+  const [savingPaymentSettings, setSavingPaymentSettings] = useState(false);
   const [savingCake, setSavingCake] = useState(false);
   const [savingCategory, setSavingCategory] = useState(false);
   const [savingAnnouncement, setSavingAnnouncement] = useState(false);
@@ -121,7 +127,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
   const [confirmState, setConfirmState] = useState<{ message: string; danger?: boolean } | null>(null);
   const [errorPopupMessage, setErrorPopupMessage] = useState<string | null>(null);
   const confirmResolverRef = useRef<((value: boolean) => void) | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "cakes" | "orders" | "announcement">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "cakes" | "orders" | "announcement" | "payment">("overview");
   const cakeFormRef = useRef<HTMLDivElement>(null);
 
   const stats = useMemo(() => ({
@@ -640,12 +646,60 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
     }
   }
 
+  async function savePaymentSettings(event: React.FormEvent) {
+    event.preventDefault();
+    if (savingPaymentSettings) return;
+    setPaymentSettingsMessage("");
+
+    const confirmed = await askConfirm(
+      paymentSettings.bankTransferEnabled
+        ? (lang === "zh" ? "确定要启用 PayNow / 网银转账选项吗？" : "Enable the PayNow / Internet Banking option on checkout?")
+        : (lang === "zh" ? "确定要停用 PayNow / 网银转账选项吗？" : "Disable the PayNow / Internet Banking option on checkout?")
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setSavingPaymentSettings(true);
+
+    try {
+      const response = await fetch("/api/admin/payment-settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(paymentSettings),
+      });
+
+      if (!response.ok) {
+        const result = (await response.json().catch(() => ({}))) as { error?: string };
+        if (response.status === 401) {
+          window.location.assign("/login?next=/admin");
+          return;
+        }
+        setPaymentSettingsMessage(result.error ?? (lang === "zh" ? "保存支付设置失败" : "Failed to save payment settings"));
+        return;
+      }
+
+      const result = (await response.json().catch(() => ({}))) as {
+        paymentSettings?: { bankTransferEnabled: boolean };
+      };
+      if (result.paymentSettings) {
+        setPaymentSettings(result.paymentSettings);
+      }
+
+      router.refresh();
+      setPaymentSettingsMessage(lang === "zh" ? "支付设置已更新。" : "Payment settings updated.");
+    } finally {
+      setSavingPaymentSettings(false);
+    }
+  }
+
   const tabs: Array<{ id: typeof activeTab; label: string; icon: string; count?: number }> = [
     { id: "overview", label: lang === "zh" ? "总览" : "Overview", icon: "📊" },
     { id: "categories", label: lang === "zh" ? "分类管理" : "Categories", icon: "🗂️", count: stats.totalCategories },
     { id: "cakes", label: lang === "zh" ? "蛋糕管理" : "Cakes", icon: "🎂", count: stats.totalCakes },
     { id: "orders", label: lang === "zh" ? "订单记录" : "Orders", icon: "🗓️", count: orders.length },
     { id: "announcement", label: lang === "zh" ? "公告设置" : "Announcement", icon: "📣" },
+    { id: "payment", label: lang === "zh" ? "支付设置" : "Payment Settings", icon: "💳" },
   ];
 
   function goToNewCake() {
@@ -1084,6 +1138,38 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
         {announcementMessage ? (
           <div className="mt-4 rounded-xl border border-[color:var(--gold)]/35 bg-[color:var(--bg-soft)] px-4 py-3 text-sm text-[color:var(--ink-soft)]" role="status" aria-live="polite">
             {announcementMessage}
+          </div>
+        ) : null}
+      </section>
+      ) : null}
+
+      {/* Payment settings tab */}
+      {activeTab === "payment" ? (
+      <section className="card-lux p-6">
+        <h2 className="heading-serif text-3xl mb-4">{lang === "zh" ? "支付设置" : "Payment Settings"}</h2>
+        <p className="mb-4 text-sm text-[color:var(--ink-soft)]">
+          {lang === "zh"
+            ? "控制结账页面上顾客可见的付款方式。关闭后，该选项将从结账页面隐藏。"
+            : "Control which payment options customers see on the checkout page. Turning an option off hides it from checkout."}
+        </p>
+        <form onSubmit={savePaymentSettings} className="space-y-4">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={paymentSettings.bankTransferEnabled}
+              onChange={(event) => setPaymentSettings((prev) => ({ ...prev, bankTransferEnabled: event.target.checked }))}
+            />
+            {lang === "zh" ? "启用 PayNow / 网银转账付款方式" : "Enable PayNow / Internet Banking payment option"}
+          </label>
+
+          <button disabled={savingPaymentSettings || dbUnavailable} className="px-5 py-2 rounded-xl bg-[color:var(--primary)] text-white disabled:opacity-70 hover:bg-[color:var(--primary-hover)]">
+            {savingPaymentSettings ? copy.adminSaving : lang === "zh" ? "保存支付设置" : "Save Payment Settings"}
+          </button>
+        </form>
+
+        {paymentSettingsMessage ? (
+          <div className="mt-4 rounded-xl border border-[color:var(--gold)]/35 bg-[color:var(--bg-soft)] px-4 py-3 text-sm text-[color:var(--ink-soft)]" role="status" aria-live="polite">
+            {paymentSettingsMessage}
           </div>
         ) : null}
       </section>

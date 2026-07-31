@@ -136,11 +136,17 @@ export default function OrderCalendar({ lang, orders, disabled = false, onUpdate
         <button type="button" onClick={() => goToMonth(1)} className="rounded-lg border border-[color:var(--gold)]/30 px-3 py-1.5 text-sm hover:bg-white/60">›</button>
       </div>
 
+      <div className="mb-2 flex items-center gap-1.5 text-[0.7rem] text-[color:var(--ink-soft)]">
+        <span className="h-2.5 w-2.5 rounded-sm bg-amber-200 border border-amber-400" />
+        {lang === "zh" ? "该日期已有订单" : "Has order(s)"}
+      </div>
+
       <div className="grid grid-cols-7 gap-1 text-center text-xs text-[color:var(--ink-soft)]">
         {weekdayLabels.map((label) => <div key={label} className="py-1">{label}</div>)}
         {cells.map((cell, index) => {
           if (!cell) return <div key={`empty-${index}`} />;
           const dayOrders = ordersByDate.get(cell.key) ?? [];
+          const hasOrders = dayOrders.length > 0;
           const isToday = cell.key === todayKey;
           const isSelected = cell.key === selectedDateKey;
           return (
@@ -151,14 +157,16 @@ export default function OrderCalendar({ lang, orders, disabled = false, onUpdate
               className={`relative flex aspect-square flex-col items-center justify-center rounded-lg border text-sm transition-colors ${
                 isSelected
                   ? "border-[color:var(--primary)] bg-[color:var(--primary)] text-white"
+                  : hasOrders
+                  ? "border-amber-400 bg-amber-100 hover:bg-amber-200"
                   : isToday
                   ? "border-[color:var(--primary)]/60 bg-white"
                   : "border-transparent bg-white/60 hover:bg-white"
               }`}
             >
               {cell.day}
-              {dayOrders.length > 0 ? (
-                <span className={`mt-0.5 rounded-full px-1.5 text-[0.62rem] ${isSelected ? "bg-white/25" : "bg-[color:var(--gold)]/25 text-[color:var(--ink)]"}`}>
+              {hasOrders ? (
+                <span className={`mt-0.5 rounded-full px-1.5 text-[0.62rem] ${isSelected ? "bg-white/25" : "bg-amber-500/90 text-white"}`}>
                   {dayOrders.length}
                 </span>
               ) : null}

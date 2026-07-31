@@ -5,8 +5,10 @@ import { WHATSAPP_NUMBER } from "@/lib/contact";
 import { getFallbackCakeBySlug } from "@/lib/fallback-catalog";
 import CheckoutOrderForm from "@/components/CheckoutOrderForm";
 import WeChatQrButton from "@/components/WeChatQrButton";
+import BankTransferButton from "@/components/BankTransferButton";
 import BackButton from "@/components/BackButton";
 import { withResilientTimeout } from "@/lib/with-timeout";
+import { readPaymentSettings } from "@/lib/payment-settings";
 
 const getCheckoutCakeBySlug = unstable_cache(
   async (slug: string) => {
@@ -22,6 +24,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const copy = t(lang);
   const cakeSlug = params.cake;
   const sizeId = params.size ? Number(params.size) : null;
+  const paymentSettings = await readPaymentSettings();
 
   let cake = null;
   try {
@@ -126,6 +129,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             whatsappNumber={WHATSAPP_NUMBER}
             baseMessage={whatsappRawMessage}
             copy={copy}
+            bankTransferEnabled={paymentSettings.bankTransferEnabled}
           />
         </div>
       ) : (
@@ -141,6 +145,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
               </span>
             </span>
             <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderDetails={whatsappRawMessage} />
+            {paymentSettings.bankTransferEnabled ? (
+              <BankTransferButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" />
+            ) : null}
           </div>
           <p className="text-xs text-[color:var(--ink-soft)]/80">
             {lang === "zh"
