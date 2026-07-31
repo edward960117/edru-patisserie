@@ -25,7 +25,12 @@ export const cakeInputSchema = z
     description: z.string().min(1, "Description is required."),
     descriptionCn: z.string().min(1, "Chinese description is required."),
     ingredients: z.string().min(1, "Ingredients are required."),
-    imageUrl: z.string().url().or(z.string().startsWith("data:image/")),
+    // Existing cakes store relative paths like "/cakes/foo.jpg"; new uploads come in as data URLs.
+    imageUrl: z
+      .string()
+      .url()
+      .or(z.string().startsWith("data:image/"))
+      .or(z.string().startsWith("/")),
     leadTimeDays: z.number().int().min(1, "Lead time must be at least 1 day.").max(30),
     active: z.boolean(),
     featured: z.boolean(),

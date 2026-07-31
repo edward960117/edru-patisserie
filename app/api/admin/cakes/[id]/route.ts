@@ -91,9 +91,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     });
 
     await prisma.cakeSize.deleteMany({ where: { cake_id: cakeId } });
-    await prisma.cakeSize.createMany({
-      data: data.sizes.map((size) => ({ cake_id: cakeId, size: size.size, price: size.price, available: size.available })),
-    });
+    // createMany triggers an implicit transaction, which the Neon HTTP adapter doesn't support — insert rows one by one instead.
+    for (const size of data.sizes) {
+      await prisma.cakeSize.create({
+        data: { cake_id: cakeId, size: size.size, price: size.price, available: size.available },
+      });
+    }
 
     const category = await prisma.category.findUnique({ where: { id: data.categoryId }, select: { slug: true } });
     revalidateTag("cakes");
@@ -120,6 +123,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     const message = getErrorText(error);
+    const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code ?? "") : "";
     if (isDuplicateSlugError(message)) {
       const conflict = parseUniqueConflict(message);
       const conflictLabel = conflict.field === "slug" ? "slug" : conflict.field;
@@ -128,7 +132,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         : "Slug already exists. Please use another slug.";
       return NextResponse.json({ error: readable, field: conflict.field, value: conflict.value }, { status: 409 });
     }
-    return NextResponse.json({ error: "Failed to update cake. Please try again." }, { status: 500 });
+    if (code === "P2000") {
+      return NextResponse.json({ error: "One of the fields is too long. Please shorten text or upload a smaller image." }, { status: 400 });
+    }
+    if (code === "P2003") {
+      return NextResponse.json({ error: "Invalid category selected. Please choose a valid category." }, { status: 400 });
+    }
+    if (message.toLowerCase().includes("payload") || message.toLowerCase().includes("body") || message.toLowerCase().includes("too large")) {
+      return NextResponse.json({ error: "Image payload is too large. Please upload a smaller image." }, { status: 413 });
+    }
+    console.error("PUT /api/admin/cakes/[id] failed", error);
+    return NextResponse.json({ error: "Failed to update cake. Please try again.", detail: message || "Unknown server error" }, { status: 500 });
   }
 }
 

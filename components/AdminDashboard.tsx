@@ -414,15 +414,22 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
               : `Please modify ${result.field ?? "this field"}${result.value ? ` (current value: ${result.value})` : ""} and try again.`)
           : "";
         const errorText = `${result.error ?? copy.saveFailed}${conflictHint ? ` ${conflictHint}` : ""}`;
+        console.error("saveCake failed", { status: response.status, result });
         setMessage(errorText);
         showErrorPopup(errorText);
         return;
       }
 
-      await refreshCakes();
+      // The save already succeeded server-side; don't let a refresh hiccup report it as failed.
       resetForm();
       setMessage(copy.saveSuccess);
-    } catch {
+      try {
+        await refreshCakes();
+      } catch (refreshError) {
+        console.error("Cake saved, but refreshing the list failed", refreshError);
+      }
+    } catch (error) {
+      console.error("saveCake threw before a response was received", error);
       const fallbackText = lang === "zh" ? "保存失败，请检查输入后重试。" : "Save failed. Please check your inputs and try again.";
       setMessage(fallbackText);
       showErrorPopup(fallbackText);

@@ -10,40 +10,42 @@ import { getCustomerDisplayName } from "@/lib/auth/customer-display";
 
 export const revalidate = 60;
 
-const HOME_CATEGORY_SLUGS = [
-  "for-her",
-  "for-him",
-  "mousse-cakes",
-  "lifes-four-joys",
-  "designer-collection",
-  "afternoon-tea-series",
-  "custom-cakes",
-  "cake-accessories",
+// Fixed homepage display order, keyed by category id (stable even if slug/name is edited later).
+// Row 1: For Her, For Him — Row 2: Mousse Cakes, Life's Four Joys — Row 3: Designer Collection, Afternoon Tea
+// Row 4: Custom Cakes, Cake Accessories — then any other categories (e.g. Today's Recommendation) after.
+const HOME_CATEGORY_ID_ORDER = [
+  3, // for-her
+  2, // for-edward (For Him)
+  6, // mousse-cakes
+  7, // lifes-four-joys
+  8, // designer-collection
+  9, // afternoon-tea-series
+  4, // custom-cakes
+  10, // cake-accessories
 ];
 
-const HOME_CATEGORY_ORDER = new Map(
-  HOME_CATEGORY_SLUGS.map((slug, index) => [slug, index])
-);
+const HOME_CATEGORY_ORDER = new Map(HOME_CATEGORY_ID_ORDER.map((id, index) => [id, index]));
 
-function sortByHomeCategoryOrder<T extends { slug: string }>(items: T[]): T[] {
+function sortByHomeCategoryOrder<T extends { id: number }>(items: T[]): T[] {
   return [...items].sort((a, b) => {
-    const aIndex = HOME_CATEGORY_ORDER.get(a.slug) ?? Number.MAX_SAFE_INTEGER;
-    const bIndex = HOME_CATEGORY_ORDER.get(b.slug) ?? Number.MAX_SAFE_INTEGER;
+    const aIndex = HOME_CATEGORY_ORDER.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+    const bIndex = HOME_CATEGORY_ORDER.get(b.id) ?? Number.MAX_SAFE_INTEGER;
     return aIndex - bIndex;
   });
 }
 
 const getHomeCategories = unstable_cache(
   async () => {
-    return prisma.category.findMany({
-      where: {
-        slug: { in: HOME_CATEGORY_SLUGS },
-      },
+    const categories = await prisma.category.findMany({
       orderBy: { id: "asc" },
+      include: { _count: { select: { cakes: { where: { active: true } } } } },
     });
+    // Hide empty/test categories from customers; always keep the special contact/static cards.
+    const alwaysShow = new Set(["custom-cakes", "cake-accessories"]);
+    return categories.filter((category) => alwaysShow.has(category.slug) || category._count.cakes > 0);
   },
   ["home-categories"],
-  { revalidate: 300, tags: ["catalog"] }
+  { revalidate: 300, tags: ["catalog", "cakes"] }
 );
 
 export default async function HomePage() {
@@ -55,10 +57,8 @@ export default async function HomePage() {
   try {
     const dbCategories = await withResilientTimeout(() => getHomeCategories(), 1400);
     if (dbCategories.length > 0) {
-      // Merge: use DB results, fill any missing slugs from fallback
-      const dbSlugs = new Set(dbCategories.map((c) => c.slug));
-      const missing = fallbackCategories.filter((c) => !dbSlugs.has(c.slug));
-      categories = sortByHomeCategoryOrder([...dbCategories, ...missing]);
+      // Database reachable: show exactly what's in admin, no fallback/demo categories mixed in.
+      categories = sortByHomeCategoryOrder(dbCategories);
     }
   } catch {
     // Keep homepage available if the database is unavailable.
