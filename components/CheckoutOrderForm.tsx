@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import WeChatQrButton from "@/components/WeChatQrButton";
 import { type Lang } from "@/lib/i18n-shared";
+import { CANDLES } from "@/lib/candles";
 
 interface AddOn {
   id: string;
@@ -19,16 +20,25 @@ const ADD_ONS: AddOn[] = [
   { id: "nothing", label: "Do Not Need Anything", label_cn: "无需任何添加", price: 0, isRequired: true },
 ];
 
+
 interface CheckoutOrderFormProps {
   cakeName: string;
   cakeSlug: string;
   sizeId: number;
   sizeSize: string;
   sizePrice: number;
+  leadTimeDays: number;
   lang: Lang;
   whatsappNumber: string;
   baseMessage: string;
   copy: any;
+}
+
+function formatDateInput(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 export default function CheckoutOrderForm({
@@ -37,16 +47,47 @@ export default function CheckoutOrderForm({
   sizeId,
   sizeSize,
   sizePrice,
+  leadTimeDays,
   lang,
   whatsappNumber,
   baseMessage,
   copy,
 }: CheckoutOrderFormProps) {
-  const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set(["nothing"])); // Default: "Do not need anything"
-  const [error, setError] = useState<string>("");
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + leadTimeDays);
+  const minDateStr = formatDateInput(minDate);
+
+  const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set()); // Nothing ticked by default
+  const [hasError, setHasError] = useState(false);
+  const [fulfillmentMethod, setFulfillmentMethod] = useState<"pickup" | "delivery" | "">("");
+  const [fulfillmentError, setFulfillmentError] = useState(false);
+  const fulfillmentSectionRef = useRef<HTMLDivElement>(null);
+  const [pickupDate, setPickupDate] = useState(""); // Empty by default so user must actively pick a date
+  const [dateError, setDateError] = useState(false);
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const addOnsSectionRef = useRef<HTMLDivElement>(null);
+  const [showCandleModal, setShowCandleModal] = useState(false);
+  const [selectedCandleId, setSelectedCandleId] = useState<string | null>(null);
+  const [pendingCandleId, setPendingCandleId] = useState<string | null>(null);
 
   const toggleAddOn = (id: string) => {
-    setError(""); // Clear error when user interacts
+    setHasError(false); // Clear error when user interacts
+
+    if (id === "candles") {
+      if (selectedAddOns.has("candles")) {
+        // Unchecking: remove the candle add-on and clear the selection
+        const newSet = new Set(selectedAddOns);
+        newSet.delete("candles");
+        setSelectedAddOns(newSet);
+        setSelectedCandleId(null);
+      } else {
+        // Ticking: open the picker, only add to the set once a candle is confirmed
+        setPendingCandleId(selectedCandleId ?? CANDLES[0].id);
+        setShowCandleModal(true);
+      }
+      return;
+    }
+
     const newSet = new Set(selectedAddOns);
     
     // If toggling "nothing", clear other selections
@@ -56,6 +97,7 @@ export default function CheckoutOrderForm({
       } else {
         newSet.clear();
         newSet.add("nothing");
+        setSelectedCandleId(null);
       }
     } else {
       // If selecting an add-on, remove "nothing"
@@ -67,22 +109,79 @@ export default function CheckoutOrderForm({
       }
     }
     
-    // Ensure at least one option is selected
-    if (newSet.size === 0) {
-      newSet.add("nothing");
-    }
-    
     setSelectedAddOns(newSet);
   };
 
+  const confirmCandleSelection = () => {
+    if (!pendingCandleId) return;
+    const newSet = new Set(selectedAddOns);
+    newSet.delete("nothing");
+    newSet.add("candles");
+    setSelectedAddOns(newSet);
+    setSelectedCandleId(pendingCandleId);
+    setShowCandleModal(false);
+  };
+
+  const cancelCandleSelection = () => {
+    setShowCandleModal(false);
+  };
+
   const handleOrderClick = (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>) => {
+    let hasIssue = false;
+    let shouldFocusFulfillment = false;
+    let shouldFocusDate = false;
+    let shouldFocusAddOns = false;
+    if (!fulfillmentMethod) {
+      hasIssue = true;
+      shouldFocusFulfillment = true;
+      setFulfillmentError(true);
+    }
+    if (!pickupDate || pickupDate < minDateStr) {
+      hasIssue = true;
+      shouldFocusDate = true;
+      setDateError(true);
+    }
     if (selectedAddOns.size === 0) {
+      hasIssue = true;
+      shouldFocusAddOns = true;
+      setHasError(true);
+    }
+    if (hasIssue) {
       e.preventDefault();
-      setError(lang === "zh" ? "请至少选择一个选项" : "Please select at least one option");
+    }
+    // Scroll to whichever required field is missing, in the order it appears on the page
+    if (shouldFocusFulfillment) {
+      fulfillmentSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else if (shouldFocusDate) {
+      dateInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      dateInputRef.current?.focus();
+    } else if (shouldFocusAddOns) {
+      addOnsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
 
-  const selectedAddOnDetails = ADD_ONS.filter((addon) => selectedAddOns.has(addon.id) && addon.id !== "nothing");
+  const selectedCandle = selectedCandleId ? CANDLES.find((candle) => candle.id === selectedCandleId) ?? null : null;
+
+  const pickupLabelText = lang === "zh" ? "到店自取" : "Store Pickup";
+  const pickupHintText = lang === "zh" ? "取货费用：免费。" : "Pickup fee: Free.";
+  const deliveryLabelText = lang === "zh" ? "配送上门" : "Delivery";
+  const deliveryHintText =
+    lang === "zh"
+      ? "配送费用：S$15 至 S$25，视天气情况及配送服务公司而定。"
+      : "Delivery fee: S$15 to S$25, depending on weather conditions and the delivery service company.";
+
+  const selectedAddOnDetails = ADD_ONS.filter((addon) => selectedAddOns.has(addon.id) && addon.id !== "nothing" && addon.id !== "candles").map((addon) => ({
+    label: addon.label,
+    label_cn: addon.label_cn,
+    price: addon.price,
+  }));
+  if (selectedAddOns.has("candles") && selectedCandle) {
+    selectedAddOnDetails.unshift({
+      label: selectedCandle.name_en,
+      label_cn: selectedCandle.name_cn,
+      price: selectedCandle.price,
+    });
+  }
   const addOnTotal = selectedAddOnDetails.reduce((sum, addon) => sum + addon.price, 0);
   const grandTotal = sizePrice + addOnTotal;
 
@@ -100,13 +199,114 @@ export default function CheckoutOrderForm({
         : `\nCake Price: S$${sizePrice.toFixed(2)}\nAdd-ons Total: S$${addOnTotal.toFixed(2)}\nGrand Total: S$${grandTotal.toFixed(2)}`
       : "";
 
-  const finalMessage = baseMessage + addOnsText + totalText;
+  const dateText = pickupDate
+    ? lang === "zh"
+      ? `\n\n\u53d6\u8d27/\u914d\u9001\u65e5\u671f: ${pickupDate}`
+      : `\n\nPickup/Delivery Date: ${pickupDate}`
+    : "";
+
+  const fulfillmentText = fulfillmentMethod
+    ? lang === "zh"
+      ? `\n取货方式: ${fulfillmentMethod === "pickup" ? "到店自取" : "配送上门"}`
+      : `\nFulfillment: ${fulfillmentMethod === "pickup" ? "Store Pickup" : "Delivery"}`
+    : "";
+
+  const finalMessage = baseMessage + fulfillmentText + dateText + addOnsText + totalText;
   const encodedMessage = encodeURIComponent(finalMessage);
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
   return (
     <div>
-      <div className="mt-7 rounded-2xl border border-[color:var(--secondary)]/25 bg-[color:var(--secondary)]/5 p-5 sm:p-6">
+      <div ref={fulfillmentSectionRef} className="mt-7 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/55 p-5 sm:p-6">
+        <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
+          {lang === "zh" ? "取货方式（必选）" : "Fulfillment Method (Required)"}
+        </h3>
+        <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
+          {lang === "zh" ? "请选择到店自取或配送上门：" : "Please choose store pickup or delivery:"}
+        </p>
+
+        <div className="mt-4 space-y-3">
+          <label className={`flex items-center gap-3 cursor-pointer rounded-lg border p-3 transition-colors ${
+            fulfillmentMethod === "pickup" ? "border-[color:var(--primary)] bg-white/50" : "border-[color:var(--gold)]/15 hover:bg-white/40"
+          }`}>
+            <input
+              type="radio"
+              name="fulfillment-method"
+              checked={fulfillmentMethod === "pickup"}
+              onChange={() => {
+                setFulfillmentMethod("pickup");
+                setFulfillmentError(false);
+              }}
+              className="w-5 h-5 accent-[color:var(--primary)] cursor-pointer"
+            />
+            <div className="flex-1">
+              <span className="text-sm font-medium text-[color:var(--ink)]">{pickupLabelText}</span>
+              <p className="text-xs text-[color:var(--ink-soft)]">{pickupHintText}</p>
+            </div>
+          </label>
+          <label className={`flex items-center gap-3 cursor-pointer rounded-lg border p-3 transition-colors ${
+            fulfillmentMethod === "delivery" ? "border-[color:var(--primary)] bg-white/50" : "border-[color:var(--gold)]/15 hover:bg-white/40"
+          }`}>
+            <input
+              type="radio"
+              name="fulfillment-method"
+              checked={fulfillmentMethod === "delivery"}
+              onChange={() => {
+                setFulfillmentMethod("delivery");
+                setFulfillmentError(false);
+              }}
+              className="w-5 h-5 accent-[color:var(--primary)] cursor-pointer"
+            />
+            <div className="flex-1">
+              <span className="text-sm font-medium text-[color:var(--ink)]">{deliveryLabelText}</span>
+              <p className="text-xs text-[color:var(--ink-soft)]">{deliveryHintText}</p>
+            </div>
+          </label>
+        </div>
+
+        {fulfillmentError && (
+          <p className="mt-3 text-sm font-medium text-[color:var(--accent-red)]">
+            {lang === "zh" ? "请选择取货或配送方式。" : "Please choose a pickup or delivery option."}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/55 p-5 sm:p-6">
+        <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
+          {lang === "zh" ? "取货/配送日期" : "Pickup / Delivery Date"}
+        </h3>
+        <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
+          {lang === "zh"
+            ? `\u6b64\u86cb\u7cd5\u9700\u63d0\u524d ${leadTimeDays} \u5929\u4e0b\u5355\uff0c\u6700\u65e9\u53ef\u9009\u65e5\u671f\u4e3a ${minDateStr}\u3002`
+            : `This cake requires ${leadTimeDays} day${leadTimeDays > 1 ? "s" : ""} advance notice. Earliest available date is ${minDateStr}.`}
+        </p>
+        <input
+          ref={dateInputRef}
+          type="date"
+          value={pickupDate}
+          min={minDateStr}
+          onChange={(e) => {
+            setPickupDate(e.target.value);
+            setDateError(false);
+          }}
+          className={`mt-3 w-full sm:w-64 rounded-lg border bg-white/90 px-3 py-2 text-sm text-[color:var(--ink)] ${
+            dateError ? "border-[color:var(--accent-red)]" : "border-[color:var(--gold)]/30"
+          }`}
+        />
+        {dateError && (
+          <p className="mt-2 text-sm font-medium text-[color:var(--accent-red)]">
+            {!pickupDate
+              ? lang === "zh"
+                ? "请选择取货/配送日期。"
+                : "Please choose a pickup/delivery date."
+              : lang === "zh"
+                ? `请选择不早于 ${minDateStr} 的日期。`
+                : `Please choose a date on or after ${minDateStr}.`}
+          </p>
+        )}
+      </div>
+
+      <div ref={addOnsSectionRef} className="mt-6 rounded-2xl border border-[color:var(--secondary)]/25 bg-[color:var(--secondary)]/5 p-5 sm:p-6">
         <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
           {lang === "zh" ? "添加项目（必选）" : "Add-ons (Required)"}
         </h3>
@@ -127,20 +327,54 @@ export default function CheckoutOrderForm({
                 <span className="text-sm font-medium text-[color:var(--ink)]">
                   {lang === "zh" ? addon.label_cn : addon.label}
                 </span>
+                {addon.id === "candles" && selectedAddOns.has("candles") && selectedCandle && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className="text-xs text-[color:var(--secondary)]">
+                      {lang === "zh" ? selectedCandle.name_cn : selectedCandle.name_en}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPendingCandleId(selectedCandleId);
+                        setShowCandleModal(true);
+                      }}
+                      className="text-xs font-semibold text-[color:var(--primary)] underline underline-offset-2"
+                    >
+                      {lang === "zh" ? "更改" : "Change"}
+                    </button>
+                  </div>
+                )}
               </div>
-              {addon.price > 0 && <span className="text-sm font-semibold text-[color:var(--primary)]">S${addon.price.toFixed(2)}</span>}
+              {addon.id === "candles"
+                ? selectedAddOns.has("candles") && selectedCandle && (
+                    <span className="text-sm font-semibold text-[color:var(--primary)]">S${selectedCandle.price.toFixed(2)}</span>
+                  )
+                : addon.price > 0 && <span className="text-sm font-semibold text-[color:var(--primary)]">S${addon.price.toFixed(2)}</span>}
             </label>
           ))}
         </div>
 
-        {error && (
+        {hasError && (
           <div className="mt-4 rounded-lg border border-[color:var(--accent-red)]/30 bg-[color:var(--accent-red)]/5 p-3">
-            <p className="text-sm font-medium text-[color:var(--accent-red)]">{error}</p>
+            <p className="text-sm font-medium text-[color:var(--accent-red)]">
+              {lang === "zh" ? "请至少选择一个选项" : "Please select at least one option"}
+            </p>
           </div>
         )}
 
         <div className="mt-5 rounded-lg border border-[color:var(--primary)]/30 bg-[color:var(--primary)]/5 p-4">
           <div className="grid grid-cols-2 gap-4 sm:gap-6">
+            <div>
+              <p className="text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "取货方式" : "Fulfillment"}</p>
+              <p className="text-lg font-bold text-[color:var(--ink)]">
+                {fulfillmentMethod ? (fulfillmentMethod === "pickup" ? pickupLabelText : deliveryLabelText) : "-"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "取货/配送日期" : "Pickup/Delivery Date"}</p>
+              <p className="text-lg font-bold text-[color:var(--ink)]">{pickupDate || "-"}</p>
+            </div>
             <div>
               <p className="text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "蛋糕价格" : "Cake Price"}</p>
               <p className="text-lg font-bold text-[color:var(--ink)]">S${sizePrice.toFixed(2)}</p>
@@ -164,16 +398,21 @@ export default function CheckoutOrderForm({
       <p className="mt-5 text-left text-sm leading-relaxed text-[color:var(--ink-soft)]">
         {copy.proceedOrderViaWhatsApp}
       </p>
-      <div className="mt-3 flex flex-wrap gap-2.5">
-        <a 
-          href={whatsappLink} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="btn-lux w-full sm:w-auto whitespace-normal text-center"
-          onClick={handleOrderClick}
-        >
-          {copy.orderViaWhatsApp}
-        </a>
+      <div className="mt-3 flex flex-wrap items-center gap-2.5">
+        <span className="relative inline-block w-full sm:w-auto">
+          <a 
+            href={whatsappLink} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="btn-lux w-full sm:w-auto whitespace-normal text-center"
+            onClick={handleOrderClick}
+          >
+            {copy.orderViaWhatsApp}
+          </a>
+          <span className="absolute -top-2.5 -right-2 rounded-full bg-[color:var(--secondary)] px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-white shadow-sm">
+            {lang === "zh" ? "推荐" : "Recommended"}
+          </span>
+        </span>
         <WeChatQrButton 
           lang={lang} 
           className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" 
@@ -181,6 +420,73 @@ export default function CheckoutOrderForm({
           onClick={handleOrderClick}
         />
       </div>
+      <p className="mt-2 text-left text-xs text-[color:var(--ink-soft)]/80">
+        {lang === "zh"
+          ? "推荐使用 WhatsApp 下单，回复更快。微信也依然可用。"
+          : "We recommend ordering via WhatsApp for the fastest response. WeChat is also available."}
+      </p>
+
+      {showCandleModal && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={lang === "zh" ? "选择蜡烛款式" : "Choose candle style"}
+        >
+          <div className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-[color:var(--card)] p-5 sm:p-6 shadow-[0_20px_48px_rgba(20,86,128,0.25)]">
+            <h3 className="heading-serif text-xl text-[color:var(--ink)]">
+              {lang === "zh" ? "选择蜡烛款式" : "Choose Your Candle Style"}
+            </h3>
+            <p className="mt-1 text-sm text-[color:var(--ink-soft)]">
+              {lang === "zh" ? "请选择一款蜡烛，然后点击确认。" : "Pick a candle style, then confirm."}
+            </p>
+
+            <div className="mt-4 space-y-2.5">
+              {CANDLES.map((candle) => (
+                <label
+                  key={candle.id}
+                  className={`flex items-center gap-3 cursor-pointer rounded-lg border p-3 transition-colors ${
+                    pendingCandleId === candle.id
+                      ? "border-[color:var(--primary)] bg-[color:var(--primary)]/5"
+                      : "border-[color:var(--gold)]/20 hover:bg-white/40"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="candle-style"
+                    checked={pendingCandleId === candle.id}
+                    onChange={() => setPendingCandleId(candle.id)}
+                    className="h-5 w-5 accent-[color:var(--primary)] cursor-pointer"
+                  />
+                  <img src={candle.image_path} alt={lang === "zh" ? candle.name_cn : candle.name_en} className="h-10 w-10 object-contain" />
+                  <span className="flex-1 text-sm font-medium text-[color:var(--ink)]">
+                    {lang === "zh" ? candle.name_cn : candle.name_en}
+                  </span>
+                  <span className="text-sm font-semibold text-[color:var(--primary)]">S${candle.price.toFixed(2)}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-5 flex justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={cancelCandleSelection}
+                className="btn-lux-outline"
+              >
+                {lang === "zh" ? "取消" : "Cancel"}
+              </button>
+              <button
+                type="button"
+                onClick={confirmCandleSelection}
+                disabled={!pendingCandleId}
+                className="btn-lux disabled:opacity-60"
+              >
+                {lang === "zh" ? "确认" : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

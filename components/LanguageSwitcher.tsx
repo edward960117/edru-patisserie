@@ -16,7 +16,9 @@ export default function LanguageSwitcher({ lang }: { lang: "zh" | "en" }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ lang: nextLang }),
     });
-    router.replace(pathname);
+    // Preserve query string (e.g. checkout's ?cake=&size=) so page state isn't lost
+    const query = window.location.search;
+    router.replace(`${pathname}${query}`);
     router.refresh();
   }
 

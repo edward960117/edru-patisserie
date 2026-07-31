@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { t, type Lang } from "@/lib/i18n-shared";
+import { markSessionActivityNow } from "@/lib/session-idle";
 
 export default function LoginForm({ lang }: { lang: Lang }) {
   const searchParams = useSearchParams();
@@ -45,6 +46,9 @@ export default function LoginForm({ lang }: { lang: Lang }) {
 
       const nextPath = searchParams.get("next");
       const safePath = nextPath && nextPath.startsWith("/") ? nextPath : "/admin";
+      // Reset the idle clock so a stale timestamp from a prior session doesn't
+      // immediately re-trigger the idle-timeout modal right after logging in.
+      markSessionActivityNow();
       window.location.assign(safePath);
     } catch {
       setError(copy.loginUnexpectedError);

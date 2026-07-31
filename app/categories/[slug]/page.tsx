@@ -6,7 +6,7 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { getFallbackCategoryWithCakes } from "@/lib/fallback-catalog";
-import { withTimeout } from "@/lib/with-timeout";
+import { withResilientTimeout } from "@/lib/with-timeout";
 import BackButton from "@/components/BackButton";
 
 type CategoryWithCakes = Prisma.CategoryGetPayload<{
@@ -45,7 +45,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const fallback = getFallbackCategoryWithCakes(slug);
 
   try {
-    category = await withTimeout(getCategoryBySlug(slug), 5000);
+    category = await withResilientTimeout(() => getCategoryBySlug(slug), 5000);
   } catch {
     category = null;
   }
@@ -64,7 +64,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   return (
     <section>
       <div className="card-lux atelier-frame px-5 py-6 sm:px-8 sm:py-8">
-        <div className="flex items-start justify-between gap-3">
+        <div className="mb-3 flex items-center justify-between gap-3 sm:mb-2">
           <p className="text-2xl">{categoryMeta.emoji}</p>
           <BackButton lang={lang} fallbackHref="/" className="whitespace-nowrap" />
         </div>

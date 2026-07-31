@@ -7,7 +7,7 @@ import { t } from "@/lib/i18n-shared";
 
 export default function Header({ lang }: { lang: "zh" | "en" }) {
   const copy = t(lang);
-  const homeHref = "/?intro=1";
+  const homeHref = "/";
   const pathname = usePathname();
   
   const isHome = pathname === "/" || pathname.startsWith("/?");

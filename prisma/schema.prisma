@@ -60,3 +60,37 @@ model User {
   active        Boolean  @default(true)
   created_at    DateTime @default(now())
 }
+
+enum OrderChannel {
+  whatsapp
+  wechat
+  handwritten
+  other
+}
+
+enum OrderStatus {
+  pending
+  confirmed
+  completed
+  cancelled
+}
+
+model Order {
+  id                Int          @id @default(autoincrement())
+  customer_name     String       @default("")
+  customer_phone    String       @default("")
+  cake_name         String       @default("")
+  size              String       @default("")
+  price             Float        @default(0)
+  quantity          Int          @default(1)
+  fulfillment       String       @default("")
+  event_date        DateTime
+  channel           OrderChannel @default(other)
+  status            OrderStatus  @default(pending)
+  notes             String       @default("")
+  source_image_url  String       @default("")
+  raw_extracted_text String      @default("")
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+}
+

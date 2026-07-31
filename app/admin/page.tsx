@@ -3,12 +3,13 @@ import { redirect } from "next/navigation";
 import type { Prisma } from "@prisma/client";
 import AdminDashboard from "@/components/AdminDashboard";
 import LogoutButton from "@/components/LogoutButton";
+import SessionIdleGuard from "@/components/SessionIdleGuard";
 import { prisma } from "@/lib/prisma";
 import { getSessionCookieName, verifySessionToken } from "@/lib/auth/session";
 import { getLang, t } from "@/lib/i18n";
 import { readSiteAnnouncement } from "@/lib/announcement";
 import { fallbackCategories } from "@/lib/fallback-catalog";
-import { withTimeout } from "@/lib/with-timeout";
+import { withResilientTimeout } from "@/lib/with-timeout";
 
 export default async function AdminPage() {
   const lang = await getLang();
@@ -31,17 +32,41 @@ export default async function AdminPage() {
     description: category.description,
   }));
   let cakes: Prisma.CakeGetPayload<{ include: { sizes: true } }>[] = [];
+  const orderListSelect = {
+    id: true,
+    customer_name: true,
+    customer_phone: true,
+    cake_name: true,
+    size: true,
+    price: true,
+    quantity: true,
+    fulfillment: true,
+    event_date: true,
+    channel: true,
+    status: true,
+    notes: true,
+  } satisfies Prisma.OrderSelect;
+  let orders: Prisma.OrderGetPayload<{ select: typeof orderListSelect }>[] = [];
   let announcement = await readSiteAnnouncement();
 
   try {
-    const [dbCategories, dbCakes, dbAnnouncement] = await Promise.all([
-      withTimeout(prisma.category.findMany({ orderBy: { id: "asc" } }), 1600),
-      withTimeout(prisma.cake.findMany({ include: { sizes: true }, orderBy: { id: "desc" } }), 1800),
+    const [dbCategories, dbCakes, dbOrders, dbAnnouncement] = await Promise.all([
+      withResilientTimeout(() => prisma.category.findMany({ orderBy: { id: "asc" } }), 1600),
+      withResilientTimeout(() => prisma.cake.findMany({ include: { sizes: true }, orderBy: { id: "desc" } }), 1800),
+      withResilientTimeout(
+        () =>
+          prisma.order.findMany({
+            orderBy: { event_date: "asc" },
+            select: orderListSelect,
+          }),
+        1800
+      ),
       readSiteAnnouncement(),
     ]);
 
     categories = dbCategories;
     cakes = dbCakes;
+    orders = dbOrders;
     announcement = dbAnnouncement;
   } catch {
     dbUnavailable = true;
@@ -49,6 +74,7 @@ export default async function AdminPage() {
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <SessionIdleGuard lang={lang} />
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="heading-serif text-4xl">{copy.adminTitle}</h1>
         <div className="flex items-center gap-4">
@@ -63,7 +89,27 @@ export default async function AdminPage() {
             : "Database is temporarily unavailable. Admin is in offline mode; you can view the page, but create/edit actions require database recovery."}
         </p>
       ) : null}
-      <AdminDashboard lang={lang} categories={categories} initialCakes={cakes} dbUnavailable={dbUnavailable} initialAnnouncement={announcement} />
+      <AdminDashboard
+        lang={lang}
+        categories={categories}
+        initialCakes={cakes}
+        initialOrders={orders.map((order) => ({
+          id: order.id,
+          customer_name: order.customer_name,
+          customer_phone: order.customer_phone,
+          cake_name: order.cake_name,
+          size: order.size,
+          price: order.price,
+          quantity: order.quantity,
+          fulfillment: order.fulfillment,
+          event_date: order.event_date.toISOString(),
+          channel: order.channel,
+          status: order.status,
+          notes: order.notes,
+        }))}
+        dbUnavailable={dbUnavailable}
+        initialAnnouncement={announcement}
+      />
     </section>
   );
 }

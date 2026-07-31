@@ -1,13 +1,7 @@
 import "dotenv/config";
-import { PrismaClient, UserRole } from "@prisma/client";
-import { PrismaNeon } from "@prisma/adapter-neon";
-import { neonConfig } from "@neondatabase/serverless";
-import ws from "ws";
+import { UserRole } from "@prisma/client";
 import argon2 from "argon2";
-
-neonConfig.webSocketConstructor = ws;
-const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
+import { prisma } from "../lib/prisma";
 
 async function ensureSchema() {
   await prisma.$executeRawUnsafe(`

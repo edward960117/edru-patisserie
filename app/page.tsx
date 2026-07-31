@@ -4,7 +4,7 @@ import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { fallbackCategories } from "@/lib/fallback-catalog";
-import { withTimeout } from "@/lib/with-timeout";
+import { withResilientTimeout } from "@/lib/with-timeout";
 
 export const revalidate = 60;
 
@@ -50,7 +50,7 @@ export default async function HomePage() {
 
   let categories = sortByHomeCategoryOrder(fallbackCategories);
   try {
-    const dbCategories = await withTimeout(getHomeCategories(), 1400);
+    const dbCategories = await withResilientTimeout(() => getHomeCategories(), 1400);
     if (dbCategories.length > 0) {
       // Merge: use DB results, fill any missing slugs from fallback
       const dbSlugs = new Set(dbCategories.map((c) => c.slug));
@@ -116,22 +116,6 @@ export default async function HomePage() {
                   {copy.workingHours}
                 </p>
               </div>
-            </div>
-            
-            {/* Enhanced Button Hierarchy */}
-            <div className="flex flex-wrap items-center gap-3 pt-2 sm:pt-4">
-              <Link
-                href="/categories/todays-recommendation"
-                className="btn-lux-primary inline-flex items-center"
-              >
-                {copy.discoverToday}
-              </Link>
-              <button
-                className="inline-flex items-center gap-2 rounded-full border border-[color:var(--primary)]/30 bg-white/70 backdrop-blur-sm px-5 py-2.5 text-[0.75rem] uppercase tracking-[0.2em] text-[color:var(--primary)]/85 font-medium transition hover:bg-white/85 hover:border-[color:var(--primary)]/50 focus:ring-2 focus:ring-[color:var(--primary)]/20"
-              >
-                <span>✨</span>
-                {copy.signatureCollection}
-              </button>
             </div>
             
             {/* Decorative accent line */}

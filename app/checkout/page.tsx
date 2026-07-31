@@ -6,7 +6,7 @@ import { getFallbackCakeBySlug } from "@/lib/fallback-catalog";
 import CheckoutOrderForm from "@/components/CheckoutOrderForm";
 import WeChatQrButton from "@/components/WeChatQrButton";
 import BackButton from "@/components/BackButton";
-import { withTimeout } from "@/lib/with-timeout";
+import { withResilientTimeout } from "@/lib/with-timeout";
 
 const getCheckoutCakeBySlug = unstable_cache(
   async (slug: string) => {
@@ -26,7 +26,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   let cake = null;
   try {
     cake = cakeSlug
-      ? await withTimeout(getCheckoutCakeBySlug(cakeSlug), 5000)
+      ? await withResilientTimeout(() => getCheckoutCakeBySlug(cakeSlug), 5000)
       : null;
   } catch {
     // Database unavailable — try fallback
@@ -43,6 +43,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         name: fallbackCake.name,
         name_cn: fallbackCake.name_cn,
         image_url: fallbackCake.image_url,
+        lead_time_days: fallbackCake.lead_time_days,
         sizes: fallbackCake.sizes || [],
       } as any;
     }
@@ -51,12 +52,6 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const size = cake && sizeId ? cake.sizes.find((item: any) => item.id === sizeId) : null;
   const cakeName = cake ? (lang === "zh" ? (cake.name_cn || cake.name) : cake.name) : "";
   const fulfillmentTitle = lang === "zh" ? "取货与配送" : "Pickup and Delivery";
-  const pickupLabel = lang === "zh" ? "取货费用：" : "Pickup fee:";
-  const pickupValue = lang === "zh" ? "免费。" : "Free.";
-  const deliveryLabel = lang === "zh" ? "配送费用：" : "Delivery fee:";
-  const deliveryValue = lang === "zh"
-    ? "S$15 至 S$25，视天气情况及配送服务公司而定。"
-    : "S$15 to S$25, depending on weather conditions and the delivery service company.";
   const whatsappRawMessage = cake && size
     ? (lang === "zh"
         ? [
@@ -126,6 +121,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             sizeId={sizeId || 0}
             sizeSize={size.size}
             sizePrice={size.price}
+            leadTimeDays={cake.lead_time_days ?? 3}
             lang={lang}
             whatsappNumber={WHATSAPP_NUMBER}
             baseMessage={whatsappRawMessage}
@@ -135,19 +131,27 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       ) : (
         <div className="mt-5 space-y-3">
           <p className={helperTextClass}>{copy.chooseCakeBeforeCheckout}</p>
-          <div className="mt-1 flex flex-wrap gap-2.5">
-            <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux w-full sm:w-auto whitespace-normal text-center">
-              {copy.orderViaWhatsApp}
-            </a>
+          <div className="mt-1 flex flex-wrap items-center gap-2.5">
+            <span className="relative inline-block w-full sm:w-auto">
+              <a href={whatsappLink} target="_blank" rel="noreferrer" className="btn-lux w-full sm:w-auto whitespace-normal text-center">
+                {copy.orderViaWhatsApp}
+              </a>
+              <span className="absolute -top-2.5 -right-2 rounded-full bg-[color:var(--secondary)] px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-white shadow-sm">
+                {lang === "zh" ? "推荐" : "Recommended"}
+              </span>
+            </span>
             <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderDetails={whatsappRawMessage} />
           </div>
+          <p className="text-xs text-[color:var(--ink-soft)]/80">
+            {lang === "zh"
+              ? "推荐使用 WhatsApp 下单，回复更快。微信也依然可用。"
+              : "We recommend ordering via WhatsApp for the fastest response. WeChat is also available."}
+          </p>
         </div>
       )}
 
       <div className="mt-6 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/55 p-4">
         <p className="text-sm uppercase tracking-[0.16em] text-[color:var(--gold)]">{fulfillmentTitle}</p>
-        <p className="mt-2 text-[color:var(--ink-soft)]"><span className="font-semibold text-[color:var(--ink)]">{pickupLabel}</span>{pickupValue}</p>
-        <p className="mt-1 text-[color:var(--ink-soft)]"><span className="font-semibold text-[color:var(--ink)]">{deliveryLabel}</span>{deliveryValue}</p>
 
         <details className="mt-4 rounded-xl border border-[color:var(--gold)]/25 bg-white/60 px-3 py-2.5">
           <summary className="cursor-pointer select-none text-sm font-semibold text-[color:var(--ink)] hover:text-[color:var(--gold-deep)]">

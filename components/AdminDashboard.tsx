@@ -4,6 +4,8 @@ import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { t, type Lang } from "@/lib/i18n-shared";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import OrderIntakeForm, { type NewOrderPayload } from "@/components/OrderIntakeForm";
+import OrderCalendar, { type OrderRecord } from "@/components/OrderCalendar";
 
 type Category = { id: number; slug: string; name: string; name_cn: string; emoji: string; description: string };
 type CakeSize = { size: '6"' | '8"' | '10"'; price: string; available: boolean };
@@ -27,6 +29,7 @@ interface Props {
   lang: Lang;
   categories: Category[];
   initialCakes: Cake[];
+  initialOrders?: OrderRecord[];
   dbUnavailable?: boolean;
   initialAnnouncement: {
     enabled: boolean;
@@ -94,11 +97,13 @@ function parsePrice(raw: string) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-export default function AdminDashboard({ lang, categories, initialCakes, dbUnavailable = false, initialAnnouncement }: Props) {
+export default function AdminDashboard({ lang, categories, initialCakes, initialOrders = [], dbUnavailable = false, initialAnnouncement }: Props) {
   const router = useRouter();
   const copy = t(lang);
   const [categoryList, setCategoryList] = useState(categories);
   const [cakes, setCakes] = useState(initialCakes);
+  const [orders, setOrders] = useState<OrderRecord[]>(initialOrders);
+  const [orderMessage, setOrderMessage] = useState("");
   const [form, setForm] = useState({ ...emptyForm, categoryId: categoryList[0]?.id ?? 0 });
   const [categoryForm, setCategoryForm] = useState(emptyCategoryForm);
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
@@ -116,6 +121,8 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
   const [confirmState, setConfirmState] = useState<{ message: string; danger?: boolean } | null>(null);
   const [errorPopupMessage, setErrorPopupMessage] = useState<string | null>(null);
   const confirmResolverRef = useRef<((value: boolean) => void) | null>(null);
+  const [activeTab, setActiveTab] = useState<"overview" | "categories" | "cakes" | "orders" | "announcement">("overview");
+  const cakeFormRef = useRef<HTMLDivElement>(null);
 
   const stats = useMemo(() => ({
     totalCakes: cakes.length,
@@ -164,6 +171,61 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
     const result = (await response.json()) as { categories: Category[] };
     setCategoryList(result.categories);
     return result.categories;
+  }
+
+  async function refreshOrders() {
+    const response = await fetch("/api/admin/orders");
+    if (!response.ok) return;
+    const result = (await response.json()) as { orders: OrderRecord[] };
+    setOrders(result.orders);
+  }
+
+  async function createOrder(payload: NewOrderPayload) {
+    if (dbUnavailable) {
+      setOrderMessage(offlineMessage);
+      throw new Error("offline");
+    }
+    const response = await fetch("/api/admin/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      if (response.status === 401) {
+        window.location.assign("/login?next=/admin");
+      }
+      throw new Error("Failed to save order");
+    }
+    setOrderMessage("");
+    await refreshOrders();
+  }
+
+  async function updateOrderStatus(id: number, status: OrderRecord["status"]) {
+    const response = await fetch(`/api/admin/orders/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    if (response.status === 401) {
+      window.location.assign("/login?next=/admin");
+      return;
+    }
+    if (response.ok) {
+      await refreshOrders();
+    }
+  }
+
+  async function deleteOrder(id: number) {
+    const confirmed = await askConfirm(lang === "zh" ? "确认删除此订单记录？" : "Delete this order record?", true);
+    if (!confirmed) return;
+    const response = await fetch(`/api/admin/orders/${id}`, { method: "DELETE" });
+    if (response.status === 401) {
+      window.location.assign("/login?next=/admin");
+      return;
+    }
+    if (response.ok) {
+      await refreshOrders();
+    }
   }
 
   async function compressImageFile(file: File) {
@@ -578,14 +640,128 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
     }
   }
 
-  return (
-    <div className="space-y-8">
-      <div className="grid gap-4 sm:grid-cols-3">
-        <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminTotalCakes}</p><p className="heading-serif text-3xl">{stats.totalCakes}</p></article>
-        <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminTotalCategories}</p><p className="heading-serif text-3xl">{stats.totalCategories}</p></article>
-        <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminActiveCakes}</p><p className="heading-serif text-3xl">{stats.activeCakes}</p></article>
-      </div>
+  const tabs: Array<{ id: typeof activeTab; label: string; icon: string; count?: number }> = [
+    { id: "overview", label: lang === "zh" ? "总览" : "Overview", icon: "📊" },
+    { id: "categories", label: lang === "zh" ? "分类管理" : "Categories", icon: "🗂️", count: stats.totalCategories },
+    { id: "cakes", label: lang === "zh" ? "蛋糕管理" : "Cakes", icon: "🎂", count: stats.totalCakes },
+    { id: "orders", label: lang === "zh" ? "订单记录" : "Orders", icon: "🗓️", count: orders.length },
+    { id: "announcement", label: lang === "zh" ? "公告设置" : "Announcement", icon: "📣" },
+  ];
 
+  function goToNewCake() {
+    resetForm();
+    setActiveTab("cakes");
+    requestAnimationFrame(() => cakeFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
+
+  return (
+    <div className="space-y-6">
+      {dbUnavailable ? null : null}
+
+      {/* Tab navigation */}
+      <nav className="card-lux grid grid-cols-2 gap-2 p-2 sm:grid-cols-5" aria-label="Admin sections">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex flex-col items-center justify-center gap-1 rounded-xl px-3 py-3 text-sm font-medium transition-all ${
+              activeTab === tab.id
+                ? "bg-[color:var(--primary)] text-white shadow-[0_8px_18px_rgba(23,61,115,0.22)]"
+                : "text-[color:var(--ink-soft)] hover:bg-[color:var(--bg-soft)]"
+            }`}
+          >
+            <span className="text-lg" aria-hidden="true">{tab.icon}</span>
+            <span className="inline-flex items-center gap-1.5">
+              {tab.label}
+              {typeof tab.count === "number" ? (
+                <span className={`rounded-full px-1.5 py-0.5 text-[0.68rem] leading-none ${activeTab === tab.id ? "bg-white/20" : "bg-[color:var(--bg-soft)]"}`}>
+                  {tab.count}
+                </span>
+              ) : null}
+            </span>
+          </button>
+        ))}
+      </nav>
+
+      {dbUnavailable ? (
+        <p className="rounded-xl border border-[color:var(--gold)]/30 bg-[color:var(--bg-soft)] px-4 py-3 text-sm text-[color:var(--ink-soft)]">
+          {offlineMessage}
+        </p>
+      ) : null}
+
+      {/* Overview tab */}
+      {activeTab === "overview" ? (
+        <div className="space-y-6">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminTotalCakes}</p><p className="heading-serif text-3xl">{stats.totalCakes}</p></article>
+            <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminTotalCategories}</p><p className="heading-serif text-3xl">{stats.totalCategories}</p></article>
+            <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminActiveCakes}</p><p className="heading-serif text-3xl">{stats.activeCakes}</p></article>
+          </div>
+
+          <section className="card-lux p-6">
+            <h2 className="heading-serif mb-4 text-2xl">{lang === "zh" ? "快捷操作" : "Quick Actions"}</h2>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <button type="button" onClick={goToNewCake} className="rounded-xl border border-[color:var(--gold)]/30 bg-white/80 p-4 text-left transition hover:border-[color:var(--primary)]/50 hover:bg-white">
+                <p className="text-2xl">🎂</p>
+                <p className="mt-2 font-medium">{lang === "zh" ? "新增蛋糕" : "Add a Cake"}</p>
+                <p className="mt-1 text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "上架新的蛋糕产品" : "Publish a new cake to the menu"}</p>
+              </button>
+              <button type="button" onClick={() => { resetCategoryForm(); setActiveTab("categories"); }} className="rounded-xl border border-[color:var(--gold)]/30 bg-white/80 p-4 text-left transition hover:border-[color:var(--primary)]/50 hover:bg-white">
+                <p className="text-2xl">🗂️</p>
+                <p className="mt-2 font-medium">{lang === "zh" ? "新增分类" : "Add a Category"}</p>
+                <p className="mt-1 text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "在首页新增分类卡片" : "Create a new homepage category card"}</p>
+              </button>
+              <button type="button" onClick={() => setActiveTab("announcement")} className="rounded-xl border border-[color:var(--gold)]/30 bg-white/80 p-4 text-left transition hover:border-[color:var(--primary)]/50 hover:bg-white">
+                <p className="text-2xl">📣</p>
+                <p className="mt-2 font-medium">{lang === "zh" ? "编辑滚动公告" : "Edit Announcement"}</p>
+                <p className="mt-1 text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "更新首页滚动通知栏" : "Update the homepage notice bar"}</p>
+              </button>
+            </div>
+          </section>
+
+          <section className="card-lux p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="heading-serif text-2xl">{lang === "zh" ? "最新蛋糕" : "Latest Cakes"}</h2>
+              <button type="button" onClick={() => setActiveTab("cakes")} className="text-sm text-[color:var(--primary)] hover:underline">
+                {lang === "zh" ? "查看全部 →" : "View all →"}
+              </button>
+            </div>
+            <div className="space-y-2">
+              {cakes.slice(0, 5).map((cake) => (
+                <div key={cake.id} className="flex items-center gap-3 rounded-xl border border-[color:var(--gold)]/20 bg-white/80 p-3">
+                  {cake.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={cake.image_url} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+                  ) : (
+                    <div className="h-12 w-12 shrink-0 rounded-lg bg-[color:var(--bg-soft)]" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium">{cake.name} / {cake.name_cn}</p>
+                    <p className="text-xs text-[color:var(--ink-soft)]">
+                      <span className={cake.active ? "font-semibold text-green-700" : "font-semibold text-red-700"}>
+                        {cake.active ? copy.adminActive : copy.adminDisabled}
+                      </span>
+                      <span> • {cake.featured ? copy.adminFeatured : copy.adminStandard}</span>
+                    </p>
+                  </div>
+                  <button type="button" onClick={() => { void editCake(cake); setActiveTab("cakes"); }} className="shrink-0 rounded-lg border border-[color:var(--gold)]/40 px-3 py-1.5 text-sm">
+                    {copy.adminEdit}
+                  </button>
+                </div>
+              ))}
+              {cakes.length === 0 ? (
+                <p className="rounded-xl border border-[color:var(--gold)]/20 bg-white/70 px-4 py-3 text-sm text-[color:var(--ink-soft)]">
+                  {lang === "zh" ? "暂无蛋糕，点击上方按钮开始新增。" : "No cakes yet — use Quick Actions above to add one."}
+                </p>
+              ) : null}
+            </div>
+          </section>
+        </div>
+      ) : null}
+
+      {/* Categories tab */}
+      {activeTab === "categories" ? (
       <section className="card-lux p-6">
         <h2 className="heading-serif mb-4 text-3xl">
           {lang === "zh" ? (editingCategoryId ? "编辑分类" : "新增分类") : (editingCategoryId ? "Edit Category" : "Add Category")}
@@ -640,8 +816,12 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
           ))}
         </div>
       </section>
+      ) : null}
 
-      <section className="card-lux p-6">
+      {/* Cakes tab */}
+      {activeTab === "cakes" ? (
+      <>
+      <section ref={cakeFormRef} className="card-lux p-6">
         <h2 className="heading-serif text-3xl mb-4">{editingId ? copy.adminEditCake : copy.adminAddCake}</h2>
         <form onSubmit={saveCake} className="grid gap-4 sm:grid-cols-2">
           <label className="text-sm">{copy.adminCategory}
@@ -716,6 +896,10 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
               {lang === "zh" ? "手机可从相册选择，电脑可从文件管理器选择。" : "On phone this opens your photo album, on laptop it opens file explorer."}
             </p>
             {form.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={form.imageUrl} alt="" className="mt-2 h-20 w-20 rounded-xl object-cover" />
+            ) : null}
+            {form.imageUrl ? (
               <p className="mt-1 text-xs text-[color:var(--gold-deep)]">
                 {copy.adminImageSelected}
               </p>
@@ -787,21 +971,29 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
         </div>
         <div className="space-y-3">
           {filteredCakes.map((cake) => (
-            <article key={cake.id} className="border border-[color:var(--gold)]/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white/80">
-              <div>
-                <p className="font-medium">{cake.name} / {cake.name_cn}</p>
-                <p className="text-sm text-[color:var(--ink-soft)]">/{cake.slug} • {copy.adminLeadTimeShort}: {cake.lead_time_days} {copy.adminDays}</p>
-                <p className="text-xs text-[color:var(--ink-soft)]">
-                  {(categoryList.find((category) => category.id === cake.category_id)?.name_cn) ?? "-"}
-                </p>
-                <p className="mt-1 text-xs text-[color:var(--ink-soft)]">
-                  <span className={cake.active ? "font-semibold text-green-700" : "font-semibold text-red-700"}>
-                    {cake.active ? copy.adminActive : copy.adminDisabled}
-                  </span>
-                  <span> • {cake.featured ? copy.adminFeatured : copy.adminStandard}</span>
-                </p>
+            <article key={cake.id} className="flex flex-col gap-3 rounded-xl border border-[color:var(--gold)]/20 bg-white/80 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
+                {cake.image_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={cake.image_url} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+                ) : (
+                  <div className="h-14 w-14 shrink-0 rounded-lg bg-[color:var(--bg-soft)]" />
+                )}
+                <div className="min-w-0">
+                  <p className="truncate font-medium">{cake.name} / {cake.name_cn}</p>
+                  <p className="text-sm text-[color:var(--ink-soft)]">/{cake.slug} • {copy.adminLeadTimeShort}: {cake.lead_time_days} {copy.adminDays}</p>
+                  <p className="text-xs text-[color:var(--ink-soft)]">
+                    {(categoryList.find((category) => category.id === cake.category_id)?.name_cn) ?? "-"}
+                  </p>
+                  <p className="mt-1 text-xs text-[color:var(--ink-soft)]">
+                    <span className={cake.active ? "font-semibold text-green-700" : "font-semibold text-red-700"}>
+                      {cake.active ? copy.adminActive : copy.adminDisabled}
+                    </span>
+                    <span> • {cake.featured ? copy.adminFeatured : copy.adminStandard}</span>
+                  </p>
+                </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex shrink-0 gap-2">
                 <button type="button" disabled={dbUnavailable} onClick={() => void editCake(cake)} className="px-4 py-1.5 rounded-lg border border-[color:var(--gold)]/40 disabled:cursor-not-allowed disabled:opacity-60">{copy.adminEdit}</button>
                 <button type="button" disabled={dbUnavailable} onClick={() => void deleteCake(cake.id)} className="px-4 py-1.5 rounded-lg bg-red-700 text-white disabled:cursor-not-allowed disabled:opacity-60">{copy.adminDelete}</button>
               </div>
@@ -814,7 +1006,35 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
           ) : null}
         </div>
       </section>
+      </>
+      ) : null}
 
+      {/* Orders tab */}
+      {activeTab === "orders" ? (
+        <div className="space-y-6">
+          {orderMessage ? (
+            <div className="rounded-xl border border-[color:var(--gold)]/35 bg-[color:var(--bg-soft)] px-4 py-3 text-sm text-[color:var(--ink-soft)]" role="status" aria-live="polite">
+              {orderMessage}
+            </div>
+          ) : null}
+          <OrderIntakeForm
+            lang={lang}
+            knownCakeNames={Array.from(new Set(cakes.flatMap((cake) => [cake.name, cake.name_cn]).filter(Boolean)))}
+            disabled={dbUnavailable}
+            onSubmit={createOrder}
+          />
+          <OrderCalendar
+            lang={lang}
+            orders={orders}
+            disabled={dbUnavailable}
+            onUpdateStatus={updateOrderStatus}
+            onDelete={deleteOrder}
+          />
+        </div>
+      ) : null}
+
+      {/* Announcement tab */}
+      {activeTab === "announcement" ? (
       <section className="card-lux p-6">
         <h2 className="heading-serif text-3xl mb-4">{copy.adminSellerAnnouncementTitle}</h2>
         <form onSubmit={saveAnnouncement} className="space-y-4">
@@ -849,6 +1069,13 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
             />
           </label>
 
+          {announcement.enabled && (announcement.messageEn.trim() || announcement.messageZh.trim()) ? (
+            <div className="rounded-xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-deep)] px-4 py-2 text-[0.8rem] text-[color:var(--primary-hover)]">
+              <p className="mb-1 text-xs uppercase tracking-[0.14em] text-[color:var(--ink-soft)]">{lang === "zh" ? "预览" : "Preview"}</p>
+              <p className="truncate">• {(lang === "zh" ? announcement.messageZh : announcement.messageEn).trim() || "…"} •</p>
+            </div>
+          ) : null}
+
           <button disabled={savingAnnouncement || dbUnavailable} className="px-5 py-2 rounded-xl bg-[color:var(--primary)] text-white disabled:opacity-70 hover:bg-[color:var(--primary-hover)]">
             {savingAnnouncement ? copy.adminSaving : lang === "zh" ? "保存公告" : "Save Announcement"}
           </button>
@@ -860,6 +1087,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
           </div>
         ) : null}
       </section>
+      ) : null}
 
       <ConfirmDialog
         open={Boolean(confirmState)}
@@ -885,3 +1113,4 @@ export default function AdminDashboard({ lang, categories, initialCakes, dbUnava
     </div>
   );
 }
+
