@@ -34,6 +34,7 @@ interface CheckoutOrderFormProps {
   baseMessage: string;
   copy: any;
   bankTransferEnabled: boolean;
+  onlinePaymentEnabled: boolean;
 }
 
 function formatDateInput(date: Date) {
@@ -55,6 +56,7 @@ export default function CheckoutOrderForm({
   baseMessage,
   copy,
   bankTransferEnabled,
+  onlinePaymentEnabled,
 }: CheckoutOrderFormProps) {
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + leadTimeDays);
@@ -75,6 +77,8 @@ export default function CheckoutOrderForm({
   const [showCandleModal, setShowCandleModal] = useState(false);
   const [selectedCandleId, setSelectedCandleId] = useState<string | null>(null);
   const [pendingCandleId, setPendingCandleId] = useState<string | null>(null);
+  const [paymentPending, setPaymentPending] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
 
   useEffect(() => {
     if (!calendarOpen) return;
@@ -168,7 +172,9 @@ export default function CheckoutOrderForm({
     setShowCandleModal(false);
   };
 
-  const handleOrderClick = (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>) => {
+  // Validates the required fields, sets error states and scrolls to the first
+  // missing field. Returns true when the order is complete and ready to submit.
+  const validateOrderFields = (): boolean => {
     let hasIssue = false;
     let shouldFocusFulfillment = false;
     let shouldFocusDate = false;
@@ -188,9 +194,6 @@ export default function CheckoutOrderForm({
       shouldFocusAddOns = true;
       setHasError(true);
     }
-    if (hasIssue) {
-      e.preventDefault();
-    }
     // Scroll to whichever required field is missing, in the order it appears on the page
     if (shouldFocusFulfillment) {
       fulfillmentSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -200,6 +203,54 @@ export default function CheckoutOrderForm({
       setCalendarOpen(true);
     } else if (shouldFocusAddOns) {
       addOnsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    return !hasIssue;
+  };
+
+  const handleOrderClick = (e: React.MouseEvent<HTMLAnchorElement> | React.MouseEvent<HTMLButtonElement>) => {
+    if (!validateOrderFields()) {
+      e.preventDefault();
+    }
+  };
+
+  const handlePayOnline = async () => {
+    if (paymentPending) return;
+    if (!validateOrderFields()) return;
+    setPaymentError("");
+    setPaymentPending(true);
+    try {
+      const addOnIds = Array.from(selectedAddOns).filter((id) => id !== "nothing");
+      const response = await fetch("/api/payment/create-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cakeSlug,
+          sizeId,
+          fulfillment: fulfillmentMethod,
+          eventDate: pickupDate,
+          addOnIds,
+          candleId: selectedCandleId,
+          lang,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.url) {
+        setPaymentError(
+          lang === "zh"
+            ? "无法开始在线付款，请稍后再试或使用 WhatsApp 下单。"
+            : "Could not start online payment. Please try again or order via WhatsApp."
+        );
+        setPaymentPending(false);
+        return;
+      }
+      window.location.assign(result.url);
+    } catch {
+      setPaymentError(
+        lang === "zh"
+          ? "无法开始在线付款，请稍后再试或使用 WhatsApp 下单。"
+          : "Could not start online payment. Please try again or order via WhatsApp."
+      );
+      setPaymentPending(false);
     }
   };
 
@@ -517,6 +568,46 @@ export default function CheckoutOrderForm({
           )}
         </div>
       </div>
+
+      {onlinePaymentEnabled && (
+        <div className="mt-5 rounded-2xl border border-[color:var(--primary)]/25 bg-[color:var(--primary)]/6 p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-sm font-semibold text-[color:var(--ink)]">
+                {lang === "zh" ? "在线支付（银行卡 / PayNow）" : "Pay online (Card / PayNow)"}
+              </p>
+              <p className="mt-0.5 text-xs text-[color:var(--ink-soft)]">
+                {lang === "zh"
+                  ? "支付成功后自动为会员账户累积积分。"
+                  : "Loyalty points are added to your member account automatically after payment."}
+              </p>
+            </div>
+            <p className="text-xl font-bold text-[color:var(--primary)]">S${grandTotal.toFixed(2)}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handlePayOnline}
+            disabled={paymentPending}
+            className="btn-lux mt-3 w-full whitespace-normal text-center disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {paymentPending
+              ? lang === "zh"
+                ? "正在跳转到安全支付…"
+                : "Redirecting to secure payment…"
+              : lang === "zh"
+                ? `安全支付 S$${grandTotal.toFixed(2)}`
+                : `Pay S$${grandTotal.toFixed(2)} securely`}
+          </button>
+          {paymentError && (
+            <p className="mt-2 text-sm font-medium text-[color:var(--secondary)]">{paymentError}</p>
+          )}
+          <p className="mt-2 text-[0.7rem] leading-relaxed text-[color:var(--ink-soft)]/80">
+            {lang === "zh"
+              ? "您将被引导至 Stripe 安全支付页面完成付款，我们不会接触您的银行卡或网银信息。"
+              : "You'll be redirected to Stripe's secure payment page. We never see your card or banking credentials."}
+          </p>
+        </div>
+      )}
 
       <p className="mt-5 text-left text-sm leading-relaxed text-[color:var(--ink-soft)]">
         {copy.proceedOrderViaWhatsApp}

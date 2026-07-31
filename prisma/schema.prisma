@@ -90,7 +90,23 @@ model Order {
   notes             String       @default("")
   source_image_url  String       @default("")
   raw_extracted_text String      @default("")
+  customer_id       Int?
+  customer          Customer?    @relation(fields: [customer_id], references: [id])
+  points_awarded    Boolean      @default(false)
+  stripe_session_id String?      @unique
   created_at        DateTime     @default(now())
   updated_at        DateTime     @updatedAt
+}
+
+model Customer {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password_hash String
+  name          String   @default("")
+  points        Int      @default(0)
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  orders        Order[]
 }
 

@@ -5,13 +5,17 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { t } from "@/lib/i18n-shared";
 
-export default function Header({ lang }: { lang: "zh" | "en" }) {
+export default function Header({ lang, customerName = null }: { lang: "zh" | "en"; customerName?: string | null }) {
   const copy = t(lang);
   const homeHref = "/";
   const pathname = usePathname();
-  
+
   const isHome = pathname === "/" || pathname.startsWith("/?");
   const isAdmin = pathname === "/admin";
+
+  // The home hero shows its own greeting badge, so avoid duplicating it there.
+  const showGreeting = Boolean(customerName) && !isHome;
+  const greetingInitial = customerName ? customerName.charAt(0).toUpperCase() : "";
 
   return (
     <header className="sticky top-0 z-[70] bg-gradient-to-b from-[color:var(--bg-soft)]/90 to-[color:var(--bg-soft)]/70 backdrop-blur-xl border-b border-[color:var(--border)]/40 py-3 sm:py-4">
@@ -44,7 +48,29 @@ export default function Header({ lang }: { lang: "zh" | "en" }) {
 
           {/* Navigation with active state indicators */}
           <nav className="flex items-center gap-1 sm:gap-2 text-[0.8rem] sm:text-[0.9rem] uppercase tracking-[0.12em] sm:tracking-[0.15em] text-[color:var(--ink-soft)]">
+            {showGreeting && (
+              <>
+                <Link
+                  href="/account"
+                  aria-label={`${copy.customerWelcome}, ${customerName}`}
+                  className="group inline-flex items-center gap-2 rounded-full border border-[color:var(--border)]/60 bg-[color:var(--surface)] py-1 pl-1 pr-1 sm:pr-3 shadow-sm transition-all duration-300 hover:border-[color:var(--primary)]/40 hover:shadow-md"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--primary)] to-[color:var(--gold-deep)] text-[0.68rem] font-semibold text-white"
+                  >
+                    {greetingInitial}
+                  </span>
+                  <span className="hidden sm:inline max-w-[7rem] truncate text-[0.72rem] font-semibold normal-case tracking-normal text-[color:var(--primary)]">
+                    {customerName}
+                  </span>
+                </Link>
+                <div className="h-4 w-px bg-[color:var(--border)] mx-1" />
+              </>
+            )}
             <NavLink href={homeHref} active={isHome} label={copy.navHome} />
+            <div className="h-4 w-px bg-[color:var(--border)] mx-1" />
+            <NavLink href="/account" active={pathname === "/account"} label={copy.navAccount} />
             <div className="h-4 w-px bg-[color:var(--border)] mx-1" />
             <NavLink href="/admin" active={isAdmin} label={copy.navAdmin} />
           </nav>

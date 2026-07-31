@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { fallbackCategories } from "@/lib/fallback-catalog";
 import { withResilientTimeout } from "@/lib/with-timeout";
+import CustomerGreeting from "@/components/CustomerGreeting";
+import { getCustomerDisplayName } from "@/lib/auth/customer-display";
 
 export const revalidate = 60;
 
@@ -47,6 +49,7 @@ const getHomeCategories = unstable_cache(
 export default async function HomePage() {
   const lang = await getLang();
   const copy = t(lang);
+  const customerName = await getCustomerDisplayName();
 
   let categories = sortByHomeCategoryOrder(fallbackCategories);
   try {
@@ -79,7 +82,12 @@ export default async function HomePage() {
               "radial-gradient(ellipse at 100% 100%, rgba(31,103,148,0.1), transparent 60%)",
           }}
         />
-        
+
+        {/* Signed-in customer greeting, top-right of the banner */}
+        <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
+          <CustomerGreeting name={customerName} lang={lang} variant="banner" />
+        </div>
+
         <div className="relative flex flex-col gap-0 sm:flex-row sm:items-center">
           {/* Left Content - Improved Spacing */}
           <div className="flex flex-1 flex-col gap-6 sm:gap-8 px-8 py-12 sm:px-12 sm:py-14">
@@ -90,9 +98,11 @@ export default async function HomePage() {
             
             {/* Title & subtitle with better spacing */}
             <div className="space-y-4 sm:space-y-5">
-              <h1 className="heading-serif text-[2.2rem] sm:text-[3.2rem] font-semibold leading-[1.1] tracking-[-0.015em] text-[color:var(--ink)]">
-                {copy.homeTitle}
-              </h1>
+              {copy.homeTitle ? (
+                <h1 className="heading-serif text-[2.2rem] sm:text-[3.2rem] font-semibold leading-[1.1] tracking-[-0.015em] text-[color:var(--ink)]">
+                  {copy.homeTitle}
+                </h1>
+              ) : null}
               <p className="max-w-md text-[0.98rem] sm:text-lg leading-[1.7] text-[color:var(--ink-soft)]">
                 {copy.homeSubtitle}
               </p>

@@ -35,6 +35,37 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     const data = parsed.data;
+    const existing = await prisma.order.findUnique({ where: { id } });
+    if (!existing) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    let nextCustomerId = existing.customer_id;
+    if (data.customerEmail !== undefined && data.customerEmail !== "") {
+      const matchedCustomer = await prisma.customer.findUnique({ where: { email: data.customerEmail.toLowerCase() } });
+      if (!matchedCustomer) {
+        return NextResponse.json({ error: "No member account found with that email." }, { status: 400 });
+      }
+      nextCustomerId = matchedCustomer.id;
+    }
+
+    const nextStatus = data.status ?? existing.status;
+    const nextPrice = data.price ?? existing.price;
+    const nextQuantity = data.quantity ?? existing.quantity;
+
+    const becomingCompleted = nextStatus === "completed" && !existing.points_awarded;
+    const leavingCompleted = existing.status === "completed" && existing.points_awarded && nextStatus !== "completed";
+
+    // NOTE: the Neon HTTP adapter does not support prisma.$transaction, so these
+    // are sequential (non-atomic) operations rather than a single transaction.
+    if (leavingCompleted && existing.customer_id) {
+      const pointsToRevert = Math.round(existing.price * existing.quantity);
+      await prisma.customer.update({
+        where: { id: existing.customer_id },
+        data: { points: { decrement: pointsToRevert } },
+      });
+    }
+
     const order = await prisma.order.update({
       where: { id },
       data: {
@@ -49,8 +80,19 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         ...(data.channel !== undefined ? { channel: data.channel } : {}),
         ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.notes !== undefined ? { notes: data.notes } : {}),
+        ...(nextCustomerId !== existing.customer_id ? { customer_id: nextCustomerId } : {}),
+        ...(leavingCompleted ? { points_awarded: false } : {}),
+        ...(becomingCompleted && nextCustomerId ? { points_awarded: true } : {}),
       },
     });
+
+    if (becomingCompleted && nextCustomerId) {
+      const pointsToAward = Math.round(nextPrice * nextQuantity);
+      await prisma.customer.update({
+        where: { id: nextCustomerId },
+        data: { points: { increment: pointsToAward } },
+      });
+    }
 
     return NextResponse.json({ order });
   } catch {

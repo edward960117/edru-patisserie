@@ -14,6 +14,10 @@
   --secondary-dark: #7a95d1;
   --secondary-light: #c9daf5;
 
+  /* ACCENT (gold-named, actually blue) */
+  --gold: #67b9e8;
+  --gold-deep: #2d84bb;
+
   /* BACKGROUND COLORS */
   --bg: #eff4fb;
   --bg-soft: #f5f9fd;
@@ -177,7 +181,7 @@ button:disabled {
 }
 
 .heading-serif {
-  font-family: "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
+  font-family: var(--font-cormorant), "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
   letter-spacing: 0.01em;
 }
 
@@ -1031,7 +1035,7 @@ textarea {
 
 /* Premium Typography Classes */
 .type-heading-1 {
-  font-family: "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
+  font-family: var(--font-cormorant), "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
   font-size: 3rem;
   font-weight: 600;
   line-height: 1.1;
@@ -1045,7 +1049,7 @@ textarea {
 }
 
 .type-heading-2 {
-  font-family: "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
+  font-family: var(--font-cormorant), "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
   font-size: 2.2rem;
   font-weight: 600;
   line-height: 1.1;
@@ -1059,7 +1063,7 @@ textarea {
 }
 
 .type-heading-3 {
-  font-family: "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
+  font-family: var(--font-cormorant), "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
   font-size: 1.65rem;
   font-weight: 600;
   line-height: 1.15;

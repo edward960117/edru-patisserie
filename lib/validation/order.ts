@@ -19,6 +19,12 @@ export const orderInputSchema = z.object({
       message: "Source image must be a valid image data URL or URL.",
     }),
   rawExtractedText: z.string().default(""),
+  customerEmail: z
+    .string()
+    .default("")
+    .refine((value) => value === "" || z.string().email().safeParse(value).success, {
+      message: "Customer email must be a valid email address.",
+    }),
 });
 
 export type OrderInput = z.infer<typeof orderInputSchema>;

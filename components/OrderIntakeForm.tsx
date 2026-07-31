@@ -8,6 +8,7 @@ type Channel = "whatsapp" | "wechat" | "handwritten" | "other";
 export interface NewOrderPayload {
   customerName: string;
   customerPhone: string;
+  customerEmail: string;
   cakeName: string;
   size: string;
   price: number;
@@ -30,6 +31,7 @@ interface Props {
 const emptyDraft = {
   customerName: "",
   customerPhone: "",
+  customerEmail: "",
   cakeName: "",
   size: "",
   price: "",
@@ -170,6 +172,7 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
       await onSubmit({
         customerName: draft.customerName.trim(),
         customerPhone: draft.customerPhone.trim(),
+        customerEmail: draft.customerEmail.trim(),
         cakeName: draft.cakeName.trim(),
         size: draft.size.trim(),
         price: Number.parseFloat(draft.price) || 0,
@@ -288,6 +291,15 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
             </label>
             <label className="text-sm">{lang === "zh" ? "联系电话" : "Phone"}
               <input value={draft.customerPhone} onChange={(event) => setDraft((prev) => ({ ...prev, customerPhone: event.target.value }))} className="input-lux mt-1" />
+            </label>
+            <label className="text-sm">{lang === "zh" ? "会员邮箱（选填，用于积分）" : "Member Email (optional, for points)"}
+              <input
+                type="email"
+                value={draft.customerEmail}
+                onChange={(event) => setDraft((prev) => ({ ...prev, customerEmail: event.target.value }))}
+                className="input-lux mt-1"
+                placeholder={lang === "zh" ? "customer@example.com" : "customer@example.com"}
+              />
             </label>
             <label className="text-sm">{lang === "zh" ? "蛋糕名称 *" : "Cake Name *"}
               <input

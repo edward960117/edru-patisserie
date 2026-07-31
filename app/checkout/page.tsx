@@ -9,6 +9,8 @@ import BankTransferButton from "@/components/BankTransferButton";
 import BackButton from "@/components/BackButton";
 import { withResilientTimeout } from "@/lib/with-timeout";
 import { readPaymentSettings } from "@/lib/payment-settings";
+import { getCustomerSession } from "@/lib/auth/customer-session";
+import { isStripeConfigured } from "@/lib/stripe";
 
 const getCheckoutCakeBySlug = unstable_cache(
   async (slug: string) => {
@@ -25,6 +27,10 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const cakeSlug = params.cake;
   const sizeId = params.size ? Number(params.size) : null;
   const paymentSettings = await readPaymentSettings();
+  const customerSession = await getCustomerSession();
+  const customer = customerSession
+    ? await prisma.customer.findUnique({ where: { id: customerSession.sub }, select: { email: true } }).catch(() => null)
+    : null;
 
   let cake = null;
   try {
@@ -55,6 +61,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const size = cake && sizeId ? cake.sizes.find((item: any) => item.id === sizeId) : null;
   const cakeName = cake ? (lang === "zh" ? (cake.name_cn || cake.name) : cake.name) : "";
   const fulfillmentTitle = lang === "zh" ? "取货与配送" : "Pickup and Delivery";
+  const memberLine = customer
+    ? (lang === "zh" ? `会员邮箱：${customer.email}` : `Member email: ${customer.email}`)
+    : "";
   const whatsappRawMessage = cake && size
     ? (lang === "zh"
         ? [
@@ -84,7 +93,8 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
       : (lang === "zh"
           ? "你好 BLUE ISLET，我想咨询蛋糕下单。"
           : "Hello BLUE ISLET, I would like to place a cake order enquiry.");
-  const whatsappMessage = encodeURIComponent(whatsappRawMessage);
+  const whatsappRawMessageWithMember = memberLine ? `${whatsappRawMessage}\n${memberLine}` : whatsappRawMessage;
+  const whatsappMessage = encodeURIComponent(whatsappRawMessageWithMember);
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
   const helperTextClass = "text-left text-sm leading-relaxed text-[color:var(--ink-soft)]";
   const termsItems = copy.checkoutTermsItems.split("|").map((item) => item.trim()).filter(Boolean);
@@ -113,6 +123,20 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         <BackButton lang={lang} fallbackHref="/" className="whitespace-nowrap" />
       </div>
       <h1 className="heading-serif mt-1 text-[1.9rem] font-bold leading-tight sm:text-5xl">{copy.checkoutTitle}</h1>
+      <p className="mt-2 text-sm text-[color:var(--ink-soft)]">
+        {customer ? (
+          <>
+            {copy.customerLoggedInAs} <span className="font-medium text-[color:var(--ink)]">{customer.email}</span>
+          </>
+        ) : (
+          <>
+            {copy.customerLoginPrompt}{" "}
+            <a href="/login/customer?next=/checkout" className="font-medium text-[color:var(--primary)] hover:underline">
+              {copy.customerLoginLink}
+            </a>
+          </>
+        )}
+      </p>
       {cake && size ? (
         <div className="mt-5 space-y-2 rounded-2xl border border-[color:var(--gold)]/20 bg-[rgba(255,250,241,0.7)] p-4 sm:p-5">
           <p><span className="text-[color:var(--ink-soft)]">{copy.cakeLabel}:</span> {cakeName}</p>
@@ -127,9 +151,10 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             leadTimeDays={cake.lead_time_days ?? 3}
             lang={lang}
             whatsappNumber={WHATSAPP_NUMBER}
-            baseMessage={whatsappRawMessage}
+            baseMessage={whatsappRawMessageWithMember}
             copy={copy}
             bankTransferEnabled={paymentSettings.bankTransferEnabled}
+            onlinePaymentEnabled={isStripeConfigured()}
           />
         </div>
       ) : (
@@ -144,7 +169,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
                 {lang === "zh" ? "推荐" : "Recommended"}
               </span>
             </span>
-            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderDetails={whatsappRawMessage} />
+            <WeChatQrButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" orderDetails={whatsappRawMessageWithMember} />
             {paymentSettings.bankTransferEnabled ? (
               <BankTransferButton lang={lang} className="btn-lux-outline w-full sm:w-auto whitespace-normal text-center" />
             ) : null}

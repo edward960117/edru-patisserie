@@ -53,6 +53,20 @@ export async function POST(request: Request) {
 
     const data = parsed.data;
     const optimizedSourceImageUrl = await optimizeImageUrlForStorage(data.sourceImageUrl);
+
+    let customerId: number | null = null;
+    if (data.customerEmail) {
+      const matchedCustomer = await prisma.customer.findUnique({ where: { email: data.customerEmail.toLowerCase() } });
+      if (!matchedCustomer) {
+        return NextResponse.json({ error: "No member account found with that email." }, { status: 400 });
+      }
+      customerId = matchedCustomer.id;
+    }
+
+    const awardOnCreate = data.status === "completed" && customerId !== null;
+
+    // NOTE: the Neon HTTP adapter does not support prisma.$transaction, so the
+    // create + points increment are done as sequential (non-atomic) operations.
     const order = await prisma.order.create({
       data: {
         customer_name: data.customerName,
@@ -68,8 +82,15 @@ export async function POST(request: Request) {
         notes: data.notes,
         source_image_url: optimizedSourceImageUrl,
         raw_extracted_text: data.rawExtractedText,
+        customer_id: customerId,
+        points_awarded: awardOnCreate,
       },
     });
+
+    if (awardOnCreate && customerId) {
+      const pointsToAward = Math.round(data.price * data.quantity);
+      await prisma.customer.update({ where: { id: customerId }, data: { points: { increment: pointsToAward } } });
+    }
 
     return NextResponse.json({ order }, { status: 201 });
   } catch (error) {

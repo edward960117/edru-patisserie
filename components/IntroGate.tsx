@@ -109,7 +109,7 @@ export default function IntroGate({ lang }: { lang: Lang }) {
       aria-label="site-intro"
     >
       <div className="absolute inset-0 bg-[rgba(12,42,68,0.34)] backdrop-blur-[6px] intro-overlay-pulse" />
-      <div className="fixed left-1/2 top-1/2 w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[color:var(--gold)]/28 bg-[color:var(--card)] px-6 py-8 sm:px-8 sm:py-10 text-center shadow-[0_12px_28px_rgba(20,86,128,0.16)] intro-panel-rise">
+      <div className="fixed left-1/2 top-1/2 w-[min(100%-2.5rem,24rem)] max-h-[88dvh] overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[color:var(--gold)]/28 bg-[color:var(--card)] px-6 py-7 sm:px-8 sm:py-9 text-center shadow-[0_20px_50px_rgba(20,86,128,0.28)] intro-panel-rise">
         {!logoBroken ? (
           <Image
             src={INTRO_LOGO}
@@ -117,7 +117,7 @@ export default function IntroGate({ lang }: { lang: Lang }) {
             width={560}
             height={420}
             priority
-            className="mx-auto h-auto w-auto max-h-[420px] max-w-full object-contain intro-logo-float"
+            className="mx-auto h-auto w-auto max-h-[180px] max-w-[220px] object-contain intro-logo-float"
             style={{ filter: "none", transform: "none" }}
             onError={() => setLogoBroken(true)}
           />
@@ -128,42 +128,44 @@ export default function IntroGate({ lang }: { lang: Lang }) {
           </div>
         )}
 
-        <h1 className="mt-4 heading-serif text-2xl text-[color:var(--ink)]">
+        <h1 className="mt-6 heading-serif text-2xl text-[color:var(--ink)]">
           {selectedLang === "zh" ? "进入网站" : "Enter Website"}
         </h1>
         <p className="mt-1 text-sm text-[color:var(--ink-soft)]">
           {selectedLang === "zh" ? "欢迎来到 BLUE ISLET" : "Welcome to BLUE ISLET"}
         </p>
 
-        <div className="mt-5 inline-flex items-center rounded-full border border-[color:var(--gold)]/40 bg-white/70 p-1.5">
-          <button
-            type="button"
-            onClick={() => setSelectedLang("zh")}
-            className={`rounded-full px-3 py-1.5 text-sm ${
-              selectedLang === "zh"
-                ? "bg-[color:var(--gold)] text-white"
-                : "text-[color:var(--ink-soft)]"
-            }`}
-          >
-            <span className="inline-flex items-center gap-1.5"><Image src="/flags/cn.svg" alt="China" width={20} height={14} className="h-3.5 w-5 rounded-[2px] object-cover" /><span>中文</span></span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedLang("en")}
-            className={`rounded-full px-3 py-1.5 text-sm ${
-              selectedLang === "en"
-                ? "bg-[color:var(--gold)] text-white"
-                : "text-[color:var(--ink-soft)]"
-            }`}
-          >
-            <span className="inline-flex items-center gap-1.5"><Image src="/flags/us.svg" alt="United States" width={20} height={14} className="h-3.5 w-5 rounded-[2px] object-cover" /><span>English</span></span>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--gold)]/40 bg-white/70 p-1.5">
+            <button
+              type="button"
+              onClick={() => setSelectedLang("zh")}
+              className={`rounded-full px-3 py-1.5 text-sm ${
+                selectedLang === "zh"
+                  ? "bg-[color:var(--gold)] text-white"
+                  : "text-[color:var(--ink-soft)]"
+              }`}
+            >
+              <span className="inline-flex items-center gap-1.5"><Image src="/flags/cn.svg" alt="China" width={20} height={14} className="h-3.5 w-5 rounded-[2px] object-cover" /><span>中文</span></span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedLang("en")}
+              className={`rounded-full px-3 py-1.5 text-sm ${
+                selectedLang === "en"
+                  ? "bg-[color:var(--gold)] text-white"
+                  : "text-[color:var(--ink-soft)]"
+              }`}
+            >
+              <span className="inline-flex items-center gap-1.5"><Image src="/flags/us.svg" alt="United States" width={20} height={14} className="h-3.5 w-5 rounded-[2px] object-cover" /><span>English</span></span>
+            </button>
+          </div>
+
+          <button type="button" onClick={() => void enterSite()} disabled={submitting} className="btn-lux min-w-44 text-sm sm:text-base disabled:opacity-70">
+            {selectedLang === "zh" ? "进入网站" : "Enter Website"}
+            <span className="ml-2">→</span>
           </button>
         </div>
-
-        <button type="button" onClick={() => void enterSite()} disabled={submitting} className="btn-lux mt-6 min-w-44 text-sm sm:text-base disabled:opacity-70">
-          {selectedLang === "zh" ? "进入网站" : "Enter Website"}
-          <span className="ml-2">→</span>
-        </button>
       </div>
     </div>
   );
