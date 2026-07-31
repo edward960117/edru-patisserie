@@ -97,7 +97,8 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
       const text = data.text || "";
       setRawText(text);
       const parsed = parseOrderText(text, knownCakeNames);
-      setDraft({
+      setDraft((prev) => ({
+        ...prev,
         customerName: parsed.customerName,
         customerPhone: parsed.customerPhone,
         cakeName: parsed.cakeName,
@@ -107,7 +108,7 @@ export default function OrderIntakeForm({ lang, knownCakeNames, disabled = false
         fulfillment: parsed.fulfillment,
         eventDate: parsed.eventDate,
         notes: "",
-      });
+      }));
       setReviewing(true);
 
       const detectedChannel = guessChannel(text);
