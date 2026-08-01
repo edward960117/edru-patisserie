@@ -57,6 +57,10 @@ Set these in .env for local development and in your hosting environment:
 - DATABASE_URL
 - DIRECT_URL
 - NEON_REST_API_URL
+- TWILIO_ACCOUNT_SID
+- TWILIO_AUTH_TOKEN
+- TWILIO_WHATSAPP_FROM
+- TWILIO_WHATSAPP_TO
 
 Example values are documented in [.env.example](.env.example).
 

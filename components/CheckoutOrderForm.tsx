@@ -627,12 +627,12 @@ export default function CheckoutOrderForm({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-sm font-semibold text-[color:var(--ink)]">
-                {lang === "zh" ? "在线支付（银行卡 / PayNow）" : "Pay online (Card / PayNow)"}
+                {lang === "zh" ? "在线支付" : "Online payment"}
               </p>
               <p className="mt-0.5 text-xs text-[color:var(--ink-soft)]">
                 {lang === "zh"
-                  ? "支付成功后自动为会员账户累积积分。"
-                  : "Loyalty points are added to your member account automatically after payment."}
+                  ? "付款成功后，积分会自动累积到会员账户。"
+                  : "Loyalty points are automatically added to your member account after payment."}
               </p>
             </div>
             <p className="text-xl font-bold text-[color:var(--primary)]">S${grandTotal.toFixed(2)}</p>
@@ -661,8 +661,8 @@ export default function CheckoutOrderForm({
           )}
           <p className="mt-2 text-[0.7rem] leading-relaxed text-[color:var(--ink-soft)]/80">
             {lang === "zh"
-              ? "您将被引导至 Stripe 安全支付页面完成付款，我们不会接触您的银行卡或网银信息。"
-              : "You'll be redirected to Stripe's secure payment page. We never see your card or banking credentials."}
+              ? "您将跳转到安全支付页面完成付款，我们不会接触您的银行卡或网银信息。"
+              : "You'll be redirected to a secure payment page. We never see your card or banking credentials."}
           </p>
         </div>
       )}
@@ -801,16 +801,16 @@ export default function CheckoutOrderForm({
                   <div className="mx-auto flex min-h-full w-full max-w-md items-center justify-center">
                     <div className="w-full rounded-2xl bg-[color:var(--card)] p-5 sm:p-6 shadow-[0_20px_48px_rgba(20,86,128,0.25)]">
                     <h3 className="heading-serif text-xl text-[color:var(--ink)]">
-                      {lang === "zh" ? "登录会员赚取积分？" : "Sign in to earn points?"}
+                      {lang === "zh" ? "登录会员账号赚积分？" : "Sign in to earn points?"}
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-[color:var(--ink-soft)]">
                       {lang === "zh"
-                        ? "您还没有登录会员账户。登录或注册后，本次付款完成即可自动累积积分；也可以选择不登录直接继续付款。"
-                        : "You're not signed in yet. Sign in or register to automatically earn points once this payment completes, or continue without an account."}
+                        ? "您还没有登录会员账户。登录或注册后，付款完成即可自动累积积分；也可以选择不登录直接继续付款。"
+                        : "You're not signed in yet. Sign in or register to automatically earn points once payment completes, or continue without an account."}
                     </p>
                     <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-end">
                       <button type="button" onClick={continueAsGuest} className="btn-lux-outline">
-                        {lang === "zh" ? "不登录，继续支付" : "Continue without signing in"}
+                        {lang === "zh" ? "不登录，继续付款" : "Continue without signing in"}
                       </button>
                       <button type="button" onClick={goToRegister} className="btn-lux">
                         {lang === "zh" ? "登录 / 注册赚积分" : "Sign in / Register to earn points"}

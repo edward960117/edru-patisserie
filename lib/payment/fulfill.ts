@@ -1,5 +1,6 @@
 import type Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
+import { sendStaffWhatsAppNotification } from "@/lib/whatsapp-notify";
 
 export interface FulfillResult {
   orderId: number;
@@ -18,6 +19,7 @@ export interface FulfillResult {
 export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): Promise<FulfillResult> {
   const meta = session.metadata ?? {};
   const amountPaid = (session.amount_total ?? 0) / 100;
+  const lang = meta.lang === "zh" ? "zh" : "en";
 
   const existing = await prisma.order.findUnique({ where: { stripe_session_id: session.id } });
   if (existing) {
@@ -61,6 +63,23 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
 
   if (points > 0 && customerId) {
     await prisma.customer.update({ where: { id: customerId }, data: { points: { increment: points } } });
+  }
+
+  try {
+    await sendStaffWhatsAppNotification({
+      lang,
+      orderId: order.id,
+      cakeName: order.cake_name,
+      size: order.size,
+      amountPaid,
+      fulfillment: order.fulfillment,
+      eventDate: order.event_date,
+      customerEmail: email || null,
+      customerPhone: order.customer_phone,
+      notes: order.notes,
+    });
+  } catch (error) {
+    console.error("Failed to send staff WhatsApp notification:", error);
   }
 
   return {

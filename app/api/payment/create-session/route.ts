@@ -134,6 +134,7 @@ export async function POST(request: Request) {
       line_items: lineItems,
       customer_email: customerEmail || undefined,
       metadata: {
+        lang: data.lang,
         cakeName,
         cakeSlug: data.cakeSlug,
         size: size.size,
