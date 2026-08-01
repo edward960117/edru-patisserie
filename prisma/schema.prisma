@@ -103,6 +103,7 @@ model Customer {
   email         String   @unique
   password_hash String
   name          String   @default("")
+  phone         String   @default("")
   points        Int      @default(0)
   active        Boolean  @default(true)
   created_at    DateTime @default(now())

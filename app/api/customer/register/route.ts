@@ -4,6 +4,7 @@ import { createSessionToken } from "@/lib/auth/session";
 import { getCustomerSessionCookieName } from "@/lib/auth/customer-session";
 import { hashPassword } from "@/lib/auth/password";
 import { customerRegisterSchema } from "@/lib/validation/customer";
+import { normalizeMobilePhone } from "@/lib/phone";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -18,7 +19,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
 
-  const { email, password, name } = parsed.data;
+  const { email, password, name, phoneCountry, phoneNumber } = parsed.data;
+  const normalizedPhone = normalizeMobilePhone(phoneCountry, phoneNumber);
+  if (!normalizedPhone) {
+    return NextResponse.json({ error: "Enter a valid mobile number for the selected country." }, { status: 400 });
+  }
 
   try {
     const existing = await prisma.customer.findUnique({ where: { email } });
@@ -28,7 +33,7 @@ export async function POST(request: Request) {
 
     const passwordHash = await hashPassword(password);
     const customer = await prisma.customer.create({
-      data: { email, password_hash: passwordHash, name },
+      data: { email, password_hash: passwordHash, name, phone: normalizedPhone },
     });
 
     const token = createSessionToken(customer.id, "customer");

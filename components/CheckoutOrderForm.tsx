@@ -6,6 +6,7 @@ import WeChatQrButton from "@/components/WeChatQrButton";
 import BankTransferButton from "@/components/BankTransferButton";
 import { type Lang } from "@/lib/i18n-shared";
 import { CANDLES } from "@/lib/candles";
+import { getDefaultPhoneCountryCode, getPhoneCountryOption, normalizeMobilePhone, parseStoredMobilePhone, PHONE_COUNTRIES, type PhoneCountryCode } from "@/lib/phone";
 
 interface AddOn {
   id: string;
@@ -37,6 +38,7 @@ interface CheckoutOrderFormProps {
   bankTransferEnabled: boolean;
   onlinePaymentEnabled: boolean;
   isLoggedIn: boolean;
+  initialCustomerPhone?: string;
 }
 
 function formatDateInput(date: Date) {
@@ -60,6 +62,7 @@ export default function CheckoutOrderForm({
   bankTransferEnabled,
   onlinePaymentEnabled,
   isLoggedIn,
+  initialCustomerPhone = "",
 }: CheckoutOrderFormProps) {
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + leadTimeDays);
@@ -84,6 +87,10 @@ export default function CheckoutOrderForm({
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [guestConfirmed, setGuestConfirmed] = useState(false);
   const [paymentError, setPaymentError] = useState("");
+  const initialPhone = initialCustomerPhone ? parseStoredMobilePhone(initialCustomerPhone) : { countryCode: getDefaultPhoneCountryCode(), nationalNumber: "" };
+  const [customerPhoneCountry, setCustomerPhoneCountry] = useState<PhoneCountryCode>(initialPhone.countryCode);
+  const [customerPhoneNumber, setCustomerPhoneNumber] = useState(initialPhone.nationalNumber);
+  const [customerPhoneError, setCustomerPhoneError] = useState(false);
   const candleModalRef = useRef<HTMLDialogElement>(null);
   const loginPromptRef = useRef<HTMLDialogElement>(null);
 
@@ -127,6 +134,14 @@ export default function CheckoutOrderForm({
       loginPromptRef.current?.close();
     };
   }, [showLoginPrompt]);
+
+  useEffect(() => {
+    if (initialCustomerPhone) {
+      const parsedPhone = parseStoredMobilePhone(initialCustomerPhone);
+      setCustomerPhoneCountry(parsedPhone.countryCode);
+      setCustomerPhoneNumber(parsedPhone.nationalNumber);
+    }
+  }, [initialCustomerPhone]);
 
   const weekdayLabels = lang === "zh" ? ["日", "一", "二", "三", "四", "五", "六"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -216,6 +231,7 @@ export default function CheckoutOrderForm({
     let shouldFocusFulfillment = false;
     let shouldFocusDate = false;
     let shouldFocusAddOns = false;
+    let shouldFocusPhone = false;
     if (!fulfillmentMethod) {
       hasIssue = true;
       shouldFocusFulfillment = true;
@@ -231,6 +247,12 @@ export default function CheckoutOrderForm({
       shouldFocusAddOns = true;
       setHasError(true);
     }
+    const normalizedPhone = normalizeMobilePhone(customerPhoneCountry, customerPhoneNumber);
+    if (!normalizedPhone) {
+      hasIssue = true;
+      shouldFocusPhone = true;
+      setCustomerPhoneError(true);
+    }
     // Scroll to whichever required field is missing, in the order it appears on the page
     if (shouldFocusFulfillment) {
       fulfillmentSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -240,6 +262,10 @@ export default function CheckoutOrderForm({
       setCalendarOpen(true);
     } else if (shouldFocusAddOns) {
       addOnsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else if (shouldFocusPhone) {
+      const phoneField = document.getElementById("checkout-contact-number") as HTMLInputElement | null;
+      phoneField?.scrollIntoView({ behavior: "smooth", block: "center" });
+      phoneField?.focus();
     }
     return !hasIssue;
   };
@@ -271,6 +297,8 @@ export default function CheckoutOrderForm({
           eventDate: pickupDate,
           addOnIds,
           candleId: selectedCandleId,
+          customerPhoneCountry,
+          customerPhoneNumber,
           lang,
         }),
       });
@@ -529,6 +557,78 @@ export default function CheckoutOrderForm({
               : lang === "zh"
                 ? `请选择不早于 ${minDateStr} 的日期。`
                 : `Please choose a date on or after ${minDateStr}.`}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/55 p-5 sm:p-6">
+        <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
+          {lang === "zh" ? "联系号码（必填）" : "Contact Number (Required)"}
+        </h3>
+        <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
+          {lang === "zh"
+            ? "请输入可联系到您的手机号码，工作人员会用它确认订单。登录会员后会自动带入已保存号码。"
+            : "Enter a number where we can contact you. Staff will use it to confirm the order. If you are signed in, we will auto-fill your saved number."}
+        </p>
+        <div
+          className={`mt-4 overflow-hidden rounded-xl border bg-white/92 shadow-[0_8px_16px_rgba(36,74,118,0.08)] ${
+            customerPhoneError ? "border-[color:var(--accent-red)]" : "border-[color:var(--gold)]/30"
+          }`}
+        >
+          <div className="grid sm:grid-cols-[220px_1fr]">
+            <div className="border-b border-[color:var(--gold)]/18 bg-[color:var(--bg-soft)]/72 px-3 py-2.5 sm:border-b-0 sm:border-r">
+              <label htmlFor="checkout-contact-country" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
+                {lang === "zh" ? "国家 / 地区" : "Country / Region"}
+              </label>
+              <select
+                id="checkout-contact-country"
+                value={customerPhoneCountry}
+                onChange={(event) => {
+                  setCustomerPhoneCountry(event.target.value as PhoneCountryCode);
+                  setCustomerPhoneError(false);
+                }}
+                className="w-full bg-transparent text-sm font-medium text-[color:var(--ink)] outline-none"
+              >
+                {PHONE_COUNTRIES.map((option) => (
+                  <option key={option.code} value={option.code}>
+                    {`${lang === "zh" ? option.labelZh : option.labelEn} (+${option.dialCode})`}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="px-3 py-2.5">
+              <label htmlFor="checkout-contact-number" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
+                {lang === "zh" ? "手机号码" : "Mobile Number"}
+              </label>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-[color:var(--primary)]/10 px-2.5 py-1 text-xs font-semibold text-[color:var(--primary)]">
+                  +{getPhoneCountryOption(customerPhoneCountry).dialCode}
+                </span>
+                <input
+                  id="checkout-contact-number"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  value={customerPhoneNumber}
+                  onChange={(event) => {
+                    setCustomerPhoneNumber(event.target.value);
+                    setCustomerPhoneError(false);
+                  }}
+                  placeholder={getPhoneCountryOption(customerPhoneCountry).example}
+                  className="w-full bg-transparent text-sm text-[color:var(--ink)] outline-none"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
+          {lang === "zh"
+            ? "默认新加坡号码。请选择国家代码并输入当地手机号码。"
+            : "Singapore is selected by default. Choose a country code and enter the local mobile number."}
+        </p>
+        {customerPhoneError && (
+          <p className="mt-2 text-sm font-medium text-[color:var(--accent-red)]">
+            {lang === "zh" ? "请输入有效的手机号码。" : "Please enter a valid mobile number."}
           </p>
         )}
       </div>

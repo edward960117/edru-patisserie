@@ -11,6 +11,7 @@ import { withResilientTimeout } from "@/lib/with-timeout";
 import { readPaymentSettings } from "@/lib/payment-settings";
 import { getCustomerSession } from "@/lib/auth/customer-session";
 import { isStripeConfigured } from "@/lib/stripe";
+import { parseStoredMobilePhone } from "@/lib/phone";
 
 const getCheckoutCakeBySlug = unstable_cache(
   async (slug: string) => {
@@ -29,8 +30,9 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
   const paymentSettings = await readPaymentSettings();
   const customerSession = await getCustomerSession();
   const customer = customerSession
-    ? await prisma.customer.findUnique({ where: { id: customerSession.sub }, select: { email: true } }).catch(() => null)
+    ? await prisma.customer.findUnique({ where: { id: customerSession.sub }, select: { email: true, phone: true } }).catch(() => null)
     : null;
+  const customerPhone = customer?.phone ? parseStoredMobilePhone(customer.phone).display : "";
 
   let cake = null;
   try {
@@ -156,6 +158,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             bankTransferEnabled={paymentSettings.bankTransferEnabled}
             onlinePaymentEnabled={isStripeConfigured()}
             isLoggedIn={Boolean(customer)}
+            initialCustomerPhone={customerPhone}
           />
         </div>
       ) : (

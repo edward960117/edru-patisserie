@@ -4,6 +4,7 @@ import { getLang, t } from "@/lib/i18n";
 import { getCustomerSession } from "@/lib/auth/customer-session";
 import { withResilientTimeout } from "@/lib/with-timeout";
 import CustomerLogoutButton from "@/components/CustomerLogoutButton";
+import { parseStoredMobilePhone } from "@/lib/phone";
 
 export default async function AccountPage() {
   const lang = await getLang();
@@ -18,7 +19,7 @@ export default async function AccountPage() {
     () =>
       prisma.customer.findUnique({
         where: { id: session.sub },
-        select: { email: true, name: true, points: true, created_at: true },
+        select: { email: true, name: true, phone: true, points: true, created_at: true },
       }),
     5000
   ).catch(() => null);
@@ -44,6 +45,7 @@ export default async function AccountPage() {
   }).format(customer.created_at);
 
   const displayName = customer.name?.trim() || customer.email.split("@")[0];
+  const customerPhone = customer.phone ? parseStoredMobilePhone(customer.phone).display : "";
 
   return (
     <section className="mx-auto max-w-2xl space-y-6">
@@ -62,6 +64,10 @@ export default async function AccountPage() {
           <div className="rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 px-4 py-3">
             <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{copy.customerEmailLabel}</p>
             <p className="mt-1 font-medium">{customer.email}</p>
+          </div>
+          <div className="rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 px-4 py-3">
+            <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{lang === "zh" ? "联系号码" : "Contact Number"}</p>
+            <p className="mt-1 font-medium">{customerPhone || (lang === "zh" ? "未填写" : "Not set")}</p>
           </div>
           <div className="rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 px-4 py-3">
             <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{copy.customerMemberSince}</p>
