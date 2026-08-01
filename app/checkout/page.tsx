@@ -155,6 +155,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             copy={copy}
             bankTransferEnabled={paymentSettings.bankTransferEnabled}
             onlinePaymentEnabled={isStripeConfigured()}
+            isLoggedIn={Boolean(customer)}
           />
         </div>
       ) : (

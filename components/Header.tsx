@@ -20,12 +20,12 @@ export default function Header({ lang, customerName = null }: { lang: "zh" | "en
   return (
     <header className="sticky top-0 z-[70] bg-gradient-to-b from-[color:var(--bg-soft)]/90 to-[color:var(--bg-soft)]/70 backdrop-blur-xl border-b border-[color:var(--border)]/40 py-3 sm:py-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 sm:h-20 items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)]/60 bg-[color:var(--surface)]/95 backdrop-blur-sm px-4 sm:px-6 shadow-[0_12px_32px_rgba(23,61,115,0.1),inset_0_1px_0_rgba(255,255,255,0.8)]">
+        <div className="flex h-16 sm:h-20 flex-nowrap items-center justify-between gap-2 sm:gap-4 overflow-x-auto rounded-2xl border border-[color:var(--border)]/60 bg-[color:var(--surface)]/95 backdrop-blur-sm px-3 sm:px-6 shadow-[0_12px_32px_rgba(23,61,115,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           
           {/* Logo section with hover effect */}
           <Link 
             href={homeHref} 
-            className="group inline-flex items-center gap-2.5 sm:gap-3 leading-none transition-all duration-300"
+            className="group inline-flex shrink-0 items-center gap-2 sm:gap-3 whitespace-nowrap leading-none transition-all duration-300"
           >
             <div className="relative">
               {/* Glow backdrop on hover */}
@@ -41,13 +41,13 @@ export default function Header({ lang, customerName = null }: { lang: "zh" | "en
               />
             </div>
             
-            <span className="heading-serif text-[0.95rem] sm:text-[1.2rem] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[color:var(--primary)] font-semibold transition-all duration-300 group-hover:tracking-[0.22em]">
+            <span className="heading-serif whitespace-nowrap text-[0.8rem] sm:text-[1.2rem] uppercase tracking-[0.1em] sm:tracking-[0.2em] text-[color:var(--primary)] font-semibold transition-all duration-300 group-hover:tracking-[0.22em]">
               BLUE ISLET
             </span>
           </Link>
 
           {/* Navigation with active state indicators */}
-          <nav className="flex items-center gap-1 sm:gap-2 text-[0.8rem] sm:text-[0.9rem] uppercase tracking-[0.12em] sm:tracking-[0.15em] text-[color:var(--ink-soft)]">
+          <nav className="flex shrink-0 items-center gap-0.5 sm:gap-2 text-[0.68rem] sm:text-[0.9rem] uppercase tracking-[0.06em] sm:tracking-[0.15em] text-[color:var(--ink-soft)]">
             {showGreeting && (
               <>
                 <Link
@@ -96,7 +96,7 @@ function NavLink({
     <Link
       href={href}
       className={`
-        relative px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all duration-300
+        relative whitespace-nowrap px-1.5 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all duration-300
         focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/30 focus:ring-offset-2
         ${active 
           ? 'text-[color:var(--primary)] bg-[color:var(--bg-soft)]/70 font-semibold' 

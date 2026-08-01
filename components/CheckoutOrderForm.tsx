@@ -35,6 +35,7 @@ interface CheckoutOrderFormProps {
   copy: any;
   bankTransferEnabled: boolean;
   onlinePaymentEnabled: boolean;
+  isLoggedIn: boolean;
 }
 
 function formatDateInput(date: Date) {
@@ -57,6 +58,7 @@ export default function CheckoutOrderForm({
   copy,
   bankTransferEnabled,
   onlinePaymentEnabled,
+  isLoggedIn,
 }: CheckoutOrderFormProps) {
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + leadTimeDays);
@@ -78,6 +80,8 @@ export default function CheckoutOrderForm({
   const [selectedCandleId, setSelectedCandleId] = useState<string | null>(null);
   const [pendingCandleId, setPendingCandleId] = useState<string | null>(null);
   const [paymentPending, setPaymentPending] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [guestConfirmed, setGuestConfirmed] = useState(false);
   const [paymentError, setPaymentError] = useState("");
 
   useEffect(() => {
@@ -213,9 +217,13 @@ export default function CheckoutOrderForm({
     }
   };
 
-  const handlePayOnline = async () => {
+  const handlePayOnline = async (bypassLoginPrompt = false) => {
     if (paymentPending) return;
     if (!validateOrderFields()) return;
+    if (!isLoggedIn && !guestConfirmed && !bypassLoginPrompt) {
+      setShowLoginPrompt(true);
+      return;
+    }
     setPaymentError("");
     setPaymentPending(true);
     try {
@@ -252,6 +260,17 @@ export default function CheckoutOrderForm({
       );
       setPaymentPending(false);
     }
+  };
+
+  const goToRegister = () => {
+    const next = `${window.location.pathname}${window.location.search}`;
+    window.location.assign(`/login/customer?next=${encodeURIComponent(next)}`);
+  };
+
+  const continueAsGuest = () => {
+    setShowLoginPrompt(false);
+    setGuestConfirmed(true);
+    void handlePayOnline(true);
   };
 
   const selectedCandle = selectedCandleId ? CANDLES.find((candle) => candle.id === selectedCandleId) ?? null : null;
@@ -586,7 +605,7 @@ export default function CheckoutOrderForm({
           </div>
           <button
             type="button"
-            onClick={handlePayOnline}
+            onClick={() => handlePayOnline()}
             disabled={paymentPending}
             className="btn-lux mt-3 w-full whitespace-normal text-center disabled:cursor-not-allowed disabled:opacity-60"
           >
@@ -703,6 +722,34 @@ export default function CheckoutOrderForm({
                 className="btn-lux disabled:opacity-60"
               >
                 {lang === "zh" ? "确认" : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLoginPrompt && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label={lang === "zh" ? "登录以赚取积分" : "Sign in to earn points"}
+        >
+          <div className="w-full max-w-md rounded-2xl bg-[color:var(--card)] p-5 sm:p-6 shadow-[0_20px_48px_rgba(20,86,128,0.25)]">
+            <h3 className="heading-serif text-xl text-[color:var(--ink)]">
+              {lang === "zh" ? "登录会员赚取积分？" : "Sign in to earn points?"}
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-[color:var(--ink-soft)]">
+              {lang === "zh"
+                ? "您还没有登录会员账户。登录或注册后，本次付款完成即可自动累积积分；也可以选择不登录直接继续付款。"
+                : "You're not signed in yet. Sign in or register to automatically earn points once this payment completes, or continue without an account."}
+            </p>
+            <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-end">
+              <button type="button" onClick={continueAsGuest} className="btn-lux-outline">
+                {lang === "zh" ? "不登录，继续支付" : "Continue without signing in"}
+              </button>
+              <button type="button" onClick={goToRegister} className="btn-lux">
+                {lang === "zh" ? "登录 / 注册赚积分" : "Sign in / Register to earn points"}
               </button>
             </div>
           </div>

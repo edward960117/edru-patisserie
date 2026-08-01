@@ -10,12 +10,19 @@ import SizeSelector from "@/components/SizeSelector";
 
 export const revalidate = 60;
 
+function bySizeAscending<T extends { size: string }>(a: T, b: T) {
+  return parseInt(a.size, 10) - parseInt(b.size, 10);
+}
+
 const getCakeBySlug = unstable_cache(
   async (slug: string) => {
-    return prisma.cake.findUnique({
+    const cake = await prisma.cake.findUnique({
       where: { slug },
-      include: { sizes: { where: { available: true }, orderBy: { size: "asc" } } },
+      include: { sizes: { where: { available: true } } },
     });
+    // "size" is stored as a string (e.g. "10\""), so sort numerically instead of alphabetically.
+    cake?.sizes.sort(bySizeAscending);
+    return cake;
   },
   ["cake-by-slug"],
   { revalidate: 300, tags: ["cakes"] }
@@ -100,7 +107,10 @@ export default async function CakeDetailsPage({ params }: { params: Promise<{ sl
           <SizeSelector
             lang={lang}
             cakeSlug={resolvedCake.slug}
-            sizes={resolvedCake.sizes.filter((size) => size.available).map((size) => ({ id: size.id, size: size.size, price: size.price }))}
+            sizes={resolvedCake.sizes
+              .filter((size) => size.available)
+              .map((size) => ({ id: size.id, size: size.size, price: size.price }))
+              .sort(bySizeAscending)}
             checkoutLabel={copy.checkout}
           />
         </div>
