@@ -19,6 +19,8 @@ const payloadSchema = z.object({
   sizeId: z.number().int().positive(),
   fulfillment: z.enum(["pickup", "delivery"]),
   eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  eventTime: z.string().trim().optional(),
+  deliveryAddress: z.string().trim().optional(),
   addOnIds: z.array(z.string()).default([]),
   candleId: z.string().nullable().default(null),
   // New payload shape
@@ -35,6 +37,13 @@ const payloadSchema = z.object({
       code: z.ZodIssueCode.custom,
       path: ["customerPhoneNumber"],
       message: "Contact number is required.",
+    });
+  }
+  if (value.fulfillment === "delivery" && !value.deliveryAddress) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["deliveryAddress"],
+      message: "Delivery address is required.",
     });
   }
 });
@@ -147,8 +156,11 @@ export async function POST(request: Request) {
   const fulfillmentLabel = data.fulfillment === "pickup" ? (isZh ? "到店自取" : "Store Pickup") : (isZh ? "配送上门" : "Delivery");
   const notesParts = [
     `${isZh ? "取货方式" : "Fulfillment"}: ${fulfillmentLabel}`,
-    `${isZh ? "日期" : "Date"}: ${data.eventDate}`,
+    `${isZh ? "日期" : "Date"}: ${data.eventDate}${data.eventTime ? ` ${data.eventTime}` : ""}`,
   ];
+  if (data.fulfillment === "delivery" && data.deliveryAddress) {
+    notesParts.push(`${isZh ? "配送地址" : "Delivery Address"}: ${data.deliveryAddress}`);
+  }
   if (addOnSummary.length > 0) {
     notesParts.push(`${isZh ? "添加项目" : "Add-ons"}: ${addOnSummary.join(", ")}`);
   }

@@ -74,8 +74,14 @@ export default function CheckoutOrderForm({
   const [fulfillmentError, setFulfillmentError] = useState(false);
   const fulfillmentSectionRef = useRef<HTMLDivElement>(null);
   const [pickupDate, setPickupDate] = useState(""); // Empty by default so user must actively pick a date
+  const [pickupTime, setPickupTime] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [dateError, setDateError] = useState(false);
+  const [timeError, setTimeError] = useState(false);
+  const [deliveryAddressError, setDeliveryAddressError] = useState(false);
   const dateInputRef = useRef<HTMLButtonElement>(null);
+  const timeSelectRef = useRef<HTMLSelectElement>(null);
+  const deliveryAddressRef = useRef<HTMLTextAreaElement>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarViewDate, setCalendarViewDate] = useState(() => new Date(minDate.getFullYear(), minDate.getMonth(), 1));
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -168,6 +174,17 @@ export default function CheckoutOrderForm({
     setCalendarViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + offset, 1));
   }
 
+  const timeSlots = useMemo(() => {
+    const slots: string[] = [];
+    for (let h = 9; h <= 21; h++) {
+      for (const m of [0, 30]) {
+        if (h === 21 && m > 0) continue;
+        slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+      }
+    }
+    return slots;
+  }, []);
+
   const toggleAddOn = (id: string) => {
     setHasError(false); // Clear error when user interacts
 
@@ -230,6 +247,8 @@ export default function CheckoutOrderForm({
     let hasIssue = false;
     let shouldFocusFulfillment = false;
     let shouldFocusDate = false;
+    let shouldFocusTime = false;
+    let shouldFocusDeliveryAddress = false;
     let shouldFocusAddOns = false;
     let shouldFocusPhone = false;
     if (!fulfillmentMethod) {
@@ -241,6 +260,16 @@ export default function CheckoutOrderForm({
       hasIssue = true;
       shouldFocusDate = true;
       setDateError(true);
+    }
+    if (!pickupTime) {
+      hasIssue = true;
+      shouldFocusTime = true;
+      setTimeError(true);
+    }
+    if (fulfillmentMethod === "delivery" && !deliveryAddress.trim()) {
+      hasIssue = true;
+      shouldFocusDeliveryAddress = true;
+      setDeliveryAddressError(true);
     }
     if (selectedAddOns.size === 0) {
       hasIssue = true;
@@ -260,6 +289,12 @@ export default function CheckoutOrderForm({
       dateInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       dateInputRef.current?.focus();
       setCalendarOpen(true);
+    } else if (shouldFocusTime) {
+      timeSelectRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      timeSelectRef.current?.focus();
+    } else if (shouldFocusDeliveryAddress) {
+      deliveryAddressRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      deliveryAddressRef.current?.focus();
     } else if (shouldFocusAddOns) {
       addOnsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     } else if (shouldFocusPhone) {
@@ -295,6 +330,8 @@ export default function CheckoutOrderForm({
           sizeId,
           fulfillment: fulfillmentMethod,
           eventDate: pickupDate,
+          eventTime: pickupTime,
+          deliveryAddress: deliveryAddress.trim(),
           addOnIds,
           candleId: selectedCandleId,
           customerPhoneCountry,
@@ -376,9 +413,16 @@ export default function CheckoutOrderForm({
 
   const dateText = pickupDate
     ? lang === "zh"
-      ? `\n\n\u53d6\u8d27/\u914d\u9001\u65e5\u671f: ${pickupDate}`
-      : `\n\nPickup/Delivery Date: ${pickupDate}`
+      ? `\n\n\u53d6\u8d27/\u914d\u9001\u65e5\u671f: ${pickupDate}${pickupTime ? ` ${pickupTime}` : ""}`
+      : `\n\nPickup/Delivery Date: ${pickupDate}${pickupTime ? ` at ${pickupTime}` : ""}`
     : "";
+
+  const deliveryAddressText =
+    fulfillmentMethod === "delivery" && deliveryAddress.trim()
+      ? lang === "zh"
+        ? `\n\u914d\u9001\u5730\u5740: ${deliveryAddress.trim()}`
+        : `\nDelivery Address: ${deliveryAddress.trim()}`
+      : "";
 
   const fulfillmentText = fulfillmentMethod
     ? lang === "zh"
@@ -386,7 +430,7 @@ export default function CheckoutOrderForm({
       : `\nFulfillment: ${fulfillmentMethod === "pickup" ? "Store Pickup" : "Delivery"}`
     : "";
 
-  const finalMessage = baseMessage + fulfillmentText + dateText + addOnsText + totalText;
+  const finalMessage = baseMessage + fulfillmentText + dateText + deliveryAddressText + addOnsText + totalText;
   const encodedMessage = encodeURIComponent(finalMessage);
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
@@ -559,6 +603,55 @@ export default function CheckoutOrderForm({
                 : `Please choose a date on or after ${minDateStr}.`}
           </p>
         )}
+
+        <div className="mt-4">
+          <label htmlFor="checkout-time" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
+            {lang === "zh" ? "取货/配送时间（必填）" : "Pickup / Delivery Time (Required)"}
+          </label>
+          <select
+            id="checkout-time"
+            ref={timeSelectRef}
+            value={pickupTime}
+            onChange={(e) => { setPickupTime(e.target.value); setTimeError(false); }}
+            className={`w-full sm:w-72 rounded-lg border bg-white/90 px-3 py-2 text-sm text-[color:var(--ink)] outline-none ${
+              timeError ? "border-[color:var(--accent-red)]" : "border-[color:var(--gold)]/30"
+            }`}
+          >
+            <option value="">{lang === "zh" ? "选择时间" : "Select a time"}</option>
+            {timeSlots.map((slot) => (
+              <option key={slot} value={slot}>{slot}</option>
+            ))}
+          </select>
+          {timeError && (
+            <p className="mt-2 text-sm font-medium text-[color:var(--accent-red)]">
+              {lang === "zh" ? "请选择取货/配送时间。" : "Please choose a pickup/delivery time."}
+            </p>
+          )}
+        </div>
+
+        {fulfillmentMethod === "delivery" && (
+          <div className="mt-4">
+            <label htmlFor="checkout-delivery-address" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
+              {lang === "zh" ? "配送地址（必填）" : "Delivery Address (Required)"}
+            </label>
+            <textarea
+              id="checkout-delivery-address"
+              ref={deliveryAddressRef}
+              value={deliveryAddress}
+              onChange={(e) => { setDeliveryAddress(e.target.value); setDeliveryAddressError(false); }}
+              placeholder={lang === "zh" ? "请输入完整地址（门牌号、楼层、邮编等）" : "Full address including unit number, floor, postal code, etc."}
+              rows={3}
+              className={`w-full rounded-lg border bg-white/90 px-3 py-2 text-sm text-[color:var(--ink)] outline-none resize-none ${
+                deliveryAddressError ? "border-[color:var(--accent-red)]" : "border-[color:var(--gold)]/30"
+              }`}
+            />
+            {deliveryAddressError && (
+              <p className="mt-2 text-sm font-medium text-[color:var(--accent-red)]">
+                {lang === "zh" ? "请输入配送地址。" : "Please enter a delivery address."}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="mt-6 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/55 p-5 sm:p-6">
@@ -700,7 +793,9 @@ export default function CheckoutOrderForm({
             </div>
             <div>
               <p className="text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "取货/配送日期" : "Pickup/Delivery Date"}</p>
-              <p className="text-lg font-bold text-[color:var(--ink)]">{pickupDate || "-"}</p>
+              <p className="text-lg font-bold text-[color:var(--ink)]">
+                {pickupDate ? `${pickupDate}${pickupTime ? ` ${pickupTime}` : ""}` : "-"}
+              </p>
             </div>
             <div>
               <p className="text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "蛋糕价格" : "Cake Price"}</p>
