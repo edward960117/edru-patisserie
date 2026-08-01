@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { getCustomerSession } from "@/lib/auth/customer-session";
 import { CANDLES } from "@/lib/candles";
-import { normalizeMobilePhone, phoneCountryCodeSchema } from "@/lib/phone";
+import { normalizeMobilePhone, parseStoredMobilePhone, phoneCountryCodeSchema } from "@/lib/phone";
 
 export const runtime = "nodejs";
 
@@ -21,9 +21,22 @@ const payloadSchema = z.object({
   eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   addOnIds: z.array(z.string()).default([]),
   candleId: z.string().nullable().default(null),
-  customerPhoneCountry: phoneCountryCodeSchema,
-  customerPhoneNumber: z.string().trim().min(1),
+  // New payload shape
+  customerPhoneCountry: phoneCountryCodeSchema.optional(),
+  customerPhoneNumber: z.string().trim().optional(),
+  // Legacy payload shape
+  customerPhone: z.string().trim().optional(),
   lang: z.enum(["zh", "en"]).default("en"),
+}).superRefine((value, ctx) => {
+  const hasNew = Boolean(value.customerPhoneCountry && value.customerPhoneNumber);
+  const hasLegacy = Boolean(value.customerPhone);
+  if (!hasNew && !hasLegacy) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["customerPhoneNumber"],
+      message: "Contact number is required.",
+    });
+  }
 });
 
 function getOrigin(request: Request): string {
@@ -54,7 +67,15 @@ export async function POST(request: Request) {
   }
   const data = parsed.data;
   const isZh = data.lang === "zh";
-  const customerPhone = normalizeMobilePhone(data.customerPhoneCountry, data.customerPhoneNumber);
+
+  let customerPhone = "";
+  if (data.customerPhoneCountry && data.customerPhoneNumber) {
+    customerPhone = normalizeMobilePhone(data.customerPhoneCountry, data.customerPhoneNumber) ?? "";
+  } else if (data.customerPhone) {
+    const parsedLegacyPhone = parseStoredMobilePhone(data.customerPhone);
+    customerPhone = normalizeMobilePhone(parsedLegacyPhone.countryCode, parsedLegacyPhone.nationalNumber) ?? "";
+  }
+
   if (!customerPhone) {
     return NextResponse.json({ error: "Please enter a valid mobile number for the selected country." }, { status: 400 });
   }
