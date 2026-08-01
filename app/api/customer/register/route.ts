@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createSessionToken } from "@/lib/auth/session";
 import { getCustomerSessionCookieName } from "@/lib/auth/customer-session";
@@ -57,7 +58,22 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch {
+  } catch (error) {
+    // Missing column errors usually mean production DB schema is not updated yet.
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2022") {
+        return NextResponse.json(
+          { error: "Service temporarily unavailable. Please try again shortly." },
+          { status: 503 }
+        );
+      }
+
+      if (error.code === "P2002") {
+        return NextResponse.json({ error: "An account with this email already exists." }, { status: 409 });
+      }
+    }
+
+    console.error("Customer register failed:", error);
     return NextResponse.json({ error: "Unable to create account right now. Please try again." }, { status: 503 });
   }
 }
