@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import WeChatQrButton from "@/components/WeChatQrButton";
 import BankTransferButton from "@/components/BankTransferButton";
@@ -83,6 +84,8 @@ export default function CheckoutOrderForm({
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [guestConfirmed, setGuestConfirmed] = useState(false);
   const [paymentError, setPaymentError] = useState("");
+  const candleModalRef = useRef<HTMLDialogElement>(null);
+  const loginPromptRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     if (!calendarOpen) return;
@@ -94,6 +97,36 @@ export default function CheckoutOrderForm({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [calendarOpen]);
+
+  useEffect(() => {
+    if (!showCandleModal) return;
+    requestAnimationFrame(() => {
+      const dialog = candleModalRef.current;
+      if (!dialog) return;
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+      dialog.focus({ preventScroll: true });
+    });
+    return () => {
+      candleModalRef.current?.close();
+    };
+  }, [showCandleModal]);
+
+  useEffect(() => {
+    if (!showLoginPrompt) return;
+    requestAnimationFrame(() => {
+      const dialog = loginPromptRef.current;
+      if (!dialog) return;
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+      dialog.focus({ preventScroll: true });
+    });
+    return () => {
+      loginPromptRef.current?.close();
+    };
+  }, [showLoginPrompt]);
 
   const weekdayLabels = lang === "zh" ? ["日", "一", "二", "三", "四", "五", "六"] : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -274,6 +307,7 @@ export default function CheckoutOrderForm({
   };
 
   const selectedCandle = selectedCandleId ? CANDLES.find((candle) => candle.id === selectedCandleId) ?? null : null;
+  const modalHost = typeof document !== "undefined" ? document.body : null;
 
   const pickupLabelText = lang === "zh" ? "到店自取" : "Store Pickup";
   const pickupHintText = lang === "zh" ? "取货费用：免费。" : "Pickup fee: Free.";
@@ -603,20 +637,25 @@ export default function CheckoutOrderForm({
             </div>
             <p className="text-xl font-bold text-[color:var(--primary)]">S${grandTotal.toFixed(2)}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => handlePayOnline()}
-            disabled={paymentPending}
-            className="btn-lux mt-3 w-full whitespace-normal text-center disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {paymentPending
-              ? lang === "zh"
-                ? "正在跳转到安全支付…"
-                : "Redirecting to secure payment…"
-              : lang === "zh"
-                ? `安全支付 S$${grandTotal.toFixed(2)}`
-                : `Pay S$${grandTotal.toFixed(2)} securely`}
-          </button>
+          <span className="relative mt-3 block w-full">
+            <button
+              type="button"
+              onClick={() => handlePayOnline()}
+              disabled={paymentPending}
+              className="btn-lux w-full whitespace-normal text-center disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {paymentPending
+                ? lang === "zh"
+                  ? "正在跳转到安全支付…"
+                  : "Redirecting to secure payment…"
+                : lang === "zh"
+                  ? `安全支付 S$${grandTotal.toFixed(2)}`
+                  : `Pay S$${grandTotal.toFixed(2)} securely`}
+            </button>
+            <span className="absolute -top-2.5 -right-2 rounded-full bg-[color:var(--secondary)] px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-white shadow-sm">
+              {lang === "zh" ? "推荐" : "Recommended"}
+            </span>
+          </span>
           {paymentError && (
             <p className="mt-2 text-sm font-medium text-[color:var(--secondary)]">{paymentError}</p>
           )}
@@ -666,95 +705,124 @@ export default function CheckoutOrderForm({
           : "We recommend ordering via WhatsApp for the fastest response. WeChat is also available."}
       </p>
 
-      {showCandleModal && (
-        <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 px-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={lang === "zh" ? "选择蜡烛款式" : "Choose candle style"}
-        >
-          <div className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-[color:var(--card)] p-5 sm:p-6 shadow-[0_20px_48px_rgba(20,86,128,0.25)]">
-            <h3 className="heading-serif text-xl text-[color:var(--ink)]">
-              {lang === "zh" ? "选择蜡烛款式" : "Choose Your Candle Style"}
-            </h3>
-            <p className="mt-1 text-sm text-[color:var(--ink-soft)]">
-              {lang === "zh" ? "请选择一款蜡烛，然后点击确认。" : "Pick a candle style, then confirm."}
-            </p>
-
-            <div className="mt-4 space-y-2.5">
-              {CANDLES.map((candle) => (
-                <label
-                  key={candle.id}
-                  className={`flex items-center gap-3 cursor-pointer rounded-lg border p-3 transition-colors ${
-                    pendingCandleId === candle.id
-                      ? "border-[color:var(--primary)] bg-[color:var(--primary)]/5"
-                      : "border-[color:var(--gold)]/20 hover:bg-white/40"
-                  }`}
+      {showCandleModal
+        ? (modalHost
+            ? createPortal(
+                <dialog
+                  className="fixed inset-0 z-[9999] m-0 h-full w-full max-h-none max-w-none border-0 bg-black/40 p-4 backdrop:bg-black/40"
+                  aria-label={lang === "zh" ? "选择蜡烛款式" : "Choose candle style"}
+                  ref={candleModalRef}
+                  onCancel={(event) => {
+                    event.preventDefault();
+                    cancelCandleSelection();
+                  }}
+                  onClick={(event) => {
+                    if (event.target === event.currentTarget) {
+                      cancelCandleSelection();
+                    }
+                  }}
                 >
-                  <input
-                    type="radio"
-                    name="candle-style"
-                    checked={pendingCandleId === candle.id}
-                    onChange={() => setPendingCandleId(candle.id)}
-                    className="h-5 w-5 accent-[color:var(--primary)] cursor-pointer"
-                  />
-                  <img src={candle.image_path} alt={lang === "zh" ? candle.name_cn : candle.name_en} className="h-10 w-10 object-contain" />
-                  <span className="flex-1 text-sm font-medium text-[color:var(--ink)]">
-                    {lang === "zh" ? candle.name_cn : candle.name_en}
-                  </span>
-                  <span className="text-sm font-semibold text-[color:var(--primary)]">S${candle.price.toFixed(2)}</span>
-                </label>
-              ))}
-            </div>
+                  <div className="mx-auto flex min-h-full w-full max-w-lg items-center justify-center">
+                    <div className="max-h-[85vh] w-full overflow-y-auto rounded-2xl bg-[color:var(--card)] p-5 sm:p-6 shadow-[0_20px_48px_rgba(20,86,128,0.25)]">
+                    <h3 className="heading-serif text-xl text-[color:var(--ink)]">
+                      {lang === "zh" ? "选择蜡烛款式" : "Choose Your Candle Style"}
+                    </h3>
+                    <p className="mt-1 text-sm text-[color:var(--ink-soft)]">
+                      {lang === "zh" ? "请选择一款蜡烛，然后点击确认。" : "Pick a candle style, then confirm."}
+                    </p>
 
-            <div className="mt-5 flex justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={cancelCandleSelection}
-                className="btn-lux-outline"
-              >
-                {lang === "zh" ? "取消" : "Cancel"}
-              </button>
-              <button
-                type="button"
-                onClick={confirmCandleSelection}
-                disabled={!pendingCandleId}
-                className="btn-lux disabled:opacity-60"
-              >
-                {lang === "zh" ? "确认" : "Confirm"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                    <div className="mt-4 space-y-2.5">
+                      {CANDLES.map((candle) => (
+                        <label
+                          key={candle.id}
+                          className={`flex items-center gap-3 cursor-pointer rounded-lg border p-3 transition-colors ${
+                            pendingCandleId === candle.id
+                              ? "border-[color:var(--primary)] bg-[color:var(--primary)]/5"
+                              : "border-[color:var(--gold)]/20 hover:bg-white/40"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="candle-style"
+                            checked={pendingCandleId === candle.id}
+                            onChange={() => setPendingCandleId(candle.id)}
+                            className="h-5 w-5 accent-[color:var(--primary)] cursor-pointer"
+                          />
+                          <img src={candle.image_path} alt={lang === "zh" ? candle.name_cn : candle.name_en} className="h-10 w-10 object-contain" />
+                          <span className="flex-1 text-sm font-medium text-[color:var(--ink)]">
+                            {lang === "zh" ? candle.name_cn : candle.name_en}
+                          </span>
+                          <span className="text-sm font-semibold text-[color:var(--primary)]">S${candle.price.toFixed(2)}</span>
+                        </label>
+                      ))}
+                    </div>
 
-      {showLoginPrompt && (
-        <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 px-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={lang === "zh" ? "登录以赚取积分" : "Sign in to earn points"}
-        >
-          <div className="w-full max-w-md rounded-2xl bg-[color:var(--card)] p-5 sm:p-6 shadow-[0_20px_48px_rgba(20,86,128,0.25)]">
-            <h3 className="heading-serif text-xl text-[color:var(--ink)]">
-              {lang === "zh" ? "登录会员赚取积分？" : "Sign in to earn points?"}
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-[color:var(--ink-soft)]">
-              {lang === "zh"
-                ? "您还没有登录会员账户。登录或注册后，本次付款完成即可自动累积积分；也可以选择不登录直接继续付款。"
-                : "You're not signed in yet. Sign in or register to automatically earn points once this payment completes, or continue without an account."}
-            </p>
-            <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-end">
-              <button type="button" onClick={continueAsGuest} className="btn-lux-outline">
-                {lang === "zh" ? "不登录，继续支付" : "Continue without signing in"}
-              </button>
-              <button type="button" onClick={goToRegister} className="btn-lux">
-                {lang === "zh" ? "登录 / 注册赚积分" : "Sign in / Register to earn points"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                    <div className="mt-5 flex justify-end gap-2.5">
+                      <button
+                        type="button"
+                        onClick={cancelCandleSelection}
+                        className="btn-lux-outline"
+                      >
+                        {lang === "zh" ? "取消" : "Cancel"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={confirmCandleSelection}
+                        disabled={!pendingCandleId}
+                        className="btn-lux disabled:opacity-60"
+                      >
+                        {lang === "zh" ? "确认" : "Confirm"}
+                      </button>
+                    </div>
+                    </div>
+                  </div>
+                </dialog>,
+                modalHost
+              )
+            : null)
+        : null}
+
+      {showLoginPrompt
+        ? (modalHost
+            ? createPortal(
+                <dialog
+                  className="fixed inset-0 z-[9999] m-0 h-full w-full max-h-none max-w-none border-0 bg-black/40 p-4 backdrop:bg-black/40"
+                  aria-label={lang === "zh" ? "登录以赚取积分" : "Sign in to earn points"}
+                  ref={loginPromptRef}
+                  onCancel={(event) => {
+                    event.preventDefault();
+                  }}
+                  onClick={(event) => {
+                    if (event.target === event.currentTarget) {
+                      continueAsGuest();
+                    }
+                  }}
+                >
+                  <div className="mx-auto flex min-h-full w-full max-w-md items-center justify-center">
+                    <div className="w-full rounded-2xl bg-[color:var(--card)] p-5 sm:p-6 shadow-[0_20px_48px_rgba(20,86,128,0.25)]">
+                    <h3 className="heading-serif text-xl text-[color:var(--ink)]">
+                      {lang === "zh" ? "登录会员赚取积分？" : "Sign in to earn points?"}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[color:var(--ink-soft)]">
+                      {lang === "zh"
+                        ? "您还没有登录会员账户。登录或注册后，本次付款完成即可自动累积积分；也可以选择不登录直接继续付款。"
+                        : "You're not signed in yet. Sign in or register to automatically earn points once this payment completes, or continue without an account."}
+                    </p>
+                    <div className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:justify-end">
+                      <button type="button" onClick={continueAsGuest} className="btn-lux-outline">
+                        {lang === "zh" ? "不登录，继续支付" : "Continue without signing in"}
+                      </button>
+                      <button type="button" onClick={goToRegister} className="btn-lux">
+                        {lang === "zh" ? "登录 / 注册赚积分" : "Sign in / Register to earn points"}
+                      </button>
+                    </div>
+                    </div>
+                  </div>
+                </dialog>,
+                modalHost
+              )
+            : null)
+        : null}
     </div>
   );
 }
