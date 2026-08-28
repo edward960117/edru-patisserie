@@ -3,12 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { getLang, t } from "@/lib/i18n";
 import { getCustomerSession } from "@/lib/auth/customer-session";
 import { withResilientTimeout } from "@/lib/with-timeout";
-import CustomerLogoutButton from "@/components/CustomerLogoutButton";
-import { parseStoredMobilePhone } from "@/lib/phone";
+import CustomerAccountPanel from "@/components/CustomerAccountPanel";
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ status?: string }> | { status?: string };
+}) {
   const lang = await getLang();
   const copy = t(lang);
+  const params = searchParams ? await Promise.resolve(searchParams) : {};
   const session = await getCustomerSession();
 
   if (!session) {
@@ -44,41 +48,19 @@ export default async function AccountPage() {
     day: "numeric",
   }).format(customer.created_at);
 
-  const displayName = customer.name?.trim() || customer.email.split("@")[0];
-  const customerPhone = customer.phone ? parseStoredMobilePhone(customer.phone).display : "";
+  const successMessage = params.status === "registered"
+    ? (lang === "zh" ? "账户注册成功，已进入你的账户。" : "Account registered successfully. You are now signed in.")
+    : params.status === "signed_in"
+      ? (lang === "zh" ? "登录成功。" : "Signed in successfully.")
+      : null;
 
   return (
     <section className="mx-auto max-w-2xl space-y-6">
-      <article className="detail-card card-lux atelier-frame p-6 sm:p-8">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-sm font-medium text-[color:var(--primary)]">
-              {copy.customerWelcome}, {displayName}
-            </p>
-            <h1 className="heading-serif mt-1 text-3xl sm:text-4xl">{copy.customerAccountTitle}</h1>
-          </div>
-          <CustomerLogoutButton lang={lang} />
-        </div>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 px-4 py-3">
-            <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{copy.customerEmailLabel}</p>
-            <p className="mt-1 font-medium">{customer.email}</p>
-          </div>
-          <div className="rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 px-4 py-3">
-            <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{lang === "zh" ? "联系号码" : "Contact Number"}</p>
-            <p className="mt-1 font-medium">{customerPhone || (lang === "zh" ? "未填写" : "Not set")}</p>
-          </div>
-          <div className="rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 px-4 py-3">
-            <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{copy.customerMemberSince}</p>
-            <p className="mt-1 font-medium">{memberSince}</p>
-          </div>
-          <div className="rounded-xl border border-[color:var(--primary)]/30 bg-[color:var(--bg-soft)]/70 px-4 py-3 sm:col-span-2">
-            <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{copy.customerPointsBalance}</p>
-            <p className="mt-1 text-2xl font-bold text-[color:var(--primary)]">{customer.points}</p>
-          </div>
-        </div>
-      </article>
+      <CustomerAccountPanel
+        lang={lang}
+        customer={customer}
+        successMessage={successMessage}
+      />
 
       <article className="detail-card card-lux atelier-frame p-6 sm:p-8">
         <h2 className="text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.customerOrdersTitle}</h2>

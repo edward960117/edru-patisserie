@@ -24,6 +24,7 @@ export default function CustomerLoginForm({ lang }: { lang: Lang }) {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   async function handleSocialAuth(provider: "google" | "apple") {
     if (loading) return;
@@ -49,6 +50,7 @@ export default function CustomerLoginForm({ lang }: { lang: Lang }) {
 
     setLoading(true);
     setError(null);
+    setSuccessMessage(null);
 
     try {
       const endpoint = mode === "login" ? "/api/customer/login" : "/api/customer/register";
@@ -76,9 +78,43 @@ export default function CustomerLoginForm({ lang }: { lang: Lang }) {
 
       const nextPath = searchParams.get("next");
       const safePath = nextPath && nextPath.startsWith("/") ? nextPath : "/account";
-      window.location.assign(safePath);
+      const redirectPath = mode === "register" ? `${safePath}?status=registered` : safePath;
+      window.location.assign(redirectPath);
     } catch {
       setError(copy.loginUnexpectedError);
+      setLoading(false);
+    }
+  }
+
+  async function handleForgotPassword() {
+    if (!email.trim() || loading) {
+      setError(copy.customerForgotPasswordMissingEmail);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const response = await fetch("/api/customer/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+
+      const result = (await response.json()) as { error?: string; message?: string };
+      if (!response.ok) {
+        setError(result.error ?? copy.customerForgotPasswordFailed);
+        setLoading(false);
+        return;
+      }
+
+      setSuccessMessage(result.message ?? copy.customerForgotPasswordSuccess);
+      setShowForgotPassword(false);
+      setLoading(false);
+    } catch {
+      setError(copy.customerForgotPasswordFailed);
       setLoading(false);
     }
   }
@@ -212,6 +248,49 @@ export default function CustomerLoginForm({ lang }: { lang: Lang }) {
           </div>
         )}
 
+        {mode === "login" && (
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                setShowForgotPassword((current) => !current);
+                setError(null);
+                setSuccessMessage(null);
+              }}
+              className="text-sm font-medium text-[color:var(--primary)] hover:underline disabled:opacity-60"
+              disabled={loading}
+            >
+              {copy.customerForgotPasswordLink}
+            </button>
+          </div>
+        )}
+
+        {showForgotPassword && mode === "login" && (
+          <div className="rounded-[12px] border border-[color:var(--gold)]/35 bg-[color:var(--bg-soft)]/80 p-4">
+            <p className="mb-3 text-sm text-[color:var(--ink-soft)]">
+              {copy.customerForgotPasswordTitle}
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input-lux flex-1"
+                placeholder={copy.customerEmailLabel}
+                disabled={loading}
+              />
+              <button
+                type="button"
+                onClick={() => void handleForgotPassword()}
+                disabled={loading}
+                className="btn-lux min-w-[150px] disabled:opacity-60"
+              >
+                {copy.customerForgotPasswordButton}
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-3 pt-1">
           <button
             type="button"
@@ -228,19 +307,6 @@ export default function CustomerLoginForm({ lang }: { lang: Lang }) {
               </svg>
             </span>
             <span>{copy.customerContinueGoogle}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleSocialAuth("apple")}
-            disabled={loading}
-            className="social-button social-button-apple w-full disabled:opacity-60"
-          >
-            <span className="social-button__icon social-button__icon-apple" aria-hidden="true">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="currentColor" d="M16.5 12.37c0-2.04 1.68-3.01 1.75-3.06-0.96-1.39-2.45-1.58-2.96-1.6-1.26-.13-2.45.74-3.09.74-.64 0-1.62-.72-2.67-.7-1.37.02-2.64.8-3.35 2.03-1.43 2.48-.36 6.15 1.03 8.15.68.98 1.5 2.09 2.58 2.04 1.03-.04 1.42-.66 2.66-.66 1.25 0 1.6.66 2.68.63 1.11-.02 1.82-1 2.49-2 .79-1.15 1.11-2.27 1.13-2.33-.02-.01-2.17-.84-3.73-2.93ZM15.13 6.26c.56-.68.94-1.63.84-2.57-.81.03-1.79.54-2.38 1.22-.52.6-.98 1.56-.86 2.47.92.07 1.82-.46 2.4-1.12Z"/>
-              </svg>
-            </span>
-            <span>{copy.customerContinueApple}</span>
           </button>
         </div>
 

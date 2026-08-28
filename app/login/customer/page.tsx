@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import CustomerLoginForm from "@/components/CustomerLoginForm";
 import { getLang } from "@/lib/i18n";
+import { getCustomerSession } from "@/lib/auth/customer-session";
 
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getLang();
@@ -20,5 +22,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CustomerLoginPage() {
   const lang = await getLang();
+  const session = await getCustomerSession();
+
+  if (session) {
+    redirect("/account");
+  }
+
   return <CustomerLoginForm lang={lang} />;
 }
