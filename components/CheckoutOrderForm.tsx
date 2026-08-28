@@ -436,9 +436,52 @@ export default function CheckoutOrderForm({
 
   return (
     <div>
+      <div className="mb-5 rounded-2xl border border-[color:var(--primary)]/15 bg-[linear-gradient(135deg,rgba(255,255,255,0.88),rgba(233,244,255,0.7))] p-4 shadow-[0_10px_22px_rgba(31,79,125,0.06)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--primary)]">
+            {lang === "zh" ? "下单流程" : "Quick order flow"}
+          </p>
+          <p className="text-xs text-[color:var(--ink-soft)]">
+            {lang === "zh" ? "只需 4 步" : "4 simple steps"}
+          </p>
+        </div>
+
+        <div className="checkout-stepper mt-3">
+          {[
+            { label: lang === "zh" ? "配送方式" : "Delivery", active: Boolean(fulfillmentMethod) },
+            { label: lang === "zh" ? "日期时间" : "Date & time", active: Boolean(pickupDate && pickupTime) },
+            { label: lang === "zh" ? "联系信息" : "Contact", active: Boolean(customerPhoneNumber) },
+            { label: lang === "zh" ? "确认付款" : "Review & pay", active: onlinePaymentEnabled || bankTransferEnabled },
+          ].map((step, index) => (
+            <div key={step.label} className={`checkout-step ${step.active ? "is-active" : ""}`}>
+              <span>{index + 1}</span>
+              <small>{step.label}</small>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-5 rounded-2xl border border-[color:var(--gold)]/20 bg-[color:var(--bg-soft)]/65 p-4">
+        <p className="text-[0.66rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--gold-deep)]">
+          {lang === "zh" ? "订单摘要" : "Your order"}
+        </p>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-lg font-semibold text-[color:var(--ink)]">{cakeName}</p>
+            <p className="text-sm text-[color:var(--ink-soft)]">
+              {lang === "zh" ? "尺寸" : "Size"}: {sizeSize}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "估算总额" : "Estimated total"}</p>
+            <p className="text-2xl font-bold text-[color:var(--primary)]">S${grandTotal.toFixed(2)}</p>
+          </div>
+        </div>
+      </div>
+
       <div ref={fulfillmentSectionRef} className="mt-7 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/55 p-5 sm:p-6">
         <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
-          {lang === "zh" ? "取货方式（必选）" : "Fulfillment Method (Required)"}
+          {lang === "zh" ? "1. 选择配送方式" : "1. Choose how you want it"}
         </h3>
         <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
           {lang === "zh" ? "请选择到店自取或配送上门：" : "Please choose store pickup or delivery:"}
@@ -492,7 +535,7 @@ export default function CheckoutOrderForm({
 
       <div className="mt-6 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/55 p-5 sm:p-6">
         <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
-          {lang === "zh" ? "取货/配送日期" : "Pickup / Delivery Date"}
+          {lang === "zh" ? "2. 选择日期和时间" : "2. Pick a date and time"}
         </h3>
         <p className="mt-2 text-xs leading-relaxed text-[color:var(--ink-soft)] break-words">
           {lang === "zh" ? (
@@ -656,7 +699,7 @@ export default function CheckoutOrderForm({
 
       <div className="mt-6 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/55 p-5 sm:p-6">
         <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
-          {lang === "zh" ? "联系号码（必填）" : "Contact Number (Required)"}
+          {lang === "zh" ? "3. 联系我们" : "3. How can we contact you?"}
         </h3>
         <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
           {lang === "zh"
@@ -728,7 +771,7 @@ export default function CheckoutOrderForm({
 
       <div ref={addOnsSectionRef} className="mt-6 rounded-2xl border border-[color:var(--secondary)]/25 bg-[color:var(--secondary)]/5 p-5 sm:p-6">
         <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-[color:var(--ink)]">
-          {lang === "zh" ? "添加项目（必选）" : "Add-ons (Required)"}
+          {lang === "zh" ? "4. 添加小惊喜" : "4. Add a little extra"}
         </h3>
         <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
           {lang === "zh" ? "请至少选择一个选项：" : "Please select at least one option:"}

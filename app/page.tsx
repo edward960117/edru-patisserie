@@ -73,7 +73,6 @@ export default async function HomePage() {
           background: "linear-gradient(135deg, #fbfeff 0%, #e8f4fb 40%, #7db8d8 90%, #4a9bca 100%)"
         }}
       >
-        {/* Subtle overlay for depth */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -83,20 +82,16 @@ export default async function HomePage() {
           }}
         />
 
-        {/* Signed-in customer greeting, top-right of the banner */}
         <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
           <CustomerGreeting name={customerName} lang={lang} variant="banner" />
         </div>
 
         <div className="relative flex flex-col gap-0 sm:flex-row sm:items-center">
-          {/* Left Content - Improved Spacing */}
           <div className="flex flex-1 flex-col gap-6 sm:gap-8 px-8 py-12 sm:px-12 sm:py-14">
-            {/* Kicker tagline */}
             <p className="text-[0.65rem] uppercase tracking-[0.35em] text-[color:var(--primary)]/70 font-medium">
               {copy.homeTagline}
             </p>
-            
-            {/* Title & subtitle with better spacing */}
+
             <div className="space-y-4 sm:space-y-5">
               {copy.homeTitle ? (
                 <h1 className="heading-serif text-[2.2rem] sm:text-[3.2rem] font-semibold leading-[1.1] tracking-[-0.015em] text-[color:var(--ink)]">
@@ -108,7 +103,6 @@ export default async function HomePage() {
               </p>
             </div>
 
-            {/* Working Hours & Response Time Info */}
             <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-2">
               <div className="flex flex-col gap-1">
                 <p className="text-[0.72rem] uppercase tracking-[0.18em] text-[color:var(--ink-soft)]/60 font-medium">
@@ -127,20 +121,14 @@ export default async function HomePage() {
                 </p>
               </div>
             </div>
-            
-            {/* Decorative accent line */}
+
             <div className="mt-4 h-0.5 w-24 bg-gradient-to-r from-[color:var(--secondary)] via-[color:var(--primary)]/60 to-transparent rounded-full" />
           </div>
 
-          {/* Right: Premium Logo Presentation */}
           <div className="hidden sm:flex sm:w-[200px] lg:w-[280px] sm:shrink-0 items-center justify-center px-8 py-12">
             <div className="relative">
-              {/* Subtle background glow */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[color:var(--primary)]/12 to-[color:var(--secondary)]/8 blur-3xl scale-125" />
-              
-              {/* Premium border treatment */}
               <div className="absolute inset-0 rounded-full border border-gradient-to-br from-[color:var(--primary)]/40 to-[color:var(--secondary)]/20" />
-              
               <Image
                 src="/Designer-blue.png"
                 alt="BLUE ISLET signature cake"

@@ -8,6 +8,13 @@ import { getDefaultPhoneCountryCode, getPhoneCountryOption, normalizeMobilePhone
 export default function CustomerLoginForm({ lang }: { lang: Lang }) {
   const searchParams = useSearchParams();
   const copy = t(lang);
+  const socialStatus = searchParams.get("status");
+  const socialProvider = searchParams.get("social");
+  const socialSuccessMessage = socialStatus === "registered"
+    ? (socialProvider === "google" ? copy.customerSocialRegisterSuccess : copy.customerSocialRegisterSuccess)
+    : socialStatus === "signed_in"
+      ? (socialProvider === "google" ? copy.customerSocialSignInSuccess : copy.customerSocialSignInSuccess)
+      : null;
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,7 +22,26 @@ export default function CustomerLoginForm({ lang }: { lang: Lang }) {
   const [phoneCountry, setPhoneCountry] = useState<PhoneCountryCode>(getDefaultPhoneCountryCode());
   const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  async function handleSocialAuth(provider: "google" | "apple") {
+    if (loading) return;
+
+    setLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const nextPath = searchParams.get("next");
+      const redirectTo = nextPath && nextPath.startsWith("/") ? nextPath : "/account";
+      const authUrl = `/api/customer/social-auth?provider=${provider}&next=${encodeURIComponent(redirectTo)}`;
+      window.location.assign(authUrl);
+    } catch {
+      setError(copy.customerSocialSignInFailed);
+      setLoading(false);
+    }
+  }
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -178,11 +204,51 @@ export default function CustomerLoginForm({ lang }: { lang: Lang }) {
           />
         </div>
 
-        {error && (
-          <div className="rounded-[12px] bg-[color:var(--accent-red)]/10 border border-[color:var(--accent-red)]/30 p-4 animate-fade-in-up">
-            <p className="text-sm text-[color:var(--accent-red)] font-medium">{error}</p>
+        {(error || successMessage || socialSuccessMessage) && (
+          <div className={`rounded-[12px] border p-4 animate-fade-in-up ${error ? "bg-[color:var(--accent-red)]/10 border-[color:var(--accent-red)]/30" : "bg-[color:var(--accent-success)]/10 border-[color:var(--accent-success)]/30"}`}>
+            <p className={`text-sm font-medium ${error ? "text-[color:var(--accent-red)]" : "text-[color:var(--accent-success)]"}`}>
+              {error ?? successMessage ?? socialSuccessMessage}
+            </p>
           </div>
         )}
+
+        <div className="space-y-3 pt-1">
+          <button
+            type="button"
+            onClick={() => void handleSocialAuth("google")}
+            disabled={loading}
+            className="social-button social-button-google w-full disabled:opacity-60"
+          >
+            <span className="social-button__icon social-button__icon-google" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true" role="img">
+                <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.2-.9 2.2-1.8 2.9l2.9 2.2c1.7-1.6 2.7-4 2.7-6.8 0-.6-.1-1.2-.2-1.7H12Z"/>
+                <path fill="#34A853" d="M12 20.9c2.5 0 4.6-.8 6.1-2.2L15.1 16.5c-.8.6-1.9 1-3.1 1-2.4 0-4.4-1.6-5.1-3.7H2.8v2.4A9.2 9.2 0 0 0 12 20.9Z"/>
+                <path fill="#FBBC05" d="M6.9 13.8A5.4 5.4 0 0 1 6.5 12c0-.6.1-1.2.3-1.8L2.8 7.7A9.1 9.1 0 0 0 2.1 12c0 1.4.3 2.8.9 4.1l3.9-2.3Z"/>
+                <path fill="#4285F4" d="M12 4.4c1.4 0 2.7.5 3.7 1.4l2.8-2.7A9.2 9.2 0 0 0 12 2a9.8 9.8 0 0 0-8.8 5.4l3.9 2.3A5.4 5.4 0 0 1 12 4.4Z"/>
+              </svg>
+            </span>
+            <span>{copy.customerContinueGoogle}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleSocialAuth("apple")}
+            disabled={loading}
+            className="social-button social-button-apple w-full disabled:opacity-60"
+          >
+            <span className="social-button__icon social-button__icon-apple" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M16.5 12.37c0-2.04 1.68-3.01 1.75-3.06-0.96-1.39-2.45-1.58-2.96-1.6-1.26-.13-2.45.74-3.09.74-.64 0-1.62-.72-2.67-.7-1.37.02-2.64.8-3.35 2.03-1.43 2.48-.36 6.15 1.03 8.15.68.98 1.5 2.09 2.58 2.04 1.03-.04 1.42-.66 2.66-.66 1.25 0 1.6.66 2.68.63 1.11-.02 1.82-1 2.49-2 .79-1.15 1.11-2.27 1.13-2.33-.02-.01-2.17-.84-3.73-2.93ZM15.13 6.26c.56-.68.94-1.63.84-2.57-.81.03-1.79.54-2.38 1.22-.52.6-.98 1.56-.86 2.47.92.07 1.82-.46 2.4-1.12Z"/>
+              </svg>
+            </span>
+            <span>{copy.customerContinueApple}</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3 pt-1">
+          <div className="h-px flex-1 bg-[color:var(--border)]" />
+          <span className="text-[0.7rem] uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{lang === "zh" ? "或" : "or"}</span>
+          <div className="h-px flex-1 bg-[color:var(--border)]" />
+        </div>
 
         <button type="submit" disabled={loading} className="btn-lux w-full disabled:opacity-60">
           {loading
