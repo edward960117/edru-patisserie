@@ -3,10 +3,12 @@ import path from "path";
 
 export interface PaymentSettings {
   bankTransferEnabled: boolean;
+  stripeEnabled: boolean;
 }
 
 const DEFAULT_PAYMENT_SETTINGS: PaymentSettings = {
   bankTransferEnabled: true,
+  stripeEnabled: true,
 };
 const SETTING_KEY = "payment_settings";
 const PAYMENT_SETTINGS_CACHE_TTL_MS = 60_000;
@@ -28,10 +30,17 @@ function getPaymentSettingsPath() {
   return path.join(process.cwd(), "data", "payment-settings.json");
 }
 
-function normalizePaymentSettings(parsed: Partial<PaymentSettings> | null | undefined): PaymentSettings {
+export function normalizePaymentSettings(parsed: Partial<PaymentSettings> | null | undefined): PaymentSettings {
   return {
-    bankTransferEnabled: parsed?.bankTransferEnabled === undefined ? DEFAULT_PAYMENT_SETTINGS.bankTransferEnabled : Boolean(parsed.bankTransferEnabled),
+    bankTransferEnabled:
+      parsed?.bankTransferEnabled === undefined ? DEFAULT_PAYMENT_SETTINGS.bankTransferEnabled : Boolean(parsed.bankTransferEnabled),
+    stripeEnabled:
+      parsed?.stripeEnabled === undefined ? DEFAULT_PAYMENT_SETTINGS.stripeEnabled : Boolean(parsed.stripeEnabled),
   };
+}
+
+export function isOnlinePaymentEnabled(paymentSettings: PaymentSettings, stripeConfigured: boolean): boolean {
+  return stripeConfigured && paymentSettings.stripeEnabled;
 }
 
 async function ensureSettingsTable() {

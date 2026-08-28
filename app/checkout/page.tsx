@@ -8,7 +8,7 @@ import WeChatQrButton from "@/components/WeChatQrButton";
 import BankTransferButton from "@/components/BankTransferButton";
 import BackButton from "@/components/BackButton";
 import { withResilientTimeout } from "@/lib/with-timeout";
-import { readPaymentSettings } from "@/lib/payment-settings";
+import { isOnlinePaymentEnabled, readPaymentSettings } from "@/lib/payment-settings";
 import { getCustomerSession } from "@/lib/auth/customer-session";
 import { isStripeConfigured } from "@/lib/stripe";
 import { parseStoredMobilePhone } from "@/lib/phone";
@@ -156,7 +156,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
             baseMessage={whatsappRawMessageWithMember}
             copy={copy}
             bankTransferEnabled={paymentSettings.bankTransferEnabled}
-            onlinePaymentEnabled={isStripeConfigured()}
+            onlinePaymentEnabled={isOnlinePaymentEnabled(paymentSettings, isStripeConfigured())}
             isLoggedIn={Boolean(customer)}
             initialCustomerPhone={customerPhone}
           />

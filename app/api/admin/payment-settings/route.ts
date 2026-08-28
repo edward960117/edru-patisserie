@@ -27,8 +27,11 @@ export async function PUT(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as { bankTransferEnabled?: boolean };
-    const next = { bankTransferEnabled: Boolean(body.bankTransferEnabled) };
+    const body = (await request.json()) as { bankTransferEnabled?: boolean; stripeEnabled?: boolean };
+    const next = {
+      bankTransferEnabled: Boolean(body.bankTransferEnabled),
+      stripeEnabled: Boolean(body.stripeEnabled),
+    };
 
     await writePaymentSettings(next);
     revalidatePath("/checkout");

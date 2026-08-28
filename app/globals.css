@@ -180,6 +180,158 @@ button:disabled {
   transform: translateY(-1px);
 }
 
+.admin-shell {
+  padding-top: 0.5rem;
+}
+
+.admin-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 1.25rem 1.25rem 1.1rem;
+  background:
+    linear-gradient(135deg, rgba(88, 140, 217, 0.12), rgba(255, 255, 255, 0.9) 48%, rgba(123, 163, 229, 0.08)),
+    linear-gradient(180deg, rgba(255,255,255,0.82), rgba(240,246,250,0.86));
+}
+
+.admin-hero::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -18px;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(103, 185, 232, 0.38), rgba(103, 185, 232, 0));
+  pointer-events: none;
+}
+
+.admin-hero-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.admin-hero-badges span {
+  border-radius: 999px;
+  border: 1px solid rgba(88, 140, 217, 0.18);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink-soft);
+  padding: 0.45rem 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .admin-tabs {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.admin-tab-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38rem;
+  border-radius: 18px;
+  padding: 0.8rem 0.7rem;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.34);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 180ms ease;
+}
+
+.admin-tab-button:hover {
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+}
+
+.admin-tab-button.is-active {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+  color: white;
+  border-color: rgba(23, 61, 115, 0.28);
+  box-shadow: 0 12px 20px rgba(23, 61, 115, 0.18);
+}
+
+.admin-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  background: rgba(88, 140, 217, 0.12);
+  color: var(--ink-soft);
+}
+
+.admin-tab-count.is-active {
+  background: rgba(255, 255, 255, 0.22);
+  color: white;
+}
+
+.admin-stat-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.2rem 1.2rem 1rem;
+}
+
+.admin-stat-accent {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 4px;
+}
+
+.admin-stat-accent.accent-blue {
+  background: linear-gradient(90deg, rgba(88,140,217,0.9), rgba(103,185,232,0.5));
+}
+
+.admin-stat-accent.accent-peach {
+  background: linear-gradient(90deg, rgba(198,147,100,0.9), rgba(229,177,120,0.5));
+}
+
+.admin-stat-accent.accent-mint {
+  background: linear-gradient(90deg, rgba(17,148,132,0.85), rgba(92,201,170,0.5));
+}
+
+.admin-action-card {
+  border: 1px solid rgba(88, 140, 217, 0.14);
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 20px;
+  padding: 1rem 1rem 1.1rem;
+  text-align: left;
+  transition: all 180ms ease;
+}
+
+.admin-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 24px rgba(88, 140, 217, 0.08);
+}
+
+.admin-action-card.accent-blue {
+  background: linear-gradient(180deg, rgba(232,241,255,0.9), rgba(255,255,255,0.82));
+}
+
+.admin-action-card.accent-peach {
+  background: linear-gradient(180deg, rgba(255,245,235,0.9), rgba(255,255,255,0.82));
+}
+
+.admin-action-card.accent-mint {
+  background: linear-gradient(180deg, rgba(233,250,246,0.9), rgba(255,255,255,0.82));
+}
+
 .heading-serif {
   font-family: var(--font-cormorant), "Cormorant Garamond", "Noto Serif SC", Georgia, serif;
   letter-spacing: 0.01em;

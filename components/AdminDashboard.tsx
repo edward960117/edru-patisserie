@@ -38,6 +38,7 @@ interface Props {
   };
   initialPaymentSettings: {
     bankTransferEnabled: boolean;
+    stripeEnabled: boolean;
   };
 }
 
@@ -659,9 +660,13 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
     setPaymentSettingsMessage("");
 
     const confirmed = await askConfirm(
-      paymentSettings.bankTransferEnabled
-        ? (lang === "zh" ? "确定要启用 PayNow / 网银转账选项吗？" : "Enable the PayNow / Internet Banking option on checkout?")
-        : (lang === "zh" ? "确定要停用 PayNow / 网银转账选项吗？" : "Disable the PayNow / Internet Banking option on checkout?")
+      paymentSettings.bankTransferEnabled || paymentSettings.stripeEnabled
+        ? (lang === "zh"
+            ? "确定要更新结账页面的付款选项吗？"
+            : "Update the checkout payment options?")
+        : (lang === "zh"
+            ? "确定要关闭所有付款选项吗？"
+            : "Disable all payment options on checkout?")
     );
     if (!confirmed) {
       return;
@@ -687,7 +692,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
       }
 
       const result = (await response.json().catch(() => ({}))) as {
-        paymentSettings?: { bankTransferEnabled: boolean };
+        paymentSettings?: { bankTransferEnabled: boolean; stripeEnabled: boolean };
       };
       if (result.paymentSettings) {
         setPaymentSettings(result.paymentSettings);
@@ -716,27 +721,38 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 admin-shell">
       {dbUnavailable ? null : null}
 
+      <header className="admin-hero card-lux">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="lux-kicker">BLUE ISLET</p>
+            <h2 className="heading-serif mt-2 text-3xl sm:text-4xl">
+              {lang === "zh" ? "运营后台" : "Operations Studio"}
+            </h2>
+          </div>
+          <div className="admin-hero-badges">
+            <span>{lang === "zh" ? "在线管理" : "Live management"}</span>
+            <span>{lang === "zh" ? "今日待办" : "Quick view"}</span>
+          </div>
+        </div>
+      </header>
+
       {/* Tab navigation */}
-      <nav className="card-lux grid grid-cols-2 gap-2 p-2 sm:grid-cols-5" aria-label="Admin sections">
+      <nav className="admin-tabs card-lux" aria-label="Admin sections">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center justify-center gap-1 rounded-xl px-3 py-3 text-sm font-medium transition-all ${
-              activeTab === tab.id
-                ? "bg-[color:var(--primary)] text-white shadow-[0_8px_18px_rgba(23,61,115,0.22)]"
-                : "text-[color:var(--ink-soft)] hover:bg-[color:var(--bg-soft)]"
-            }`}
+            className={`admin-tab-button ${activeTab === tab.id ? "is-active" : ""}`}
           >
             <span className="text-lg" aria-hidden="true">{tab.icon}</span>
             <span className="inline-flex items-center gap-1.5">
               {tab.label}
               {typeof tab.count === "number" ? (
-                <span className={`rounded-full px-1.5 py-0.5 text-[0.68rem] leading-none ${activeTab === tab.id ? "bg-white/20" : "bg-[color:var(--bg-soft)]"}`}>
+                <span className={`admin-tab-count ${activeTab === tab.id ? "is-active" : ""}`}>
                   {tab.count}
                 </span>
               ) : null}
@@ -755,25 +771,37 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
       {activeTab === "overview" ? (
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-3">
-            <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminTotalCakes}</p><p className="heading-serif text-3xl">{stats.totalCakes}</p></article>
-            <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminTotalCategories}</p><p className="heading-serif text-3xl">{stats.totalCategories}</p></article>
-            <article className="card-lux p-5"><p className="text-sm text-[color:var(--ink-soft)]">{copy.adminActiveCakes}</p><p className="heading-serif text-3xl">{stats.activeCakes}</p></article>
+            <article className="admin-stat-card card-lux">
+              <div className="admin-stat-accent accent-blue" />
+              <p className="text-sm text-[color:var(--ink-soft)]">{copy.adminTotalCakes}</p>
+              <p className="heading-serif text-3xl">{stats.totalCakes}</p>
+            </article>
+            <article className="admin-stat-card card-lux">
+              <div className="admin-stat-accent accent-peach" />
+              <p className="text-sm text-[color:var(--ink-soft)]">{copy.adminTotalCategories}</p>
+              <p className="heading-serif text-3xl">{stats.totalCategories}</p>
+            </article>
+            <article className="admin-stat-card card-lux">
+              <div className="admin-stat-accent accent-mint" />
+              <p className="text-sm text-[color:var(--ink-soft)]">{copy.adminActiveCakes}</p>
+              <p className="heading-serif text-3xl">{stats.activeCakes}</p>
+            </article>
           </div>
 
           <section className="card-lux p-6">
             <h2 className="heading-serif mb-4 text-2xl">{lang === "zh" ? "快捷操作" : "Quick Actions"}</h2>
             <div className="grid gap-3 sm:grid-cols-3">
-              <button type="button" onClick={goToNewCake} className="rounded-xl border border-[color:var(--gold)]/30 bg-white/80 p-4 text-left transition hover:border-[color:var(--primary)]/50 hover:bg-white">
+              <button type="button" onClick={goToNewCake} className="admin-action-card accent-blue">
                 <p className="text-2xl">🎂</p>
                 <p className="mt-2 font-medium">{lang === "zh" ? "新增蛋糕" : "Add a Cake"}</p>
                 <p className="mt-1 text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "上架新的蛋糕产品" : "Publish a new cake to the menu"}</p>
               </button>
-              <button type="button" onClick={() => { resetCategoryForm(); setActiveTab("categories"); }} className="rounded-xl border border-[color:var(--gold)]/30 bg-white/80 p-4 text-left transition hover:border-[color:var(--primary)]/50 hover:bg-white">
+              <button type="button" onClick={() => { resetCategoryForm(); setActiveTab("categories"); }} className="admin-action-card accent-peach">
                 <p className="text-2xl">🗂️</p>
                 <p className="mt-2 font-medium">{lang === "zh" ? "新增分类" : "Add a Category"}</p>
                 <p className="mt-1 text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "在首页新增分类卡片" : "Create a new homepage category card"}</p>
               </button>
-              <button type="button" onClick={() => setActiveTab("announcement")} className="rounded-xl border border-[color:var(--gold)]/30 bg-white/80 p-4 text-left transition hover:border-[color:var(--primary)]/50 hover:bg-white">
+              <button type="button" onClick={() => setActiveTab("announcement")} className="admin-action-card accent-mint">
                 <p className="text-2xl">📣</p>
                 <p className="mt-2 font-medium">{lang === "zh" ? "编辑滚动公告" : "Edit Announcement"}</p>
                 <p className="mt-1 text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "更新首页滚动通知栏" : "Update the homepage notice bar"}</p>
@@ -1167,6 +1195,15 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
               onChange={(event) => setPaymentSettings((prev) => ({ ...prev, bankTransferEnabled: event.target.checked }))}
             />
             {lang === "zh" ? "启用 PayNow / 网银转账付款方式" : "Enable PayNow / Internet Banking payment option"}
+          </label>
+
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={paymentSettings.stripeEnabled}
+              onChange={(event) => setPaymentSettings((prev) => ({ ...prev, stripeEnabled: event.target.checked }))}
+            />
+            {lang === "zh" ? "启用 Stripe 在线支付" : "Enable Stripe online payment"}
           </label>
 
           <button disabled={savingPaymentSettings || dbUnavailable} className="px-5 py-2 rounded-xl bg-[color:var(--primary)] text-white disabled:opacity-70 hover:bg-[color:var(--primary-hover)]">
