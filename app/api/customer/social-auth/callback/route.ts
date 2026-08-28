@@ -12,8 +12,20 @@ const callbackSchema = z.object({
   state: z.string().optional(),
 });
 
-function getBaseUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL || "http://127.0.0.1:3010";
+function getBaseUrl(requestUrl?: URL | string) {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+
+  if (typeof requestUrl === "string") {
+    return new URL(requestUrl).origin;
+  }
+
+  if (requestUrl) {
+    return requestUrl.origin;
+  }
+
+  return "http://127.0.0.1:3010";
 }
 
 function decodeState(state: string | undefined) {
@@ -160,15 +172,15 @@ export async function GET(request: Request) {
   });
 
   if (!parsed.success) {
-    return NextResponse.redirect(new URL("/login/customer?error=oauth_invalid", getBaseUrl()));
+    return NextResponse.redirect(new URL("/login/customer?error=oauth_invalid", getBaseUrl(url)));
   }
 
   const { provider, code, state } = parsed.data;
   const safeNextPath = decodeState(state);
-  const redirectUri = new URL(`/api/customer/social-auth/callback?provider=${provider}`, getBaseUrl()).toString();
+  const redirectUri = new URL(`/api/customer/social-auth/callback?provider=${provider}`, getBaseUrl(url)).toString();
 
   if (!code) {
-    return NextResponse.redirect(new URL(`/login/customer?error=${provider}_missing_code`, getBaseUrl()));
+    return NextResponse.redirect(new URL(`/login/customer?error=${provider}_missing_code`, getBaseUrl(url)));
   }
 
   try {
@@ -177,7 +189,7 @@ export async function GET(request: Request) {
       : await exchangeAppleUser(code, redirectUri);
 
     if (!profile.email) {
-      return NextResponse.redirect(new URL(`/login/customer?error=${provider}_missing_email`, getBaseUrl()));
+      return NextResponse.redirect(new URL(`/login/customer?error=${provider}_missing_email`, getBaseUrl(url)));
     }
 
     let customer = await prisma.customer.findUnique({ where: { email: profile.email } });
@@ -195,7 +207,7 @@ export async function GET(request: Request) {
     }
 
     const token = createSessionToken(customer.id, "customer");
-    const response = NextResponse.redirect(new URL(`${safeNextPath}?social=${provider}&status=${status}`, getBaseUrl()));
+    const response = NextResponse.redirect(new URL(`${safeNextPath}?social=${provider}&status=${status}`, getBaseUrl(url)));
     const forwardedProto = request.headers.get("x-forwarded-proto");
     const isHttps = forwardedProto === "https" || request.url.startsWith("https://");
     response.cookies.set(getCustomerSessionCookieName(), token, {
@@ -209,6 +221,6 @@ export async function GET(request: Request) {
     return response;
   } catch (error) {
     console.error(`OAuth callback failed for ${provider}:`, error);
-    return NextResponse.redirect(new URL(`/login/customer?error=oauth_failed&provider=${provider}`, getBaseUrl()));
+    return NextResponse.redirect(new URL(`/login/customer?error=oauth_failed&provider=${provider}`, getBaseUrl(url)));
   }
 }

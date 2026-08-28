@@ -6,12 +6,24 @@ const socialAuthSchema = z.object({
   next: z.string().optional().default("/account"),
 });
 
-function getBaseUrl(requestUrl: URL | string) {
-  return process.env.NEXT_PUBLIC_SITE_URL || (typeof requestUrl === "string" ? new URL(requestUrl).origin : requestUrl.origin) || "http://127.0.0.1:3010";
+function getBaseUrl(requestUrl?: URL | string) {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+
+  if (typeof requestUrl === "string") {
+    return new URL(requestUrl).origin;
+  }
+
+  if (requestUrl) {
+    return requestUrl.origin;
+  }
+
+  return "http://127.0.0.1:3010";
 }
 
-function getRedirectUri(provider: "google" | "apple") {
-  return new URL(`/api/customer/social-auth/callback?provider=${provider}`, getBaseUrl("http://127.0.0.1:3010")).toString();
+function getRedirectUri(provider: "google" | "apple", requestUrl?: URL | string) {
+  return new URL(`/api/customer/social-auth/callback?provider=${provider}`, getBaseUrl(requestUrl)).toString();
 }
 
 function ensureSafeNextPath(next: string | undefined) {
@@ -25,9 +37,9 @@ function buildState(next: string, provider: "google" | "apple") {
   return Buffer.from(JSON.stringify({ next: ensureSafeNextPath(next), provider })).toString("base64url");
 }
 
-function buildProviderRedirectUrl(provider: "google" | "apple", next: string) {
-  const baseUrl = getBaseUrl("http://127.0.0.1:3010");
-  const redirectUri = new URL(`/api/customer/social-auth/callback?provider=${provider}`, baseUrl).toString();
+function buildProviderRedirectUrl(provider: "google" | "apple", next: string, requestUrl?: URL | string) {
+  const baseUrl = getBaseUrl(requestUrl);
+  const redirectUri = getRedirectUri(provider, requestUrl);
 
   if (provider === "google") {
     const googleClientId = process.env.GOOGLE_CLIENT_ID;
@@ -82,7 +94,7 @@ export async function GET(request: Request) {
   const base = getBaseUrl(url);
 
   try {
-    const redirectUrl = buildProviderRedirectUrl(provider, next);
+    const redirectUrl = buildProviderRedirectUrl(provider, next, url);
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error(`Social auth redirect setup failed for ${provider}:`, error);
@@ -107,7 +119,7 @@ export async function POST(request: Request) {
   const { provider, next } = parsed.data;
 
   try {
-    const authUrl = buildProviderRedirectUrl(provider, next);
+    const authUrl = buildProviderRedirectUrl(provider, next, new URL(request.url));
     return NextResponse.json({ ok: true, authUrl });
   } catch (error) {
     console.error(`Social auth setup failed for ${provider}:`, error);
