@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import CustomerLogoutButton from "@/components/CustomerLogoutButton";
 import { t, type Lang } from "@/lib/i18n-shared";
 import { getDefaultPhoneCountryCode, getPhoneCountryOption, normalizeMobilePhone, parseStoredMobilePhone, PHONE_COUNTRIES, type PhoneCountryCode } from "@/lib/phone";
@@ -22,6 +23,7 @@ export default function CustomerAccountPanel({
   customer: CustomerAccountData;
   successMessage: string | null;
 }) {
+  const router = useRouter();
   const copy = t(lang);
   const initialPhone = useMemo(
     () => (customer.phone ? parseStoredMobilePhone(customer.phone) : { countryCode: getDefaultPhoneCountryCode(), nationalNumber: "" }),
@@ -33,6 +35,16 @@ export default function CustomerAccountPanel({
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(successMessage);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const parsed = customer.phone ? parseStoredMobilePhone(customer.phone) : { countryCode: getDefaultPhoneCountryCode(), nationalNumber: "" };
+    setPhoneCountry(parsed.countryCode);
+    setPhoneNumber(parsed.nationalNumber);
+  }, [customer.phone]);
+
+  useEffect(() => {
+    setStatusMessage(successMessage);
+  }, [successMessage]);
 
   async function handleSavePhone() {
     const normalizedPhone = normalizeMobilePhone(phoneCountry, phoneNumber);
@@ -61,6 +73,7 @@ export default function CustomerAccountPanel({
 
       setStatusMessage(result.message ?? (lang === "zh" ? "联系号码已更新。" : "Contact number updated successfully."));
       setLoading(false);
+      router.refresh();
     } catch {
       setError(lang === "zh" ? "更新联系号码失败。" : "Unable to update contact number.");
       setLoading(false);
@@ -68,19 +81,24 @@ export default function CustomerAccountPanel({
   }
 
   return (
-    <article className="detail-card card-lux atelier-frame p-6 sm:p-8">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium text-[color:var(--primary)]">
-            {copy.customerWelcome}, {customer.name?.trim() || customer.email.split("@")[0]}
-          </p>
-          <h1 className="heading-serif mt-1 text-3xl sm:text-4xl">{copy.customerAccountTitle}</h1>
+    <article className="account-panel detail-card card-lux atelier-frame p-5 sm:p-7">
+      <div className="account-panel__top flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(88,140,217,0.14),rgba(123,163,229,0.26))] text-lg font-semibold text-[color:var(--primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+            {customer.name?.trim()?.charAt(0)?.toUpperCase() || customer.email.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-[color:var(--primary)]">
+              {copy.customerWelcome}, {customer.name?.trim() || customer.email.split("@")[0]}
+            </p>
+            <h1 className="heading-serif mt-1 text-3xl sm:text-4xl">{copy.customerAccountTitle}</h1>
+          </div>
         </div>
         <CustomerLogoutButton lang={lang} />
       </div>
 
       {(error || statusMessage) && (
-        <div className={`mt-5 rounded-[12px] border p-4 ${error ? "bg-[color:var(--accent-red)]/10 border-[color:var(--accent-red)]/30" : "bg-[color:var(--accent-success)]/10 border-[color:var(--accent-success)]/30"}`}>
+        <div className={`mt-5 rounded-[14px] border p-4 ${error ? "bg-[color:var(--accent-red)]/10 border-[color:var(--accent-red)]/30" : "bg-[color:var(--accent-success)]/10 border-[color:var(--accent-success)]/30"}`}>
           <p className={`text-sm font-medium ${error ? "text-[color:var(--accent-red)]" : "text-[color:var(--accent-success)]"}`}>
             {error ?? statusMessage}
           </p>
@@ -88,25 +106,25 @@ export default function CustomerAccountPanel({
       )}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 px-4 py-3">
-          <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{copy.customerEmailLabel}</p>
-          <p className="mt-1 font-medium">{customer.email}</p>
+        <div className="account-metric rounded-[22px] border border-[color:var(--gold)]/22 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(239,246,255,0.82))] px-4 py-4">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.customerEmailLabel}</p>
+          <p className="mt-2 break-all text-base font-semibold text-[color:var(--ink)]">{customer.email}</p>
         </div>
 
-        <div className="rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 px-4 py-3">
-          <p className="text-xs uppercase tracking-[0.16em] text-[color:var(--ink-soft)]">{copy.customerPointsBalance}</p>
-          <p className="mt-1 text-2xl font-bold text-[color:var(--primary)]">{customer.points}</p>
+        <div className="account-metric rounded-[22px] border border-[color:var(--gold)]/22 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(239,246,255,0.82))] px-4 py-4">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">{copy.customerPointsBalance}</p>
+          <p className="mt-2 text-3xl font-bold text-[color:var(--primary)]">{customer.points}</p>
         </div>
       </div>
 
-      <div className="mt-6 rounded-xl border border-[color:var(--gold)]/28 bg-[color:var(--surface)]/92 p-4">
+      <div className="account-field mt-6 rounded-[24px] border border-[color:var(--gold)]/24 bg-[linear-gradient(180deg,rgba(252,253,255,0.98),rgba(239,246,255,0.78))] p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-sm uppercase tracking-[0.18em] text-[color:var(--ink-soft)]">
             {lang === "zh" ? "联系号码" : "Contact Number"}
           </h2>
         </div>
 
-        <div className="overflow-hidden rounded-[14px] border border-[color:var(--gold)]/35 bg-white/92 shadow-[0_8px_16px_rgba(36,74,118,0.08)]">
+        <div className="overflow-hidden rounded-[18px] border border-[color:var(--gold)]/35 bg-white/94 shadow-[0_14px_22px_rgba(36,74,118,0.08)]">
           <div className="grid sm:grid-cols-[220px_1fr]">
             <div className="border-b border-[color:var(--gold)]/18 bg-[color:var(--bg-soft)]/72 px-3 py-2.5 sm:border-b-0 sm:border-r">
               <label htmlFor="account-phone-country" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
@@ -156,7 +174,7 @@ export default function CustomerAccountPanel({
             type="button"
             onClick={() => void handleSavePhone()}
             disabled={loading}
-            className="inline-flex items-center justify-center rounded-full bg-[color:var(--primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(35,80,120,0.2)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+            className="account-save-btn inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? (lang === "zh" ? "保存中…" : "Saving...") : (lang === "zh" ? "保存联系号码" : "Save Contact Number")}
           </button>

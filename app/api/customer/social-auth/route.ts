@@ -7,16 +7,26 @@ const socialAuthSchema = z.object({
 });
 
 function getBaseUrl(requestUrl?: URL | string) {
+  const requestOrigin = typeof requestUrl === "string"
+    ? (() => {
+        try {
+          return new URL(requestUrl).origin;
+        } catch {
+          return null;
+        }
+      })()
+    : requestUrl?.origin ?? null;
+
+  if (requestOrigin && ["localhost", "127.0.0.1", "0.0.0.0"].includes(new URL(requestOrigin).hostname)) {
+    return requestOrigin;
+  }
+
   if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
   }
 
-  if (typeof requestUrl === "string") {
-    return new URL(requestUrl).origin;
-  }
-
-  if (requestUrl) {
-    return requestUrl.origin;
+  if (requestOrigin) {
+    return requestOrigin;
   }
 
   return "http://127.0.0.1:3010";
