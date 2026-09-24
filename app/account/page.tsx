@@ -8,11 +8,11 @@ import CustomerAccountPanel from "@/components/CustomerAccountPanel";
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ status?: string }> | { status?: string };
+  searchParams?: Promise<{ status?: string }>;
 }) {
   const lang = await getLang();
   const copy = t(lang);
-  const params = searchParams ? await Promise.resolve(searchParams) : {};
+  const params = searchParams ? await searchParams : {};
   const session = await getCustomerSession();
 
   if (!session) {
