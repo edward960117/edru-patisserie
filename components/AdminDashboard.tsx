@@ -898,8 +898,14 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
                 <p className="text-sm text-[color:var(--ink-soft)]">/{category.slug}</p>
               </div>
               <div className="flex gap-2">
-                <button type="button" disabled={dbUnavailable} onClick={() => void editCategory(category)} className="rounded-lg border border-[color:var(--gold)]/40 px-4 py-1.5 disabled:cursor-not-allowed disabled:opacity-60">{copy.adminEdit}</button>
-                <button type="button" disabled={dbUnavailable} onClick={() => void deleteCategory(category)} className="rounded-lg bg-red-700 px-4 py-1.5 text-white disabled:cursor-not-allowed disabled:opacity-60">{copy.adminDelete}</button>
+                <button type="button" disabled={dbUnavailable} onClick={() => void editCategory(category)} className="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--gold)]/40 px-4 py-1.5 disabled:cursor-not-allowed disabled:opacity-60">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /></svg>
+                  {copy.adminEdit}
+                </button>
+                <button type="button" disabled={dbUnavailable} onClick={() => void deleteCategory(category)} className="inline-flex items-center gap-1.5 rounded-lg bg-red-700 px-4 py-1.5 text-white disabled:cursor-not-allowed disabled:opacity-60">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /></svg>
+                  {copy.adminDelete}
+                </button>
               </div>
             </article>
           ))}
@@ -913,6 +919,9 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
       <section ref={cakeFormRef} className="card-lux p-6">
         <h2 className="heading-serif text-3xl mb-4">{editingId ? copy.adminEditCake : copy.adminAddCake}</h2>
         <form onSubmit={saveCake} className="grid gap-4 sm:grid-cols-2">
+          <p className="sm:col-span-2 -mb-1 text-xs font-semibold uppercase tracking-wide text-[color:var(--primary)]">
+            🎂 {lang === "zh" ? "基本信息" : "Basic Info"}
+          </p>
           <label className="text-sm">{copy.adminCategory}
             <select value={form.categoryId} onChange={(event) => setForm((prev) => ({ ...prev, categoryId: Number(event.target.value) }))} className="select-premium mt-1" required>
               {categoryList.map((category) => <option key={category.id} value={category.id}>{category.name_cn} / {category.name}</option>)}
@@ -964,6 +973,9 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
           <label className="text-sm">{copy.adminLeadTimeDays}
             <input type="number" min={1} value={form.leadTimeDays} onChange={(event) => setForm((prev) => ({ ...prev, leadTimeDays: Number(event.target.value) }))} className="input-lux mt-1" required />
           </label>
+          <p className="sm:col-span-2 mt-2 -mb-1 text-xs font-semibold uppercase tracking-wide text-[color:var(--primary)]">
+            📝 {lang === "zh" ? "描述与配料" : "Description & Ingredients"}
+          </p>
           <label className="text-sm sm:col-span-2">{copy.adminDescription}
             <textarea value={form.description} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} placeholder={copy.adminDescriptionPlaceholder} className="input-lux mt-1" rows={3} required />
           </label>
@@ -973,6 +985,9 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
           <label className="text-sm sm:col-span-2">{copy.adminIngredients}
             <textarea value={form.ingredients} onChange={(event) => setForm((prev) => ({ ...prev, ingredients: event.target.value }))} placeholder={copy.adminIngredientsPlaceholder} className="input-lux mt-1" rows={3} required />
           </label>
+          <p className="sm:col-span-2 mt-2 -mb-1 text-xs font-semibold uppercase tracking-wide text-[color:var(--primary)]">
+            📷 {lang === "zh" ? "蛋糕照片" : "Photo"}
+          </p>
           <label className="text-sm sm:col-span-2">{copy.adminUploadImage}
             <input
               type="file"
@@ -996,6 +1011,9 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
           </label>
 
           <div className="sm:col-span-2 grid gap-3 sm:grid-cols-3">
+            <p className="sm:col-span-3 -mb-1 text-xs font-semibold uppercase tracking-wide text-[color:var(--primary)]">
+              💰 {lang === "zh" ? "价格与尺寸" : "Pricing & Sizes"}
+            </p>
             {form.sizes.map((size, index) => (
               <div key={size.size} className="border border-[color:var(--gold)]/20 rounded-xl p-3 bg-white/80">
                 <p className="text-sm font-medium">{size.size}</p>
@@ -1023,8 +1041,17 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
             ))}
           </div>
 
-          <label className="text-sm inline-flex items-center gap-2"><input type="checkbox" checked={form.featured} onChange={(event) => setForm((prev) => ({ ...prev, featured: event.target.checked }))} /> {copy.adminFeatured}</label>
-          <label className="text-sm inline-flex items-center gap-2"><input type="checkbox" checked={form.active} onChange={(event) => setForm((prev) => ({ ...prev, active: event.target.checked }))} /> {copy.adminActive}</label>
+          <p className="sm:col-span-2 mt-2 -mb-1 text-xs font-semibold uppercase tracking-wide text-[color:var(--primary)]">
+            👁️ {lang === "zh" ? "上架状态" : "Visibility"}
+          </p>
+          <label className="text-sm inline-flex items-center gap-2.5">
+            <input type="checkbox" role="switch" className="toggle-switch-track" checked={form.featured} onChange={(event) => setForm((prev) => ({ ...prev, featured: event.target.checked }))} />
+            {copy.adminFeatured}
+          </label>
+          <label className="text-sm inline-flex items-center gap-2.5">
+            <input type="checkbox" role="switch" className="toggle-switch-track" checked={form.active} onChange={(event) => setForm((prev) => ({ ...prev, active: event.target.checked }))} />
+            {copy.adminActive}
+          </label>
 
           <div className="sm:col-span-2 flex gap-3">
             <button disabled={savingCake} className="px-5 py-2 rounded-xl bg-[color:var(--primary)] text-white disabled:opacity-70 hover:bg-[color:var(--primary-hover)]">{savingCake ? copy.adminSaving : editingId ? copy.adminUpdate : copy.adminCreate}</button>
@@ -1070,7 +1097,7 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
                 )}
                 <div className="min-w-0">
                   <p className="truncate font-medium">{cake.name} / {cake.name_cn}</p>
-                  <p className="text-sm text-[color:var(--ink-soft)]">/{cake.slug} • {copy.adminLeadTimeShort}: {cake.lead_time_days} {copy.adminDays}</p>
+                  <p className="text-sm text-[color:var(--ink-soft)]">{copy.adminLeadTimeShort}: {cake.lead_time_days} {copy.adminDays}</p>
                   <p className="text-xs text-[color:var(--ink-soft)]">
                     {(categoryList.find((category) => category.id === cake.category_id)?.name_cn) ?? "-"}
                   </p>
@@ -1083,8 +1110,14 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
                 </div>
               </div>
               <div className="flex shrink-0 gap-2">
-                <button type="button" disabled={dbUnavailable} onClick={() => void editCake(cake)} className="px-4 py-1.5 rounded-lg border border-[color:var(--gold)]/40 disabled:cursor-not-allowed disabled:opacity-60">{copy.adminEdit}</button>
-                <button type="button" disabled={dbUnavailable} onClick={() => void deleteCake(cake.id)} className="px-4 py-1.5 rounded-lg bg-red-700 text-white disabled:cursor-not-allowed disabled:opacity-60">{copy.adminDelete}</button>
+                <button type="button" disabled={dbUnavailable} onClick={() => void editCake(cake)} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg border border-[color:var(--gold)]/40 disabled:cursor-not-allowed disabled:opacity-60">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /></svg>
+                  {copy.adminEdit}
+                </button>
+                <button type="button" disabled={dbUnavailable} onClick={() => void deleteCake(cake.id)} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-red-700 text-white disabled:cursor-not-allowed disabled:opacity-60">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /></svg>
+                  {copy.adminDelete}
+                </button>
               </div>
             </article>
           ))}
@@ -1127,14 +1160,24 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
       <section className="card-lux p-6">
         <h2 className="heading-serif text-3xl mb-4">{copy.adminSellerAnnouncementTitle}</h2>
         <form onSubmit={saveAnnouncement} className="space-y-4">
-          <label className="text-sm inline-flex items-center gap-2">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--gold)]/20 bg-white/70 px-4 py-3">
+            <div>
+              <p className="text-sm font-medium">{lang === "zh" ? "启用滚动公告" : "Enable moving announcement"}</p>
+              <p className="text-xs text-[color:var(--ink-soft)]">
+                {announcement.enabled
+                  ? (lang === "zh" ? "已开启 · 顾客将在首页看到此公告" : "On · Customers will see this on the homepage")
+                  : (lang === "zh" ? "已关闭 · 首页不会显示公告" : "Off · Nothing will show on the homepage")}
+              </p>
+            </div>
             <input
               type="checkbox"
+              role="switch"
+              aria-checked={announcement.enabled}
+              className="toggle-switch-track"
               checked={announcement.enabled}
               onChange={(event) => setAnnouncement((prev) => ({ ...prev, enabled: event.target.checked }))}
             />
-            {lang === "zh" ? "启用滚动公告" : "Enable moving announcement"}
-          </label>
+          </div>
 
           <label className="block text-sm">
             {lang === "zh" ? "英文公告文案" : "English announcement message"}
@@ -1188,23 +1231,43 @@ export default function AdminDashboard({ lang, categories, initialCakes, initial
             : "Control which payment options customers see on the checkout page. Turning an option off hides it from checkout."}
         </p>
         <form onSubmit={savePaymentSettings} className="space-y-4">
-          <label className="flex items-center gap-2 text-sm">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--gold)]/20 bg-white/70 px-4 py-3">
+            <div>
+              <p className="text-sm font-medium">{lang === "zh" ? "PayNow / 网银转账" : "PayNow / Internet Banking"}</p>
+              <p className="text-xs text-[color:var(--ink-soft)]">
+                {paymentSettings.bankTransferEnabled
+                  ? (lang === "zh" ? "已开启 · 结账页会显示此付款方式" : "On · Shown to customers at checkout")
+                  : (lang === "zh" ? "已关闭 · 结账页会隐藏此付款方式" : "Off · Hidden from checkout")}
+              </p>
+            </div>
             <input
               type="checkbox"
+              role="switch"
+              aria-checked={paymentSettings.bankTransferEnabled}
+              className="toggle-switch-track"
               checked={paymentSettings.bankTransferEnabled}
               onChange={(event) => setPaymentSettings((prev) => ({ ...prev, bankTransferEnabled: event.target.checked }))}
             />
-            {lang === "zh" ? "启用 PayNow / 网银转账付款方式" : "Enable PayNow / Internet Banking payment option"}
-          </label>
+          </div>
 
-          <label className="flex items-center gap-2 text-sm">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-[color:var(--gold)]/20 bg-white/70 px-4 py-3">
+            <div>
+              <p className="text-sm font-medium">{lang === "zh" ? "Stripe 在线支付" : "Stripe Online Payment"}</p>
+              <p className="text-xs text-[color:var(--ink-soft)]">
+                {paymentSettings.stripeEnabled
+                  ? (lang === "zh" ? "已开启 · 结账页会显示此付款方式" : "On · Shown to customers at checkout")
+                  : (lang === "zh" ? "已关闭 · 结账页会隐藏此付款方式" : "Off · Hidden from checkout")}
+              </p>
+            </div>
             <input
               type="checkbox"
+              role="switch"
+              aria-checked={paymentSettings.stripeEnabled}
+              className="toggle-switch-track"
               checked={paymentSettings.stripeEnabled}
               onChange={(event) => setPaymentSettings((prev) => ({ ...prev, stripeEnabled: event.target.checked }))}
             />
-            {lang === "zh" ? "启用 Stripe 在线支付" : "Enable Stripe online payment"}
-          </label>
+          </div>
 
           <button disabled={savingPaymentSettings || dbUnavailable} className="px-5 py-2 rounded-xl bg-[color:var(--primary)] text-white disabled:opacity-70 hover:bg-[color:var(--primary-hover)]">
             {savingPaymentSettings ? copy.adminSaving : lang === "zh" ? "保存支付设置" : "Save Payment Settings"}

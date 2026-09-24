@@ -6,7 +6,7 @@ import WeChatQrButton from "@/components/WeChatQrButton";
 import BankTransferButton from "@/components/BankTransferButton";
 import { type Lang } from "@/lib/i18n-shared";
 import { CANDLES } from "@/lib/candles";
-import { getDefaultPhoneCountryCode, getPhoneCountryOption, normalizeMobilePhone, parseStoredMobilePhone, PHONE_COUNTRIES, type PhoneCountryCode } from "@/lib/phone";
+import { getPhoneCountryOption, normalizeMobilePhone, parseStoredMobilePhone } from "@/lib/phone";
 
 interface AddOn {
   id: string;
@@ -27,6 +27,7 @@ const ADD_ONS: AddOn[] = [
 interface CheckoutOrderFormProps {
   cakeName: string;
   cakeSlug: string;
+  cakeImageUrl?: string;
   sizeId: number;
   sizeSize: string;
   sizePrice: number;
@@ -51,6 +52,7 @@ function formatDateInput(date: Date) {
 export default function CheckoutOrderForm({
   cakeName,
   cakeSlug,
+  cakeImageUrl = "",
   sizeId,
   sizeSize,
   sizePrice,
@@ -93,9 +95,10 @@ export default function CheckoutOrderForm({
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [guestConfirmed, setGuestConfirmed] = useState(false);
   const [paymentError, setPaymentError] = useState("");
-  const initialPhone = initialCustomerPhone ? parseStoredMobilePhone(initialCustomerPhone) : { countryCode: getDefaultPhoneCountryCode(), nationalNumber: "" };
-  const [customerPhoneCountry, setCustomerPhoneCountry] = useState<PhoneCountryCode>(initialPhone.countryCode);
-  const [customerPhoneNumber, setCustomerPhoneNumber] = useState(initialPhone.nationalNumber);
+  // Pickup/delivery is Singapore-only, so the phone number is always local (+65).
+  const customerPhoneCountry = "sg" as const;
+  const initialPhone = initialCustomerPhone ? parseStoredMobilePhone(initialCustomerPhone) : { countryCode: customerPhoneCountry, nationalNumber: "" };
+  const [customerPhoneNumber, setCustomerPhoneNumber] = useState(initialPhone.countryCode === customerPhoneCountry ? initialPhone.nationalNumber : "");
   const [customerPhoneError, setCustomerPhoneError] = useState(false);
   const candleModalRef = useRef<HTMLDialogElement>(null);
   const loginPromptRef = useRef<HTMLDialogElement>(null);
@@ -144,8 +147,7 @@ export default function CheckoutOrderForm({
   useEffect(() => {
     if (initialCustomerPhone) {
       const parsedPhone = parseStoredMobilePhone(initialCustomerPhone);
-      setCustomerPhoneCountry(parsedPhone.countryCode);
-      setCustomerPhoneNumber(parsedPhone.nationalNumber);
+      setCustomerPhoneNumber(parsedPhone.countryCode === customerPhoneCountry ? parsedPhone.nationalNumber : "");
     }
   }, [initialCustomerPhone]);
 
@@ -447,17 +449,24 @@ export default function CheckoutOrderForm({
         </div>
 
         <div className="checkout-stepper mt-3">
-          {[
-            { label: lang === "zh" ? "配送方式" : "Delivery", active: Boolean(fulfillmentMethod) },
-            { label: lang === "zh" ? "日期时间" : "Date & time", active: Boolean(pickupDate && pickupTime) },
-            { label: lang === "zh" ? "联系信息" : "Contact", active: Boolean(customerPhoneNumber) },
-            { label: lang === "zh" ? "确认付款" : "Review & pay", active: onlinePaymentEnabled || bankTransferEnabled },
-          ].map((step, index) => (
-            <div key={step.label} className={`checkout-step ${step.active ? "is-active" : ""}`}>
-              <span>{index + 1}</span>
-              <small>{step.label}</small>
-            </div>
-          ))}
+          {(() => {
+            const stepFulfillment = Boolean(fulfillmentMethod);
+            const stepDateTime = Boolean(pickupDate && pickupTime);
+            const stepContact = Boolean(customerPhoneNumber);
+            const stepReady = stepFulfillment && stepDateTime && stepContact;
+            const steps = [
+              { label: lang === "zh" ? "配送方式" : "Delivery", done: stepFulfillment },
+              { label: lang === "zh" ? "日期时间" : "Date & time", done: stepDateTime },
+              { label: lang === "zh" ? "联系信息" : "Contact", done: stepContact },
+              { label: lang === "zh" ? "确认付款" : "Review & pay", done: stepReady },
+            ];
+            return steps.map((step, index) => (
+              <div key={step.label} className={`checkout-step ${step.done ? "is-active" : ""}`}>
+                <span>{step.done ? "✓" : index + 1}</span>
+                <small>{step.label}</small>
+              </div>
+            ));
+          })()}
         </div>
       </div>
 
@@ -466,11 +475,20 @@ export default function CheckoutOrderForm({
           {lang === "zh" ? "订单摘要" : "Your order"}
         </p>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-lg font-semibold text-[color:var(--ink)]">{cakeName}</p>
-            <p className="text-sm text-[color:var(--ink-soft)]">
-              {lang === "zh" ? "尺寸" : "Size"}: {sizeSize}
-            </p>
+          <div className="flex items-center gap-3">
+            {cakeImageUrl ? (
+              <img
+                src={cakeImageUrl}
+                alt={cakeName}
+                className="h-16 w-16 shrink-0 rounded-xl object-cover shadow-[0_6px_14px_rgba(31,79,125,0.12)]"
+              />
+            ) : null}
+            <div>
+              <p className="text-lg font-semibold text-[color:var(--ink)]">{cakeName}</p>
+              <p className="text-sm text-[color:var(--ink-soft)]">
+                {lang === "zh" ? "尺寸" : "Size"}: {sizeSize}
+              </p>
+            </div>
           </div>
           <div className="text-right">
             <p className="text-xs text-[color:var(--ink-soft)]">{lang === "zh" ? "估算总额" : "Estimated total"}</p>
@@ -707,60 +725,39 @@ export default function CheckoutOrderForm({
             : "Enter a number where we can contact you. Staff will use it to confirm the order. If you are signed in, we will auto-fill your saved number."}
         </p>
         <div
-          className={`mt-4 overflow-hidden rounded-xl border bg-white/92 shadow-[0_8px_16px_rgba(36,74,118,0.08)] ${
-            customerPhoneError ? "border-[color:var(--accent-red)]" : "border-[color:var(--gold)]/30"
+          className={`mt-4 overflow-hidden rounded-2xl border bg-white/92 px-3.5 py-3 shadow-[0_8px_16px_rgba(36,74,118,0.08)] transition-shadow focus-within:shadow-[0_10px_22px_rgba(36,74,118,0.14)] ${
+            customerPhoneError ? "border-[color:var(--accent-red)]" : "border-[color:var(--gold)]/30 focus-within:border-[color:var(--primary)]/40"
           }`}
         >
-          <div className="grid sm:grid-cols-[220px_1fr]">
-            <div className="border-b border-[color:var(--gold)]/18 bg-[color:var(--bg-soft)]/72 px-3 py-2.5 sm:border-b-0 sm:border-r">
-              <label htmlFor="checkout-contact-country" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
-                {lang === "zh" ? "国家 / 地区" : "Country / Region"}
-              </label>
-              <select
-                id="checkout-contact-country"
-                value={customerPhoneCountry}
-                onChange={(event) => {
-                  setCustomerPhoneCountry(event.target.value as PhoneCountryCode);
-                  setCustomerPhoneError(false);
-                }}
-                className="w-full bg-transparent text-sm font-medium text-[color:var(--ink)] outline-none"
-              >
-                {PHONE_COUNTRIES.map((option) => (
-                  <option key={option.code} value={option.code}>
-                    {`${lang === "zh" ? option.labelZh : option.labelEn} (+${option.dialCode})`}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="px-3 py-2.5">
-              <label htmlFor="checkout-contact-number" className="mb-1 block text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
-                {lang === "zh" ? "手机号码" : "Mobile Number"}
-              </label>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-[color:var(--primary)]/10 px-2.5 py-1 text-xs font-semibold text-[color:var(--primary)]">
-                  +{getPhoneCountryOption(customerPhoneCountry).dialCode}
-                </span>
-                <input
-                  id="checkout-contact-number"
-                  type="tel"
-                  inputMode="tel"
-                  autoComplete="tel-national"
-                  value={customerPhoneNumber}
-                  onChange={(event) => {
-                    setCustomerPhoneNumber(event.target.value);
-                    setCustomerPhoneError(false);
-                  }}
-                  placeholder={getPhoneCountryOption(customerPhoneCountry).example}
-                  className="w-full bg-transparent text-sm text-[color:var(--ink)] outline-none"
-                />
-              </div>
-            </div>
+          <label htmlFor="checkout-contact-number" className="mb-1.5 block text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[color:var(--ink-soft)]">
+            {lang === "zh" ? "手机号码" : "Mobile Number"}
+          </label>
+          <div className="flex items-center gap-2.5">
+            <span className="flex items-center gap-1.5 rounded-full bg-[color:var(--primary)]/10 px-3 py-1.5 text-sm font-semibold text-[color:var(--primary)]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              +{getPhoneCountryOption(customerPhoneCountry).dialCode}
+            </span>
+            <input
+              id="checkout-contact-number"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel-national"
+              value={customerPhoneNumber}
+              onChange={(event) => {
+                setCustomerPhoneNumber(event.target.value);
+                setCustomerPhoneError(false);
+              }}
+              placeholder={getPhoneCountryOption(customerPhoneCountry).example}
+              className="w-full bg-transparent text-base text-[color:var(--ink)] outline-none placeholder:text-[color:var(--ink-faint)]"
+            />
           </div>
         </div>
         <p className="mt-2 text-xs text-[color:var(--ink-soft)]">
           {lang === "zh"
-            ? "默认新加坡号码。请选择国家代码并输入当地手机号码。"
-            : "Singapore is selected by default. Choose a country code and enter the local mobile number."}
+            ? "仅支持新加坡本地手机号码。"
+            : "Only Singapore mobile numbers are supported."}
         </p>
         {customerPhoneError && (
           <p className="mt-2 text-sm font-medium text-[color:var(--accent-red)]">
@@ -861,42 +858,29 @@ export default function CheckoutOrderForm({
       </div>
 
       {onlinePaymentEnabled && (
-        <div className="mt-5 rounded-2xl border border-[color:var(--primary)]/25 bg-[color:var(--primary)]/6 p-4 sm:p-5">
+        <div className="mt-5 rounded-2xl border border-[color:var(--gold)]/25 bg-[color:var(--bg-soft)]/60 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-sm font-semibold text-[color:var(--ink)]">
                 {lang === "zh" ? "在线支付" : "Online payment"}
               </p>
-              <p className="mt-0.5 text-xs text-[color:var(--ink-soft)]">
+              <p className="mt-0.5 text-xs font-medium text-[color:var(--accent-red)]">
                 {lang === "zh"
-                  ? "付款成功后，积分会自动累积到会员账户。"
-                  : "Loyalty points are automatically added to your member account after payment."}
+                  ? "该功能暂时无法使用，请通过 WhatsApp 或微信下单付款。"
+                  : "This feature is temporarily unavailable. Please order and pay via WhatsApp or WeChat."}
               </p>
             </div>
-            <p className="text-xl font-bold text-[color:var(--primary)]">S${grandTotal.toFixed(2)}</p>
+            <p className="text-xl font-bold text-[color:var(--ink-soft)]">S${grandTotal.toFixed(2)}</p>
           </div>
-          <span className="relative mt-3 block w-full">
-            <button
-              type="button"
-              onClick={() => handlePayOnline()}
-              disabled={paymentPending}
-              className="btn-lux w-full whitespace-normal text-center disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {paymentPending
-                ? lang === "zh"
-                  ? "正在跳转到安全支付…"
-                  : "Redirecting to secure payment…"
-                : lang === "zh"
-                  ? `安全支付 S$${grandTotal.toFixed(2)}`
-                  : `Pay S$${grandTotal.toFixed(2)} securely`}
-            </button>
-            <span className="absolute -top-2.5 -right-2 rounded-full bg-[color:var(--secondary)] px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-white shadow-sm">
-              {lang === "zh" ? "推荐" : "Recommended"}
-            </span>
-          </span>
-          {paymentError && (
-            <p className="mt-2 text-sm font-medium text-[color:var(--secondary)]">{paymentError}</p>
-          )}
+          <button
+            type="button"
+            disabled
+            className="btn-lux mt-3 w-full cursor-not-allowed whitespace-normal text-center opacity-50"
+          >
+            {lang === "zh"
+              ? `安全支付 S$${grandTotal.toFixed(2)}`
+              : `Pay S$${grandTotal.toFixed(2)} securely`}
+          </button>
           <p className="mt-2 text-[0.7rem] leading-relaxed text-[color:var(--ink-soft)]/80">
             {lang === "zh"
               ? "您将跳转到安全支付页面完成付款，我们不会接触您的银行卡或网银信息。"
